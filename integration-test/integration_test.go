@@ -63,7 +63,7 @@ func healthCheck(attempts int) error {
 func TestHTTPDoTranslate(t *testing.T) {
 	body := `{
 		"destination": "en",
-		"original": "текст для перевода",
+		"original": "texto para tradução",
 		"source": "auto"
 	}`
 	Test(t,
@@ -77,7 +77,7 @@ func TestHTTPDoTranslate(t *testing.T) {
 
 	body = `{
 		"destination": "en",
-		"original": "текст для перевода"
+		"original": "texto para tradução"
 	}`
 	Test(t,
 		Description("DoTranslate Fail"),
