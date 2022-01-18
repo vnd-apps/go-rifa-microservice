@@ -132,8 +132,8 @@ func TestRMQClientRPC(t *testing.T) {
 			t.Fatal("RabbitMQ RPC Client - remote call error - rmqClient.RemoteCall", err)
 		}
 
-		if history.History[0].Original != "текст для перевода" {
-			t.Fatal("Original != текст для перевода")
+		if history.History[0].Original != "texto para tradução" {
+			t.Fatal("Original != texto para tradução")
 		}
 	}
 }
