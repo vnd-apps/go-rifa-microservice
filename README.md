@@ -6,10 +6,10 @@
 
 Clean Architecture template for Golang services
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/evrone/go-clean-template)](https://goreportcard.com/report/github.com/evrone/go-clean-template)
-[![License](https://img.shields.io/github/license/evrone/go-clean-template.svg)](https://github.com/evrone/go-clean-template/blob/master/LICENSE)
-[![Release](https://img.shields.io/github/v/release/evrone/go-clean-template.svg)](https://github.com/evrone/go-clean-template/releases/)
-[![codecov](https://codecov.io/gh/evrone/go-clean-template/branch/master/graph/badge.svg?token=XE3E0X3EVQ)](https://codecov.io/gh/evrone/go-clean-template)
+[![Go Report Card](https://goreportcard.com/badge/github.com/evmartinelli/go-rifa-microservice)](https://goreportcard.com/report/github.com/evmartinelli/go-rifa-microservice)
+[![License](https://img.shields.io/github/license/evmartinelli/go-rifa-microservice.svg)](https://github.com/evmartinelli/go-rifa-microservice/blob/master/LICENSE)
+[![Release](https://img.shields.io/github/v/release/evmartinelli/go-rifa-microservice.svg)](https://github.com/evmartinelli/go-rifa-microservice/releases/)
+[![codecov](https://codecov.io/gh/evmartinelli/go-rifa-microservice/branch/master/graph/badge.svg?token=XE3E0X3EVQ)](https://codecov.io/gh/evmartinelli/go-rifa-microservice)
 
 ## Overview
 The purpose of the template is to show:
