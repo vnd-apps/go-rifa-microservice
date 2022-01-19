@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/evrone/go-clean-template/internal/entity"
+	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
 )
 
 // TranslationUseCase -.

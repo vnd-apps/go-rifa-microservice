@@ -1,4 +1,4 @@
-module github.com/evrone/go-clean-template
+module github.com/evmartinelli/go-rifa-microservice
 
 go 1.17
 
