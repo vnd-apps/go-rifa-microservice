@@ -6,7 +6,7 @@ Clean Architecture template for Golang services
 [![Go Report Card](https://goreportcard.com/badge/github.com/evmartinelli/go-rifa-microservice)](https://goreportcard.com/report/github.com/evmartinelli/go-rifa-microservice)
 [![License](https://img.shields.io/github/license/evmartinelli/go-rifa-microservice.svg)](https://github.com/evmartinelli/go-rifa-microservice/blob/master/LICENSE)
 [![Release](https://img.shields.io/github/v/release/evmartinelli/go-rifa-microservice.svg)](https://github.com/evmartinelli/go-rifa-microservice/releases/)
-[![codecov](https://codecov.io/gh/evmartinelli/go-rifa-microservice/branch/master/graph/badge.svg?token=XE3E0X3EVQ)](https://codecov.io/gh/evmartinelli/go-rifa-microservice)
+[![codecov](https://codecov.io/gh/evmartinelli/go-rifa-microservice/branch/master/graph/badge.svg?token=4NG66X8AYQ)](https://codecov.io/gh/evmartinelli/go-rifa-microservice)
 
 ## Overview
 The purpose of the template is to show:
