@@ -1,7 +1,4 @@
 ![Go Clean Template](docs/img/logo.svg)
-
-# Test CI
-
 # Go Clean template
 
 Clean Architecture template for Golang services
