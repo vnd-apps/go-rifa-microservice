@@ -11,7 +11,7 @@ import (
 
 	// Swagger docs.
 	_ "github.com/evmartinelli/go-rifa-microservice/docs"
-	"github.com/evmartinelli/go-rifa-microservice/http/middleware/customlogger"
+	customlogger "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/middleware"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )

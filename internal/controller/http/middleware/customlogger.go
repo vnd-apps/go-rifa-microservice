@@ -15,8 +15,7 @@ func RequestLoggerMiddleware(l logger.Interface) gin.HandlerFunc {
 		tee := io.TeeReader(c.Request.Body, &buf)
 		body, _ := ioutil.ReadAll(tee)
 		c.Request.Body = ioutil.NopCloser(&buf)
-		l.Info(string(body))
-		l.Info("Header", c.Request.Header)
+		l.Info(string(body), c.Request.Header)
 		c.Next()
 	}
 }
