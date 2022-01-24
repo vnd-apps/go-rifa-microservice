@@ -1,0 +1,16 @@
+{
+  "id" : "uuid",
+  "nome" : "string",
+  "imagens": [
+
+  ],
+  "status" : "string",
+  "valor" : 4,
+  "quantidadeNumeros" : 4,
+  "quantidadeVendida" : 4,
+}
+
+Aberto
+Aguardando Pagamento
+Fechada
+Sorteada
