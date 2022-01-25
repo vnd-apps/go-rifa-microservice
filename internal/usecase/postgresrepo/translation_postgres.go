@@ -1,4 +1,4 @@
-package repo
+package postgresrepo
 
 import (
 	"context"

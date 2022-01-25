@@ -13,10 +13,13 @@ import (
 	amqprpc "github.com/evmartinelli/go-rifa-microservice/internal/controller/amqp_rpc"
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo"
+
+	// "github.com/evmartinelli/go-rifa-microservice/internal/usecase/postgresrepo"
+	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/mongodbrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/webapi"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/httpserver"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
+	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/postgres"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/rabbitmq/rmq_rpc/server"
 )
@@ -32,9 +35,21 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 
-	// Use case
+	// Mongo Repository
+	mdb, err := mongodb.New(cfg.MDB.URL, cfg.MDB.Database)
+	if err != nil {
+		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
+	}
+
+	// // Use case
+	// translationUseCase := usecase.New(
+	// 	postgresrepo.New(pg),
+	// 	webapi.New(),
+	// )
+
+	// Use case MongoDB
 	translationUseCase := usecase.New(
-		repo.New(pg),
+		mongodbrepo.New(mdb),
 		webapi.New(),
 	)
 

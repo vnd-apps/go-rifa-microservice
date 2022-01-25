@@ -12,7 +12,17 @@ services:
       POSTGRES_DB: 'postgres'
     ports:
       - 5432:5432
-
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'user'
+      MONGO_INITDB_ROOT_PASSWORD: 'pass'
+      MONGO_INITDB_DATABASE: 'db-rifa'
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.8.12-management
@@ -26,12 +36,14 @@ services:
     image: app
     environment:
       PG_URL: 'postgres://user:pass@postgres:5432/postgres'
+      MDB_URL: 'mongodb://user:pass@mongodb:27017/'
       RMQ_URL: 'amqp://guest:guest@rabbitmq:5672/'
     ports:
       - 8080:8080
     depends_on:
       - postgres
       - rabbitmq
+      - mongodb
 
   integration:
     build:
@@ -44,3 +56,4 @@ services:
 
 volumes:
   pg-data:
+  mongodb_data_container:

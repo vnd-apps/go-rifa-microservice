@@ -13,6 +13,7 @@ type (
 		HTTP `yaml:"http"`
 		Log  `yaml:"logger"`
 		PG   `yaml:"postgres"`
+		MDB  `yaml:"mongodb"`
 		RMQ  `yaml:"rabbitmq"`
 	}
 
@@ -36,6 +37,12 @@ type (
 	PG struct {
 		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
 		URL     string `env-required:"true"                 env:"PG_URL"`
+	}
+
+	// PG -.
+	MDB struct {
+		Database string `env-required:"true" yaml:"database" env:"MDB_DATABASE"`
+		URL      string `env-required:"true"                 env:"MDB_URL"`
 	}
 
 	// RMQ -.
