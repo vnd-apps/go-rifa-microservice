@@ -5,10 +5,9 @@ package entity
 // Translation -.
 type Raffle struct {
 	Id           string
-	Name         string   `json:"name"  example:"en"`
-	Images       []string `json:"images"     example:"текст для перевода"`
+	Name         string `json:"name"  example:"en"`
 	Status       string
-	Value        string `json:"value"  example:"text for translation"`
-	TotalNumbers string `json:"totalNumbers"  example:"text for translation"`
+	Value        int `json:"value"  example:"5"`
+	TotalNumbers int `json:"totalNumbers"  example:"10"`
 	TotalSold    string
 }

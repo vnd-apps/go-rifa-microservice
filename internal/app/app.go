@@ -14,8 +14,8 @@ import (
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
 
-	// "github.com/evmartinelli/go-rifa-microservice/internal/usecase/postgresrepo"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/mongodbrepo"
+	// "github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/postgresrepo"
+	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/mongodbrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/webapi"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/httpserver"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
@@ -48,9 +48,14 @@ func Run(cfg *config.Config) {
 	// )
 
 	// Use case MongoDB
-	translationUseCase := usecase.New(
-		mongodbrepo.New(mdb),
+	translationUseCase := usecase.NewTranslation(
+		mongodbrepo.NewTranslation(mdb),
 		webapi.New(),
+	)
+
+	// Use case MongoDB
+	raffleUseCase := usecase.NewRaffleUseCase(
+		mongodbrepo.NewRaffle(mdb),
 	)
 
 	// RabbitMQ RPC Server
@@ -63,7 +68,7 @@ func Run(cfg *config.Config) {
 
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, l, translationUseCase)
+	v1.NewRouter(handler, l, translationUseCase, raffleUseCase)
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal

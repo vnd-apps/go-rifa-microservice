@@ -13,7 +13,7 @@ type TranslationRepo struct {
 }
 
 // New -.
-func New(mdb *mongodb.MongoDB) *TranslationRepo {
+func NewTranslation(mdb *mongodb.MongoDB) *TranslationRepo {
 	return &TranslationRepo{mdb}
 }
 

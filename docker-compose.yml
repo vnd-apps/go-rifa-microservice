@@ -15,14 +15,15 @@ services:
   mongodb:
     image: mongo:latest
     container_name: mongodb
+    restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: 'user'
-      MONGO_INITDB_ROOT_PASSWORD: 'pass'
-      MONGO_INITDB_DATABASE: 'db-rifa'
+        MONGO_INITDB_ROOT_USERNAME: user
+        MONGO_INITDB_ROOT_PASSWORD: pass
+        MONGO_INITDB_DATABASE: db-rifa
     ports:
-      - 27017:27017
+        - 27017:27017
     volumes:
-      - mongodb_data_container:/data/db
+        - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.8.12-management
