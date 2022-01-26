@@ -22,8 +22,8 @@ services:
     ports:
         - 27017:27017
     volumes:
-        - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-        - mongodb_data_container:/data/db
+      - mongodb_data_container:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro        
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.8.12-management
