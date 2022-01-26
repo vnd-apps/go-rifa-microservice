@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	_defaultConnTimeout = time.Second
+	_defaultConnTimeout = time.Hour
 )
 
 type MongoDB struct {
