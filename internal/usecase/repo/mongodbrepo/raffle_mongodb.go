@@ -9,10 +9,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// TranslationRepo -.
 type RaffleRepo struct {
-	db *mongodb.MongoDB
+	db *mongodb.MongoCol
 }
+
+const collection = "rifas-collection"
+
 type Raffle struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
 	Name         string             `bson:"title"`
@@ -25,20 +27,22 @@ type Raffle struct {
 // New -.
 func NewRaffle(mdb *mongodb.MongoDB) *RaffleRepo {
 	return &RaffleRepo{
-		db: mdb,
+		db: &mongodb.MongoCol{
+			Collection: mdb.Database.Collection(collection),
+		},
 	}
 }
 
 func (r *RaffleRepo) Create(ctx context.Context, rm entity.Raffle) error {
 	model := toModel(&rm)
-	_, err := r.db.Database.Collection("rifas-collection").InsertOne(ctx, model)
+	_, err := r.db.Collection.InsertOne(ctx, model)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func (r *RaffleRepo) GetAvaliableRaffle(ctx context.Context) ([]entity.Raffle, error) {
-	cur, err := r.db.Database.Collection("rifas-collection").Find(ctx, bson.M{})
+	cur, err := r.db.Collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
