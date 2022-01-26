@@ -17,12 +17,8 @@ const (
 )
 
 type MongoDB struct {
-	Database   *mongo.Database
-	Collection *mongo.Collection
+	Database *mongo.Database
 }
-
-var Collection *mongo.Collection
-
 type MongoCol struct {
 	Collection *mongo.Collection
 }
