@@ -7,16 +7,16 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
 )
 
-//go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test
+//go:generate mockgen -source=raffle_interfaces.go -destination=./mocks_raffle_test.go -package=usecase_test
 
 type (
-	// Translation -.
+	// Raffle -.
 	Raffle interface {
 		Create(context.Context, entity.Raffle) error
 		GetAvailableRaffle(context.Context) ([]entity.Raffle, error)
 	}
 
-	// TranslationRepo -.
+	// RaffleRepo -.
 	RaffleRepo interface {
 		Create(context.Context, entity.Raffle) error
 		GetAvailableRaffle(context.Context) ([]entity.Raffle, error)

@@ -77,7 +77,7 @@ func toModel(b *entity.Raffle) *Raffle {
 
 func toBookmark(b *Raffle) entity.Raffle {
 	return entity.Raffle{
-		Id:           b.ID.Hex(),
+		ID:           b.ID.Hex(),
 		Name:         b.Name,
 		Status:       b.Status,
 		Value:        b.Value,
