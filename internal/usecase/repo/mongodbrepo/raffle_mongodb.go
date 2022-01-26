@@ -41,7 +41,7 @@ func (r *RaffleRepo) Create(ctx context.Context, rm entity.Raffle) error {
 	}
 	return nil
 }
-func (r *RaffleRepo) GetAvaliableRaffle(ctx context.Context) ([]entity.Raffle, error) {
+func (r *RaffleRepo) GetAvailableRaffle(ctx context.Context) ([]entity.Raffle, error) {
 	cur, err := r.db.Collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func toModel(b *entity.Raffle) *Raffle {
 	return &Raffle{
 		ID:           primitive.NewObjectID(),
 		Name:         b.Name,
-		Status:       "Avaliable",
+		Status:       "Available",
 		Value:        b.Value,
 		TotalNumbers: b.TotalNumbers,
 		TotalSold:    0,

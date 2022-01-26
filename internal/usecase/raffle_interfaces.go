@@ -13,12 +13,12 @@ type (
 	// Translation -.
 	Raffle interface {
 		Create(context.Context, entity.Raffle) error
-		GetAvaliableRaffle(context.Context) ([]entity.Raffle, error)
+		GetAvailableRaffle(context.Context) ([]entity.Raffle, error)
 	}
 
 	// TranslationRepo -.
 	RaffleRepo interface {
 		Create(context.Context, entity.Raffle) error
-		GetAvaliableRaffle(context.Context) ([]entity.Raffle, error)
+		GetAvailableRaffle(context.Context) ([]entity.Raffle, error)
 	}
 )

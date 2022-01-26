@@ -6,7 +6,7 @@ package entity
 type Raffle struct {
 	Id           string `json:"id"  example:"61f0c143ad06223fa03910b0"`
 	Name         string `json:"name"  example:"Rifa"`
-	Status       string `json:"status"  example:"Avaliable"`
+	Status       string `json:"status"  example:"Available"`
 	Value        int    `json:"value"  example:"5"`
 	TotalNumbers int    `json:"totalNumbers"  example:"10"`
 	TotalSold    int    `json:"totalSold"  example:"1"`

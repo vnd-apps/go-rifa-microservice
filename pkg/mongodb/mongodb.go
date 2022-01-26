@@ -11,9 +11,7 @@ import (
 )
 
 const (
-	_defaultMaxPoolSize  = 1
-	_defaultConnAttempts = 10
-	_defaultConnTimeout  = time.Second
+	_defaultConnTimeout = time.Second
 )
 
 type MongoDB struct {
@@ -29,11 +27,11 @@ func New(url string, args ...interface{}) (*MongoDB, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), _defaultConnTimeout)
 	defer cancel()
 
-	//Connect to the DB
+	// Connect to the DB
 	log.Print(url)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(url))
 
-	//Check for any errors
+	// Check for any errors
 	if err != nil {
 		log.Fatalf("unable to initialize connection %v", err)
 	}
@@ -42,7 +40,7 @@ func New(url string, args ...interface{}) (*MongoDB, error) {
 	if err != nil {
 		log.Fatalf("unable to connect %v", err)
 	}
-	//Print confirmation of connection
+	// Print confirmation of connection
 	log.Printf("Connected to MongoDB!")
 	mdb.Database = client.Database("db-rifa")
 	return mdb, nil

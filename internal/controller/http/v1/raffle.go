@@ -20,26 +20,26 @@ func newRaffleRoutes(handler *gin.RouterGroup, t usecase.Raffle, l logger.Interf
 
 	h := handler.Group("/raffle")
 	{
-		h.GET("/avaliable", r.avaliable)
+		h.GET("/available", r.available)
 		h.POST("/do-create", r.doCreateRaffle)
 	}
 }
 
-type avaliableResponse struct {
-	Avaliable []entity.Raffle `json:"avaliable"`
+type availableResponse struct {
+	Available []entity.Raffle `json:"available"`
 }
 
 // @Summary     Show raffles
-// @Description Show all avaliable raffles
+// @Description Show all available raffles
 // @ID          raffle
 // @Tags  	    translation
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} raffleResponse
 // @Failure     500 {object} response
-// @Router      /raffle/avaliable [get]
-func (r *raffleRoutes) avaliable(c *gin.Context) {
-	raffles, err := r.t.GetAvaliableRaffle(c.Request.Context())
+// @Router      /raffle/available [get]
+func (r *raffleRoutes) available(c *gin.Context) {
+	raffles, err := r.t.GetAvailableRaffle(c.Request.Context())
 	if err != nil {
 		r.l.Error(err, "http - v1 - history")
 		errorResponse(c, http.StatusInternalServerError, "database problems")
@@ -47,7 +47,7 @@ func (r *raffleRoutes) avaliable(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, avaliableResponse{raffles})
+	c.JSON(http.StatusOK, availableResponse{raffles})
 }
 
 type doRaffleRequest struct {
@@ -66,7 +66,7 @@ type doRaffleRequest struct {
 // @Success     200 {object} entity.Raffle
 // @Failure     400 {object} response
 // @Failure     500 {object} response
-// @Router      /avaliable/do-create [post]
+// @Router      /available/do-create [post]
 func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 	var request doRaffleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

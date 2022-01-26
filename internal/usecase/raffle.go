@@ -23,8 +23,8 @@ func (uc *RaffleUseCase) Create(ctx context.Context, model entity.Raffle) error 
 	return uc.repo.Create(ctx, model)
 }
 
-func (uc *RaffleUseCase) GetAvaliableRaffle(ctx context.Context) ([]entity.Raffle, error) {
-	res, err := uc.repo.GetAvaliableRaffle(ctx)
+func (uc *RaffleUseCase) GetAvailableRaffle(ctx context.Context) ([]entity.Raffle, error) {
+	res, err := uc.repo.GetAvailableRaffle(ctx)
 	if err != nil {
 		return []entity.Raffle{}, fmt.Errorf("TranslationUseCase - Translate - s.repo.Store: %w", err)
 	}

@@ -14,8 +14,8 @@ import (
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
 
-	// "github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/postgresrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/mongodbrepo"
+	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/postgresrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/webapi"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/httpserver"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
@@ -41,15 +41,9 @@ func Run(cfg *config.Config) {
 		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
 	}
 
-	// // Use case
-	// translationUseCase := usecase.New(
-	// 	postgresrepo.New(pg),
-	// 	webapi.New(),
-	// )
-
-	// Use case MongoDB
+	// Use case
 	translationUseCase := usecase.NewTranslation(
-		mongodbrepo.NewTranslation(mdb),
+		postgresrepo.New(pg),
 		webapi.New(),
 	)
 
