@@ -1,44 +1,42 @@
-version: '3.9'
+version: "3.9"
 services:
-
   postgres:
     container_name: postgres
     image: postgres
     volumes:
       - pg-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: 'user'
-      POSTGRES_PASSWORD: 'pass'
-      POSTGRES_DB: 'postgres'
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "pass"
+      POSTGRES_DB: "postgres"
     ports:
       - 5432:5432
   mongodb:
-    container_name: mongodb
     image: mongo:latest
+    container_name: mongodb
+    restart: always
     environment:
-        MONGO_INITDB_ROOT_USERNAME: user
-        MONGO_INITDB_ROOT_PASSWORD: pass
-        MONGO_INITDB_DATABASE: db-rifa
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: db-rifa
     ports:
-        - 27017:27017
+      - 27017:27017
     volumes:
-      - mongodb_data_container:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro        
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.8.12-management
     ports:
       - 5672:5672
       - 15672:15672
-
   app:
     build: .
     container_name: app
     image: app
     environment:
-      PG_URL: 'postgres://user:pass@postgres:5432/postgres'
-      MDB_URL: 'mongodb://user:pass@mongodb:27017/db-rifa'
-      RMQ_URL: 'amqp://guest:guest@rabbitmq:5672/'
+      PG_URL: "postgres://user:pass@postgres:5432/postgres"
+      MDB_URL: "mongodb://user:pass@mongodb:27017/"
+      RMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
     ports:
       - 8080:8080
     depends_on:
@@ -57,4 +55,3 @@ services:
 
 volumes:
   pg-data:
-  mongodb_data_container:

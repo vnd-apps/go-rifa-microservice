@@ -35,9 +35,9 @@ type availableResponse struct {
 // @Tags  	    translation
 // @Accept      json
 // @Produce     json
-// @Success     200 {object} raffleResponse
+// @Success     200 {object} availableResponse
 // @Failure     500 {object} response
-// @Router      /raffle/available [get]
+// @Router      /raffle/available [get].
 func (r *raffleRoutes) available(c *gin.Context) {
 	raffles, err := r.t.GetAvailableRaffle(c.Request.Context())
 	if err != nil {
