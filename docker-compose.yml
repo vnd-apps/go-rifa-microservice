@@ -37,7 +37,7 @@ services:
     image: app
     environment:
       PG_URL: 'postgres://user:pass@postgres:5432/postgres'
-      MDB_URL: 'mongodb://user:pass@mongodb:27017/'
+      MDB_URL: 'mongodb://user:pass@mongodb:27017/db-rifa'
       RMQ_URL: 'amqp://guest:guest@rabbitmq:5672/'
     ports:
       - 8080:8080
