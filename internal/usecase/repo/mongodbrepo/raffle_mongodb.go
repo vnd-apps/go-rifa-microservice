@@ -35,6 +35,7 @@ func NewRaffle(mdb *mongodb.MongoDB) *RaffleRepo {
 
 func (r *RaffleRepo) Create(ctx context.Context, rm entity.Raffle) error {
 	model := toModel(&rm)
+
 	_, err := r.db.Collection.InsertOne(ctx, model)
 	if err != nil {
 		return err
@@ -53,6 +54,7 @@ func (r *RaffleRepo) GetAvailableRaffle(ctx context.Context) ([]entity.Raffle, e
 
 	for cur.Next(ctx) {
 		user := new(Raffle)
+
 		err := cur.Decode(user)
 		if err != nil {
 			return nil, err
