@@ -3,18 +3,23 @@ package customlogger
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
-	"github.com/gin-gonic/gin"
 )
 
 func RequestLoggerMiddleware(l logger.Interface) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var buf bytes.Buffer
 		tee := io.TeeReader(c.Request.Body, &buf)
-		body, _ := ioutil.ReadAll(tee)
-		c.Request.Body = ioutil.NopCloser(&buf)
+
+		body, err := io.ReadAll(tee)
+		if err != nil {
+			c.Next()
+		}
+
+		c.Request.Body = io.NopCloser(&buf)
 		l.Info(string(body), c.Request.Header)
 		c.Next()
 	}

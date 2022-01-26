@@ -3,10 +3,11 @@ package mongodbrepo
 import (
 	"context"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
-	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
+	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
 )
 
 type RaffleRepo struct {

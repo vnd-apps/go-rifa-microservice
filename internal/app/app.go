@@ -13,7 +13,6 @@ import (
 	amqprpc "github.com/evmartinelli/go-rifa-microservice/internal/controller/amqp_rpc"
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
-
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/mongodbrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/postgresrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/webapi"

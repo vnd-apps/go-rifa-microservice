@@ -27,8 +27,6 @@ func New(url string, args ...interface{}) (*MongoDB, error) {
 	mdb := &MongoDB{}
 	ctx, cancel := context.WithTimeout(context.Background(), _defaultConnTimeout)
 
-	defer cancel()
-
 	// Connect to the DB
 	log.Print(url)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(url))
@@ -45,6 +43,8 @@ func New(url string, args ...interface{}) (*MongoDB, error) {
 	log.Printf("Connected to MongoDB!")
 
 	mdb.Database = client.Database("db-rifa")
+
+	defer cancel()
 
 	return mdb, nil
 }
