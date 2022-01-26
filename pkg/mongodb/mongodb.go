@@ -17,6 +17,7 @@ const (
 type MongoDB struct {
 	Database *mongo.Database
 }
+
 type MongoCol struct {
 	Collection *mongo.Collection
 }
@@ -31,7 +32,6 @@ func New(url string, args ...interface{}) (*MongoDB, error) {
 	// Connect to the DB
 	log.Print(url)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(url))
-
 	// Check for any errors
 	if err != nil {
 		log.Fatalf("unable to initialize connection %v", err)
