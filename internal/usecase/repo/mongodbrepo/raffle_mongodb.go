@@ -6,6 +6,7 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // TranslationRepo -.
@@ -13,9 +14,13 @@ type RaffleRepo struct {
 	db *mongodb.MongoDB
 }
 
-type Bookmark struct {
-	URL   string `bson:"url"`
-	Title string `bson:"title"`
+type Raffle struct {
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Name         string             `bson:"title"`
+	Status       string             `bson:"status"`
+	Value        int                `bson:"value"`
+	TotalNumbers int                `bson:"totalnumbers"`
+	TotalSold    int                `bson:"totalsold"`
 }
 
 // New -.
@@ -24,7 +29,8 @@ func NewRaffle(mdb *mongodb.MongoDB) *RaffleRepo {
 		db: mdb}
 }
 
-func (r *RaffleRepo) Create(ctx context.Context, model entity.Raffle) error {
+func (r *RaffleRepo) Create(ctx context.Context, rm entity.Raffle) error {
+	model := toModel(&rm)
 	_, err := r.db.Database.Collection("rifas-collection").InsertOne(ctx, model)
 	if err != nil {
 		return err
@@ -36,10 +42,10 @@ func (r *RaffleRepo) GetAvaliableRaffle(ctx context.Context) ([]entity.Raffle, e
 	if err != nil {
 		return nil, err
 	}
-	out := make([]*Bookmark, 0)
+	out := make([]*Raffle, 0)
 
 	for cur.Next(ctx) {
-		user := new(Bookmark)
+		user := new(Raffle)
 		err := cur.Decode(user)
 		if err != nil {
 			return nil, err
@@ -54,14 +60,29 @@ func (r *RaffleRepo) GetAvaliableRaffle(ctx context.Context) ([]entity.Raffle, e
 	return toBookmarks(out), nil
 }
 
-func toBookmark(b *Bookmark) entity.Raffle {
-	return entity.Raffle{
-		Value: 5,
-		Name:  b.Title,
+func toModel(b *entity.Raffle) *Raffle {
+	return &Raffle{
+		ID:           primitive.NewObjectID(),
+		Name:         b.Name,
+		Status:       "Avaliable",
+		Value:        b.Value,
+		TotalNumbers: b.TotalNumbers,
+		TotalSold:    0,
 	}
 }
 
-func toBookmarks(bs []*Bookmark) []entity.Raffle {
+func toBookmark(b *Raffle) entity.Raffle {
+	return entity.Raffle{
+		Id:           b.ID.Hex(),
+		Name:         b.Name,
+		Status:       b.Status,
+		Value:        b.Value,
+		TotalNumbers: b.TotalNumbers,
+		TotalSold:    b.TotalSold,
+	}
+}
+
+func toBookmarks(bs []*Raffle) []entity.Raffle {
 	out := make([]entity.Raffle, len(bs))
 
 	for i, b := range bs {

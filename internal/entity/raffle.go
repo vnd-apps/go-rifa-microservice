@@ -9,5 +9,5 @@ type Raffle struct {
 	Status       string
 	Value        int `json:"value"  example:"5"`
 	TotalNumbers int `json:"totalNumbers"  example:"10"`
-	TotalSold    string
+	TotalSold    int
 }
