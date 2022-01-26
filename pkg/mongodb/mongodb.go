@@ -25,6 +25,7 @@ type MongoCol struct {
 func New(url string, args ...interface{}) (*MongoDB, error) {
 	mdb := &MongoDB{}
 	ctx, cancel := context.WithTimeout(context.Background(), _defaultConnTimeout)
+
 	defer cancel()
 
 	// Connect to the DB
@@ -42,6 +43,8 @@ func New(url string, args ...interface{}) (*MongoDB, error) {
 	}
 	// Print confirmation of connection
 	log.Printf("Connected to MongoDB!")
+
 	mdb.Database = client.Database("db-rifa")
+
 	return mdb, nil
 }

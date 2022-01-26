@@ -24,6 +24,5 @@ func (r *TranslationRepo) GetHistory(ctx context.Context) ([]entity.Translation,
 
 // Store -.
 func (r *TranslationRepo) Store(ctx context.Context, t entity.Translation) error {
-
 	return nil
 }

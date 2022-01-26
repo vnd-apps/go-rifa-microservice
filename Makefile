@@ -35,7 +35,7 @@ docker-rm-volume: ### remove docker volume
 .PHONY: docker-rm-volume
 
 linter-golangci: ### check by golangci linter
-	golangci-lint run
+	golangci-lint run --timeout=5m
 .PHONY: linter-golangci
 
 linter-hadolint: ### check by hadolint linter
