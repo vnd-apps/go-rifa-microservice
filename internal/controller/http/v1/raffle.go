@@ -20,7 +20,7 @@ func newRaffleRoutes(handler *gin.RouterGroup, t usecase.Raffle, l logger.Interf
 
 	h := handler.Group("/raffle")
 	{
-		h.GET("/avaliable", r.history)
+		h.GET("/avaliable", r.avaliable)
 		h.POST("/do-create", r.doCreateRaffle)
 	}
 }
@@ -38,7 +38,7 @@ type avaliableResponse struct {
 // @Success     200 {object} raffleResponse
 // @Failure     500 {object} response
 // @Router      /raffle/avaliable [get]
-func (r *raffleRoutes) history(c *gin.Context) {
+func (r *raffleRoutes) avaliable(c *gin.Context) {
 	raffles, err := r.t.GetAvaliableRaffle(c.Request.Context())
 	if err != nil {
 		r.l.Error(err, "http - v1 - history")
@@ -53,7 +53,7 @@ func (r *raffleRoutes) history(c *gin.Context) {
 type doRaffleRequest struct {
 	Name         string `json:"name" binding:"required" example:"rifa faca"`
 	Value        int    `json:"value" binding:"required" example:"1"`
-	TotalNumbers int    `json:"totalnumbers" binding:"required" example:"20"`
+	TotalNumbers int    `json:"totalNumbers" binding:"required" example:"20"`
 }
 
 // @Summary     Create
@@ -91,5 +91,5 @@ func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, "")
+	c.Status(http.StatusCreated)
 }

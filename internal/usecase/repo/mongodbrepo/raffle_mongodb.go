@@ -13,7 +13,6 @@ import (
 type RaffleRepo struct {
 	db *mongodb.MongoDB
 }
-
 type Raffle struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
 	Name         string             `bson:"title"`
@@ -26,7 +25,8 @@ type Raffle struct {
 // New -.
 func NewRaffle(mdb *mongodb.MongoDB) *RaffleRepo {
 	return &RaffleRepo{
-		db: mdb}
+		db: mdb,
+	}
 }
 
 func (r *RaffleRepo) Create(ctx context.Context, rm entity.Raffle) error {
