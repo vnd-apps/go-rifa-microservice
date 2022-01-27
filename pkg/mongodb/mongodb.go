@@ -12,6 +12,7 @@ import (
 
 const (
 	_defaultConnTimeout = time.Hour
+	_dbName             = "db-rifa"
 )
 
 type MongoDB struct {
@@ -42,7 +43,7 @@ func New(url string, args ...interface{}) (*MongoDB, error) {
 	// Print confirmation of connection
 	log.Printf("Connected to MongoDB!")
 
-	mdb.Database = client.Database("db-rifa")
+	mdb.Database = client.Database(_dbName)
 
 	defer cancel()
 
