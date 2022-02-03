@@ -11,6 +11,7 @@ import (
 const (
 	_steamBaseURL = "https://steamcommunity.com/"
 	_weaponType   = "Weapon"
+	_steamCDNURL  = "http://cdn.steamcommunity.com/economy/image/"
 )
 
 // SteamWebAPI -.
@@ -22,6 +23,8 @@ type Response struct {
 	Descriptions []struct {
 		MarketHash string `json:"market_hash_name"`
 		Name       string `json:"name"`
+		Marketable int    `json:"marketable"`
+		Icon       string `json:"icon_url"`
 		Tags       []struct {
 			Category string `json:"category"`
 		}
@@ -57,11 +60,16 @@ func (s *SteamWebAPI) PlayerItens(id string) (entity.Skin, error) {
 
 func createPlayerInventory(res *Response, skin *entity.Skin) {
 	for _, desc := range res.Descriptions {
+		if desc.Marketable != 1 {
+			continue
+		}
+
 		for _, tag := range desc.Tags {
 			if tag.Category == _weaponType {
 				skin.Items = append(skin.Items, entity.Item{
 					Name:           desc.Name,
 					MarketHashName: desc.MarketHash,
+					Image:          _steamCDNURL + desc.Icon,
 				})
 			}
 		}

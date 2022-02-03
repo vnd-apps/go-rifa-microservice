@@ -1,5 +1,14 @@
-basePath: /v1
+basePath: /v1.
 definitions:
+  entity.Item:
+    properties:
+      icon_url:
+        type: string
+      market_hash_name:
+        type: string
+      name:
+        type: string
+    type: object
   entity.Raffle:
     properties:
       id:
@@ -20,6 +29,17 @@ definitions:
       value:
         example: 5
         type: integer
+    type: object
+  entity.Skin:
+    properties:
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/entity.Item'
+        type: array
+      steam_id:
+        type: string
     type: object
   entity.Translation:
     properties:
@@ -111,10 +131,10 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/entity.Raffle'
+            $ref: '#/definitions/v1.response'
         "400":
           description: Bad Request
           schema:
@@ -146,6 +166,37 @@ paths:
       summary: Show raffles
       tags:
       - translation
+  /steam//do-player-inventory:
+    post:
+      consumes:
+      - application/json
+      description: Create a Player Inventory
+      operationId: do-player-inventory
+      parameters:
+      - description: Set up raffle
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.doRaffleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Skin'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Create
+      tags:
+      - raffle
   /translation/do-translate:
     post:
       consumes:

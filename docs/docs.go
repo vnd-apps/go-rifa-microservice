@@ -49,10 +49,10 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entity.Raffle"
+                            "$ref": "#/definitions/v1.response"
                         }
                     },
                     "400": {
@@ -89,6 +89,53 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/v1.availableResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/steam//do-player-inventory": {
+            "post": {
+                "description": "Create a Player Inventory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raffle"
+                ],
+                "summary": "Create",
+                "operationId": "do-player-inventory",
+                "parameters": [
+                    {
+                        "description": "Set up raffle",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.doRaffleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Skin"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
                         }
                     },
                     "500": {
@@ -179,6 +226,20 @@ var doc = `{
         }
     },
     "definitions": {
+        "entity.Item": {
+            "type": "object",
+            "properties": {
+                "icon_url": {
+                    "type": "string"
+                },
+                "market_hash_name": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.Raffle": {
             "type": "object",
             "properties": {
@@ -205,6 +266,23 @@ var doc = `{
                 "value": {
                     "type": "integer",
                     "example": 5
+                }
+            }
+        },
+        "entity.Skin": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Item"
+                    }
+                },
+                "steam_id": {
+                    "type": "string"
                 }
             }
         },
@@ -320,7 +398,7 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
 	Host:        "localhost:8080",
-	BasePath:    "/v1",
+	BasePath:    "/v1.",
 	Schemes:     []string{},
 	Title:       "Go Clean Template API",
 	Description: "Using a translation service as an example",

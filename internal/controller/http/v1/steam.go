@@ -28,8 +28,8 @@ type doSteamRequest struct {
 }
 
 // @Summary     Create
-// @Description Create a Raffle
-// @ID          do-create
+// @Description Create a Player Inventory
+// @ID          do-player-inventory
 // @Tags  	    raffle
 // @Accept      json
 // @Produce     json

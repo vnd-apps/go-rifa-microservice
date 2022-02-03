@@ -7,7 +7,7 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/v1",
+    "basePath": "/v1.",
     "paths": {
         "/available/do-create": {
             "post": {
@@ -35,10 +35,10 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entity.Raffle"
+                            "$ref": "#/definitions/v1.response"
                         }
                     },
                     "400": {
@@ -75,6 +75,53 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/v1.availableResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/steam//do-player-inventory": {
+            "post": {
+                "description": "Create a Player Inventory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raffle"
+                ],
+                "summary": "Create",
+                "operationId": "do-player-inventory",
+                "parameters": [
+                    {
+                        "description": "Set up raffle",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.doRaffleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Skin"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
                         }
                     },
                     "500": {
@@ -165,6 +212,20 @@
         }
     },
     "definitions": {
+        "entity.Item": {
+            "type": "object",
+            "properties": {
+                "icon_url": {
+                    "type": "string"
+                },
+                "market_hash_name": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.Raffle": {
             "type": "object",
             "properties": {
@@ -191,6 +252,23 @@
                 "value": {
                     "type": "integer",
                     "example": 5
+                }
+            }
+        },
+        "entity.Skin": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Item"
+                    }
+                },
+                "steam_id": {
+                    "type": "string"
                 }
             }
         },
