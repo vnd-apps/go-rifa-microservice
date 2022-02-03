@@ -1,5 +1,46 @@
-basePath: /v1
+basePath: /v1.
 definitions:
+  entity.Item:
+    properties:
+      icon_url:
+        type: string
+      market_hash_name:
+        type: string
+      name:
+        type: string
+    type: object
+  entity.Raffle:
+    properties:
+      id:
+        example: 61f0c143ad06223fa03910b0
+        type: string
+      name:
+        example: Rifa
+        type: string
+      status:
+        example: Available
+        type: string
+      totalNumbers:
+        example: 10
+        type: integer
+      totalSold:
+        example: 1
+        type: integer
+      value:
+        example: 5
+        type: integer
+    type: object
+  entity.Skin:
+    properties:
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/entity.Item'
+        type: array
+      steam_id:
+        type: string
+    type: object
   entity.Translation:
     properties:
       destination:
@@ -14,6 +55,29 @@ definitions:
       translation:
         example: text for translation
         type: string
+    type: object
+  v1.availableResponse:
+    properties:
+      available:
+        items:
+          $ref: '#/definitions/entity.Raffle'
+        type: array
+    type: object
+  v1.doRaffleRequest:
+    properties:
+      name:
+        example: rifa faca
+        type: string
+      totalNumbers:
+        example: 20
+        type: integer
+      value:
+        example: 1
+        type: integer
+    required:
+    - name
+    - totalNumbers
+    - value
     type: object
   v1.doTranslateRequest:
     properties:
@@ -51,6 +115,88 @@ info:
   title: Go Clean Template API
   version: "1.0"
 paths:
+  /available/do-create:
+    post:
+      consumes:
+      - application/json
+      description: Create a Raffle
+      operationId: do-create
+      parameters:
+      - description: Set up raffle
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.doRaffleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Create
+      tags:
+      - raffle
+  /raffle/available:
+    get:
+      consumes:
+      - application/json
+      description: Show all available raffles
+      operationId: raffle
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.availableResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Show raffles
+      tags:
+      - translation
+  /steam//do-player-inventory:
+    post:
+      consumes:
+      - application/json
+      description: Create a Player Inventory
+      operationId: do-player-inventory
+      parameters:
+      - description: Set up raffle
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.doRaffleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Skin'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Create
+      tags:
+      - raffle
   /translation/do-translate:
     post:
       consumes:

@@ -14,7 +14,7 @@ type TranslationUseCase struct {
 }
 
 // New -.
-func New(r TranslationRepo, w TranslationWebAPI) *TranslationUseCase {
+func NewTranslation(r TranslationRepo, w TranslationWebAPI) *TranslationUseCase {
 	return &TranslationUseCase{
 		repo:   r,
 		webAPI: w,

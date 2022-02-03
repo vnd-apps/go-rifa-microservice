@@ -13,10 +13,12 @@ import (
 	amqprpc "github.com/evmartinelli/go-rifa-microservice/internal/controller/amqp_rpc"
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo"
+	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/mongodbrepo"
+	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/postgresrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/webapi"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/httpserver"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
+	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/postgres"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/rabbitmq/rmq_rpc/server"
 )
@@ -32,10 +34,26 @@ func Run(cfg *config.Config) {
 	}
 	defer pg.Close()
 
-	// Use case
-	translationUseCase := usecase.New(
-		repo.New(pg),
+	// Mongo Repository
+	mdb, err := mongodb.New(cfg.MDB.URL, cfg.MDB.Database)
+	if err != nil {
+		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
+	}
+
+	// Translation Use Case
+	translationUseCase := usecase.NewTranslation(
+		postgresrepo.New(pg),
 		webapi.New(),
+	)
+
+	// Raffle Use Case
+	raffleUseCase := usecase.NewRaffleUseCase(
+		mongodbrepo.NewRaffle(mdb),
+	)
+
+	// Steam Use Case
+	steamUseCase := usecase.NewSteam(
+		webapi.NewSteamAPI(),
 	)
 
 	// RabbitMQ RPC Server
@@ -48,7 +66,7 @@ func Run(cfg *config.Config) {
 
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, l, translationUseCase)
+	v1.NewRouter(handler, l, translationUseCase, raffleUseCase, steamUseCase)
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal

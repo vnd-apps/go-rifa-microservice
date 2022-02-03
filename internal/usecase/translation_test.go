@@ -2,7 +2,6 @@ package usecase_test
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -11,15 +10,6 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
 )
-
-var errInternalServErr = errors.New("internal server error")
-
-type test struct {
-	name string
-	mock func()
-	res  interface{}
-	err  error
-}
 
 func translation(t *testing.T) (*usecase.TranslationUseCase, *MockTranslationRepo, *MockTranslationWebAPI) {
 	t.Helper()
@@ -30,7 +20,7 @@ func translation(t *testing.T) (*usecase.TranslationUseCase, *MockTranslationRep
 	repo := NewMockTranslationRepo(mockCtl)
 	webAPI := NewMockTranslationWebAPI(mockCtl)
 
-	translation := usecase.New(repo, webAPI)
+	translation := usecase.NewTranslation(repo, webAPI)
 
 	return translation, repo, webAPI
 }

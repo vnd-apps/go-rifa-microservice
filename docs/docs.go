@@ -23,6 +23,130 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/available/do-create": {
+            "post": {
+                "description": "Create a Raffle",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raffle"
+                ],
+                "summary": "Create",
+                "operationId": "do-create",
+                "parameters": [
+                    {
+                        "description": "Set up raffle",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.doRaffleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/raffle/available": {
+            "get": {
+                "description": "Show all available raffles",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "translation"
+                ],
+                "summary": "Show raffles",
+                "operationId": "raffle",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.availableResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/steam//do-player-inventory": {
+            "post": {
+                "description": "Create a Player Inventory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raffle"
+                ],
+                "summary": "Create",
+                "operationId": "do-player-inventory",
+                "parameters": [
+                    {
+                        "description": "Set up raffle",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.doRaffleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Skin"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
         "/translation/do-translate": {
             "post": {
                 "description": "Translate a text",
@@ -102,6 +226,66 @@ var doc = `{
         }
     },
     "definitions": {
+        "entity.Item": {
+            "type": "object",
+            "properties": {
+                "icon_url": {
+                    "type": "string"
+                },
+                "market_hash_name": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.Raffle": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "61f0c143ad06223fa03910b0"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Rifa"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Available"
+                },
+                "totalNumbers": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "totalSold": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "value": {
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
+        "entity.Skin": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Item"
+                    }
+                },
+                "steam_id": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.Translation": {
             "type": "object",
             "properties": {
@@ -120,6 +304,39 @@ var doc = `{
                 "translation": {
                     "type": "string",
                     "example": "text for translation"
+                }
+            }
+        },
+        "v1.availableResponse": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Raffle"
+                    }
+                }
+            }
+        },
+        "v1.doRaffleRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "totalNumbers",
+                "value"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "rifa faca"
+                },
+                "totalNumbers": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "value": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -181,7 +398,7 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
 	Host:        "localhost:8080",
-	BasePath:    "/v1",
+	BasePath:    "/v1.",
 	Schemes:     []string{},
 	Title:       "Go Clean Template API",
 	Description: "Using a translation service as an example",
