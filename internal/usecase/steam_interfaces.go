@@ -18,4 +18,8 @@ type (
 	SteamWebAPI interface {
 		PlayerItens(string) (entity.Skin, error)
 	}
+	// RaffleRepo -.
+	PlayerSkinRepo interface {
+		Create(context.Context, entity.Skin) error
+	}
 )

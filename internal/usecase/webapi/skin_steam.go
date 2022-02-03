@@ -6,6 +6,7 @@ import (
 	"github.com/go-resty/resty/v2"
 
 	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
+	"github.com/evmartinelli/go-rifa-microservice/pkg/rabbitmq/rmq_pub/pub"
 )
 
 const (
@@ -17,6 +18,7 @@ const (
 // SteamWebAPI -.
 type SteamWebAPI struct {
 	client *resty.Client
+	pub    pub.Client
 }
 
 type Response struct {
@@ -32,12 +34,13 @@ type Response struct {
 }
 
 // New -.
-func NewSteamAPI() *SteamWebAPI {
+func NewSteamAPI(pub *pub.Client) *SteamWebAPI {
 	client := resty.New()
 	client.SetBaseURL(_steamBaseURL)
 
 	return &SteamWebAPI{
 		client: client,
+		pub:    *pub,
 	}
 }
 
@@ -53,12 +56,15 @@ func (s *SteamWebAPI) PlayerItens(id string) (entity.Skin, error) {
 		return entity.Skin{}, err
 	}
 
-	createPlayerInventory(res, skin)
+	err = createPlayerInventory(s, res, skin)
+	if err != nil {
+		return entity.Skin{}, err
+	}
 
 	return *skin, nil
 }
 
-func createPlayerInventory(res *Response, skin *entity.Skin) {
+func createPlayerInventory(s *SteamWebAPI, res *Response, skin *entity.Skin) error {
 	for _, desc := range res.Descriptions {
 		if desc.Marketable != 1 {
 			continue
@@ -71,9 +77,16 @@ func createPlayerInventory(res *Response, skin *entity.Skin) {
 					MarketHashName: desc.MarketHash,
 					Image:          _steamCDNURL + desc.Icon,
 				})
+
+				err := s.pub.Publish(desc.MarketHash)
+				if err != nil {
+					return fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)
+				}
 			}
 		}
 	}
+
+	return nil
 }
 
 func getSteamInventory(s *SteamWebAPI, res *Response, id string) error {
