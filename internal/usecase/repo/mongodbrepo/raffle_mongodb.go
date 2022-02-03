@@ -68,21 +68,21 @@ func (r *RaffleRepo) GetAvailableRaffle(ctx context.Context) ([]entity.Raffle, e
 		return nil, err
 	}
 
-	return toBookmarks(out), nil
+	return toRaffles(out), nil
 }
 
-func toModel(b *entity.Raffle) *Raffle {
+func toModel(r *entity.Raffle) *Raffle {
 	return &Raffle{
 		ID:           primitive.NewObjectID(),
-		Name:         b.Name,
+		Name:         r.Name,
 		Status:       "Available",
-		Value:        b.Value,
-		TotalNumbers: b.TotalNumbers,
+		Value:        r.Value,
+		TotalNumbers: r.TotalNumbers,
 		TotalSold:    0,
 	}
 }
 
-func toBookmark(b *Raffle) entity.Raffle {
+func toRaffle(b *Raffle) entity.Raffle {
 	return entity.Raffle{
 		ID:           b.ID.Hex(),
 		Name:         b.Name,
@@ -93,11 +93,11 @@ func toBookmark(b *Raffle) entity.Raffle {
 	}
 }
 
-func toBookmarks(bs []*Raffle) []entity.Raffle {
-	out := make([]entity.Raffle, len(bs))
+func toRaffles(rs []*Raffle) []entity.Raffle {
+	out := make([]entity.Raffle, len(rs))
 
-	for i, b := range bs {
-		out[i] = toBookmark(b)
+	for i, b := range rs {
+		out[i] = toRaffle(b)
 	}
 
 	return out
