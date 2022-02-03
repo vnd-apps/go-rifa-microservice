@@ -22,8 +22,8 @@ import (
 // @description Using a translation service as an example
 // @version     1.0
 // @host        localhost:8080
-// @BasePath    /v1
-func NewRouter(handler *gin.Engine, l logger.Interface, t usecase.Translation, r usecase.Raffle) {
+// @BasePath    /v1.
+func NewRouter(handler *gin.Engine, l logger.Interface, t usecase.Translation, r usecase.Raffle, s usecase.Steam) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -44,5 +44,6 @@ func NewRouter(handler *gin.Engine, l logger.Interface, t usecase.Translation, r
 	{
 		newTranslationRoutes(h, t, l)
 		newRaffleRoutes(h, r, l)
+		newSteamRoutes(h, s, l)
 	}
 }

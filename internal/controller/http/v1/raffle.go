@@ -63,10 +63,10 @@ type doRaffleRequest struct {
 // @Accept      json
 // @Produce     json
 // @Param       request body doRaffleRequest true "Set up raffle"
-// @Success     200 {object} entity.Raffle
+// @Success     201 {object} response
 // @Failure     400 {object} response
 // @Failure     500 {object} response
-// @Router      /available/do-create [post]
+// @Router      /available/do-create [post].
 func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 	var request doRaffleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

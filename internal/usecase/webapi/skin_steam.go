@@ -38,14 +38,14 @@ func NewSteamAPI() *SteamWebAPI {
 	}
 }
 
-// Translate -.
-func (s *SteamWebAPI) PlayerItens(translation entity.Translation, id string) (entity.Skin, error) {
+// PlayerItens -.
+func (s *SteamWebAPI) PlayerItens(id string) (entity.Skin, error) {
 	res := &Response{}
 	skin := &entity.Skin{
 		PlayerID: id,
 	}
 
-	_, err := getSteamInventory(s, res, id)
+	err := getSteamInventory(s, res, id)
 	if err != nil {
 		return entity.Skin{}, err
 	}
@@ -68,18 +68,18 @@ func createPlayerInventory(res *Response, skin *entity.Skin) {
 	}
 }
 
-func getSteamInventory(s *SteamWebAPI, res *Response, id string) (entity.Skin, error) {
+func getSteamInventory(s *SteamWebAPI, res *Response, id string) error {
 	resp, err := s.client.R().
 		SetResult(&res).
 		SetPathParams(map[string]string{"steam.id": id}).
 		Get("/inventory/{steam.id}/730/2?l=en")
 	if err != nil {
-		return entity.Skin{}, fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)
+		return fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)
 	}
 
 	if resp.IsError() {
-		return entity.Skin{}, fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)
+		return fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)
 	}
 
-	return entity.Skin{}, nil
+	return nil
 }

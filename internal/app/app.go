@@ -40,15 +40,20 @@ func Run(cfg *config.Config) {
 		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
 	}
 
-	// Use case
+	// Translation Use Case
 	translationUseCase := usecase.NewTranslation(
 		postgresrepo.New(pg),
 		webapi.New(),
 	)
 
-	// Use case MongoDB
+	// Raffle Use Case
 	raffleUseCase := usecase.NewRaffleUseCase(
 		mongodbrepo.NewRaffle(mdb),
+	)
+
+	// Steam Use Case
+	steamUseCase := usecase.NewSteam(
+		webapi.NewSteamAPI(),
 	)
 
 	// RabbitMQ RPC Server
@@ -61,7 +66,7 @@ func Run(cfg *config.Config) {
 
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, l, translationUseCase, raffleUseCase)
+	v1.NewRouter(handler, l, translationUseCase, raffleUseCase, steamUseCase)
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal
