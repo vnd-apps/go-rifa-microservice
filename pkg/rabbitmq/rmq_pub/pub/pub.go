@@ -38,7 +38,7 @@ func New(url, clientExchange string, opts ...Option) (*Client, error) {
 
 	c := &Client{
 		conn:           rmqpub.New("test", cfg),
-		serverExchange: "test",
+		serverExchange: clientExchange,
 		error:          make(chan error),
 		stop:           make(chan struct{}),
 		timeout:        _defaultTimeout,

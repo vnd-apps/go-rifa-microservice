@@ -91,9 +91,9 @@ func (c *Connection) connect() error {
 	}
 
 	err = c.Channel.QueueBind(
-		q.Name, // queue name
-		"",     // routing key
-		"test", // exchange
+		q.Name,             // queue name
+		"",                 // routing key
+		c.ConsumerExchange, // exchange
 		false,
 		nil,
 	)

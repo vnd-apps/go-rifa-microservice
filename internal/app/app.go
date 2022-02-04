@@ -53,7 +53,7 @@ func Run(cfg *config.Config) {
 	)
 
 	// Steam Use Case
-	rmqPub, err := pub.New(cfg.RMQ.URL, cfg.RMQ.ServerExchange)
+	rmqPub, err := pub.New(cfg.RMQ.URL, cfg.RMQ.PubExchange)
 	if err != nil {
 		l.Fatal(fmt.Errorf("app - Run - rmqServer - server.New: %w", err))
 	}
