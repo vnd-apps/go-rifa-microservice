@@ -21,15 +21,15 @@ const (
 
 // Client -.
 type Client struct {
-	conn           *rmqpub.Connection
-	serverExchange string
-	error          chan error
-	stop           chan struct{}
-	timeout        time.Duration
+	conn        *rmqpub.Connection
+	pubExchange string
+	error       chan error
+	stop        chan struct{}
+	timeout     time.Duration
 }
 
 // New -.
-func New(url, clientExchange string, opts ...Option) (*Client, error) {
+func New(url, pubExchange string, opts ...Option) (*Client, error) {
 	cfg := rmqpub.Config{
 		URL:      url,
 		WaitTime: _defaultWaitTime,
@@ -37,11 +37,11 @@ func New(url, clientExchange string, opts ...Option) (*Client, error) {
 	}
 
 	c := &Client{
-		conn:           rmqpub.New("test", cfg),
-		serverExchange: clientExchange,
-		error:          make(chan error),
-		stop:           make(chan struct{}),
-		timeout:        _defaultTimeout,
+		conn:        rmqpub.New(pubExchange, cfg),
+		pubExchange: pubExchange,
+		error:       make(chan error),
+		stop:        make(chan struct{}),
+		timeout:     _defaultTimeout,
 	}
 
 	// Custom options
@@ -58,7 +58,7 @@ func New(url, clientExchange string, opts ...Option) (*Client, error) {
 }
 
 func (c *Client) Publish(body string) error {
-	err := c.conn.Channel.Publish(c.serverExchange, "", false, false,
+	err := c.conn.Channel.Publish(c.pubExchange, "", false, false,
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(body),
