@@ -9,12 +9,14 @@ import (
 
 // SteamUseCase -.
 type SteamUseCase struct {
+	repo   PlayerSkinRepo
 	webAPI SteamWebAPI
 }
 
 // New -.
-func NewSteam(w SteamWebAPI) *SteamUseCase {
+func NewSteam(r PlayerSkinRepo, w SteamWebAPI) *SteamUseCase {
 	return &SteamUseCase{
+		repo:   r,
 		webAPI: w,
 	}
 }
@@ -22,6 +24,11 @@ func NewSteam(w SteamWebAPI) *SteamUseCase {
 // Player Itens - getting inventory player.
 func (uc *SteamUseCase) GetPlayerInventory(ctx context.Context, id string) (entity.Skin, error) {
 	skin, err := uc.webAPI.PlayerItens(id)
+	if err != nil {
+		return entity.Skin{}, fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)
+	}
+
+	err = uc.repo.Create(ctx, skin)
 	if err != nil {
 		return entity.Skin{}, fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)
 	}

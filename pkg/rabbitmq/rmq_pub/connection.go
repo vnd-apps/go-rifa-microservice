@@ -21,7 +21,6 @@ type Connection struct {
 	Config
 	Connection *amqp.Connection
 	Channel    *amqp.Channel
-	Delivery   <-chan amqp.Delivery
 }
 
 // New -.
@@ -69,7 +68,7 @@ func (c *Connection) connect() error {
 	err = c.Channel.ExchangeDeclare(
 		c.ConsumerExchange,
 		"fanout",
-		false,
+		true,
 		false,
 		false,
 		false,
@@ -79,40 +78,27 @@ func (c *Connection) connect() error {
 		return fmt.Errorf("c.Connection.Channel: %w", err)
 	}
 
-	queue, err := c.Channel.QueueDeclare(
-		"",
-		false,
-		false,
-		true,
-		false,
-		nil,
+	q, err := c.Channel.QueueDeclare(
+		"",    // name
+		true,  // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
 	)
 	if err != nil {
 		return fmt.Errorf("c.Channel.QueueDeclare: %w", err)
 	}
 
 	err = c.Channel.QueueBind(
-		queue.Name,
-		"",
-		c.ConsumerExchange,
+		q.Name, // queue name
+		"",     // routing key
+		"test", // exchange
 		false,
 		nil,
 	)
 	if err != nil {
-		return fmt.Errorf("c.Channel.QueueBind: %w", err)
-	}
-
-	c.Delivery, err = c.Channel.Consume(
-		queue.Name,
-		"",
-		false,
-		false,
-		false,
-		false,
-		nil,
-	)
-	if err != nil {
-		return fmt.Errorf("c.Channel.Consume: %w", err)
+		return fmt.Errorf("c.Channel.QueueDeclare: %w", err)
 	}
 
 	return nil

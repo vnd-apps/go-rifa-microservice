@@ -20,6 +20,7 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/postgres"
+	"github.com/evmartinelli/go-rifa-microservice/pkg/rabbitmq/rmq_pub/pub"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/rabbitmq/rmq_rpc/server"
 )
 
@@ -52,8 +53,14 @@ func Run(cfg *config.Config) {
 	)
 
 	// Steam Use Case
+	rmqPub, err := pub.New(cfg.RMQ.URL, cfg.RMQ.ServerExchange)
+	if err != nil {
+		l.Fatal(fmt.Errorf("app - Run - rmqServer - server.New: %w", err))
+	}
+
 	steamUseCase := usecase.NewSteam(
-		webapi.NewSteamAPI(),
+		mongodbrepo.NewPlayerSkin(mdb),
+		webapi.NewSteamAPI(rmqPub),
 	)
 
 	// RabbitMQ RPC Server

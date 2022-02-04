@@ -50,31 +50,31 @@ func (mr *MockSteamMockRecorder) GetPlayerInventory(arg0, arg1 interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerInventory", reflect.TypeOf((*MockSteam)(nil).GetPlayerInventory), arg0, arg1)
 }
 
-// MockSteamWebApi is a mock of SteamWebApi interface.
-type MockSteamWebApi struct {
+// MockSteamWebAPI is a mock of SteamWebAPI interface.
+type MockSteamWebAPI struct {
 	ctrl     *gomock.Controller
-	recorder *MockSteamWebApiMockRecorder
+	recorder *MockSteamWebAPIMockRecorder
 }
 
-// MockSteamWebApiMockRecorder is the mock recorder for MockSteamWebApi.
-type MockSteamWebApiMockRecorder struct {
-	mock *MockSteamWebApi
+// MockSteamWebAPIMockRecorder is the mock recorder for MockSteamWebAPI.
+type MockSteamWebAPIMockRecorder struct {
+	mock *MockSteamWebAPI
 }
 
-// NewMockSteamWebApi creates a new mock instance.
-func NewMockSteamWebApi(ctrl *gomock.Controller) *MockSteamWebApi {
-	mock := &MockSteamWebApi{ctrl: ctrl}
-	mock.recorder = &MockSteamWebApiMockRecorder{mock}
+// NewMockSteamWebAPI creates a new mock instance.
+func NewMockSteamWebAPI(ctrl *gomock.Controller) *MockSteamWebAPI {
+	mock := &MockSteamWebAPI{ctrl: ctrl}
+	mock.recorder = &MockSteamWebAPIMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSteamWebApi) EXPECT() *MockSteamWebApiMockRecorder {
+func (m *MockSteamWebAPI) EXPECT() *MockSteamWebAPIMockRecorder {
 	return m.recorder
 }
 
 // PlayerItens mocks base method.
-func (m *MockSteamWebApi) PlayerItens(arg0 string) (entity.Skin, error) {
+func (m *MockSteamWebAPI) PlayerItens(arg0 string) (entity.Skin, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PlayerItens", arg0)
 	ret0, _ := ret[0].(entity.Skin)
@@ -83,7 +83,44 @@ func (m *MockSteamWebApi) PlayerItens(arg0 string) (entity.Skin, error) {
 }
 
 // PlayerItens indicates an expected call of PlayerItens.
-func (mr *MockSteamWebApiMockRecorder) PlayerItens(arg0 interface{}) *gomock.Call {
+func (mr *MockSteamWebAPIMockRecorder) PlayerItens(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlayerItens", reflect.TypeOf((*MockSteamWebApi)(nil).PlayerItens), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlayerItens", reflect.TypeOf((*MockSteamWebAPI)(nil).PlayerItens), arg0)
+}
+
+// MockPlayerSkinRepo is a mock of PlayerSkinRepo interface.
+type MockPlayerSkinRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockPlayerSkinRepoMockRecorder
+}
+
+// MockPlayerSkinRepoMockRecorder is the mock recorder for MockPlayerSkinRepo.
+type MockPlayerSkinRepoMockRecorder struct {
+	mock *MockPlayerSkinRepo
+}
+
+// NewMockPlayerSkinRepo creates a new mock instance.
+func NewMockPlayerSkinRepo(ctrl *gomock.Controller) *MockPlayerSkinRepo {
+	mock := &MockPlayerSkinRepo{ctrl: ctrl}
+	mock.recorder = &MockPlayerSkinRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPlayerSkinRepo) EXPECT() *MockPlayerSkinRepoMockRecorder {
+	return m.recorder
+}
+
+// Create mocks base method.
+func (m *MockPlayerSkinRepo) Create(arg0 context.Context, arg1 entity.Skin) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockPlayerSkinRepoMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockPlayerSkinRepo)(nil).Create), arg0, arg1)
 }
