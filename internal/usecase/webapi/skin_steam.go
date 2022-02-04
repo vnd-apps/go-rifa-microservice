@@ -18,7 +18,7 @@ const (
 // SteamWebAPI -.
 type SteamWebAPI struct {
 	client *resty.Client
-	pub    pub.Client
+	pub    *pub.Client
 }
 
 type Response struct {
@@ -34,13 +34,13 @@ type Response struct {
 }
 
 // New -.
-func NewSteamAPI(pub *pub.Client) *SteamWebAPI {
+func NewSteamAPI(p *pub.Client) *SteamWebAPI {
 	client := resty.New()
 	client.SetBaseURL(_steamBaseURL)
 
 	return &SteamWebAPI{
 		client: client,
-		pub:    *pub,
+		pub:    p,
 	}
 }
 
