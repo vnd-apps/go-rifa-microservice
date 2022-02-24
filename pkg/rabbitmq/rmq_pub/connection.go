@@ -79,12 +79,12 @@ func (c *Connection) connect() error {
 	}
 
 	q, err := c.Channel.QueueDeclare(
-		"",    // name
-		true,  // durable
-		false, // delete when unused
-		false, // exclusive
-		false, // no-wait
-		nil,   // arguments
+		"rifa.steamqueue", // name
+		true,              // durable
+		false,             // delete when unused
+		false,             // exclusive
+		false,             // no-wait
+		nil,               // arguments
 	)
 	if err != nil {
 		return fmt.Errorf("c.Channel.QueueDeclare: %w", err)
