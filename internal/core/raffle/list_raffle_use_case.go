@@ -1,4 +1,4 @@
-package usecase
+package raffle
 
 import (
 	"context"
@@ -13,13 +13,13 @@ type RaffleUseCase struct {
 }
 
 // New -.
-func NewRaffleUseCase(r RaffleRepo) *RaffleUseCase {
+func NewListRaffleUseCase(r RaffleRepo) *RaffleUseCase {
 	return &RaffleUseCase{
 		repo: r,
 	}
 }
 
-func (uc *RaffleUseCase) Create(ctx context.Context, model entity.Raffle) error {
+func (uc *RaffleUseCase) Run(ctx context.Context, model entity.Raffle) error {
 	return uc.repo.Create(ctx, model)
 }
 

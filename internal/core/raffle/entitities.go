@@ -1,8 +1,7 @@
 // Package entity defines main entities for business logic (services), data base mapping and
 // HTTP response objects if suitable. Each logic group entities in own file.
-package entity
+package raffle
 
-// Translation -.
 type Raffle struct {
 	ID           string `json:"id"  example:"61f0c143ad06223fa03910b0"`
 	Name         string `json:"name"  example:"Rifa"`

@@ -1,4 +1,4 @@
-package mongodbrepo
+package dynamodb
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
 )
 
@@ -26,7 +26,7 @@ type Raffle struct {
 }
 
 // New -.
-func NewRaffle(mdb *mongodb.MongoDB) *RaffleRepo {
+func NewRaffleRepo(mdb *mongodb.MongoDB) *RaffleRepo {
 	return &RaffleRepo{
 		db: &mongodb.MongoCol{
 			Collection: mdb.Database.Collection(collection),
@@ -34,7 +34,7 @@ func NewRaffle(mdb *mongodb.MongoDB) *RaffleRepo {
 	}
 }
 
-func (r *RaffleRepo) Create(ctx context.Context, rm entity.Raffle) error {
+func (r *RaffleRepo) Create(ctx context.Context, rm raffle.Raffle) error {
 	model := toModel(&rm)
 
 	_, err := r.db.Collection.InsertOne(ctx, model)
@@ -45,7 +45,7 @@ func (r *RaffleRepo) Create(ctx context.Context, rm entity.Raffle) error {
 	return nil
 }
 
-func (r *RaffleRepo) GetAvailableRaffle(ctx context.Context) ([]entity.Raffle, error) {
+func (r *RaffleRepo) GetAvailableRaffle(ctx context.Context) ([]raffle.Raffle, error) {
 	cur, err := r.db.Collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (r *RaffleRepo) GetAvailableRaffle(ctx context.Context) ([]entity.Raffle, e
 	return toRaffles(out), nil
 }
 
-func toModel(r *entity.Raffle) *Raffle {
+func toModel(r *raffle.Raffle) *Raffle {
 	return &Raffle{
 		ID:           primitive.NewObjectID(),
 		Name:         r.Name,
@@ -82,8 +82,8 @@ func toModel(r *entity.Raffle) *Raffle {
 	}
 }
 
-func toRaffle(b *Raffle) entity.Raffle {
-	return entity.Raffle{
+func toRaffle(b *Raffle) raffle.Raffle {
+	return raffle.Raffle{
 		ID:           b.ID.Hex(),
 		Name:         b.Name,
 		Status:       b.Status,
@@ -93,8 +93,8 @@ func toRaffle(b *Raffle) entity.Raffle {
 	}
 }
 
-func toRaffles(rs []*Raffle) []entity.Raffle {
-	out := make([]entity.Raffle, len(rs))
+func toRaffles(rs []*Raffle) []raffle.Raffle {
+	out := make([]raffle.Raffle, len(rs))
 
 	for i, b := range rs {
 		out[i] = toRaffle(b)

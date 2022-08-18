@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
@@ -26,7 +26,7 @@ func newRaffleRoutes(handler *gin.RouterGroup, t usecase.Raffle, l logger.Interf
 }
 
 type availableResponse struct {
-	Available []entity.Raffle `json:"available"`
+	Available []raffle.Raffle `json:"available"`
 }
 
 // @Summary     Show raffles
@@ -78,7 +78,7 @@ func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 
 	err := r.t.Create(
 		c.Request.Context(),
-		entity.Raffle{
+		raffle.Raffle{
 			Name:         request.Name,
 			TotalNumbers: request.TotalNumbers,
 			Value:        request.Value,

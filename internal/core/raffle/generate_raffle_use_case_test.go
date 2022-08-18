@@ -1,4 +1,4 @@
-package usecase_test
+package raffle_test
 
 import (
 	"context"
