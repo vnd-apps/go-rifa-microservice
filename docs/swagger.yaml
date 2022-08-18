@@ -41,21 +41,6 @@ definitions:
       steam_id:
         type: string
     type: object
-  entity.Translation:
-    properties:
-      destination:
-        example: en
-        type: string
-      original:
-        example: текст для перевода
-        type: string
-      source:
-        example: auto
-        type: string
-      translation:
-        example: text for translation
-        type: string
-    type: object
   v1.availableResponse:
     properties:
       available:
@@ -78,29 +63,6 @@ definitions:
     - name
     - totalNumbers
     - value
-    type: object
-  v1.doTranslateRequest:
-    properties:
-      destination:
-        example: en
-        type: string
-      original:
-        example: текст для перевода
-        type: string
-      source:
-        example: auto
-        type: string
-    required:
-    - destination
-    - original
-    - source
-    type: object
-  v1.historyResponse:
-    properties:
-      history:
-        items:
-          $ref: '#/definitions/entity.Translation'
-        type: array
     type: object
   v1.response:
     properties:
@@ -151,7 +113,7 @@ paths:
       consumes:
       - application/json
       description: Show all available raffles
-      operationId: raffle
+      operationId: available
       produces:
       - application/json
       responses:
@@ -165,7 +127,7 @@ paths:
             $ref: '#/definitions/v1.response'
       summary: Show raffles
       tags:
-      - translation
+      - raffle
   /steam//do-player-inventory:
     post:
       consumes:
@@ -196,56 +158,5 @@ paths:
             $ref: '#/definitions/v1.response'
       summary: Create
       tags:
-      - raffle
-  /translation/do-translate:
-    post:
-      consumes:
-      - application/json
-      description: Translate a text
-      operationId: do-translate
-      parameters:
-      - description: Set up translation
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/v1.doTranslateRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entity.Translation'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      summary: Translate
-      tags:
-      - translation
-  /translation/history:
-    get:
-      consumes:
-      - application/json
-      description: Show all translation history
-      operationId: history
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/v1.historyResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      summary: Show history
-      tags:
-      - translation
+      - steam
 swagger: "2.0"

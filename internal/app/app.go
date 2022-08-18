@@ -10,18 +10,15 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/evmartinelli/go-rifa-microservice/config"
-	amqprpc "github.com/evmartinelli/go-rifa-microservice/internal/controller/amqp_rpc"
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/mongodbrepo"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/postgresrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/webapi"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/httpserver"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/postgres"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/rabbitmq/rmq_pub/pub"
-	"github.com/evmartinelli/go-rifa-microservice/pkg/rabbitmq/rmq_rpc/server"
 )
 
 // Run creates objects via constructors.
@@ -41,12 +38,6 @@ func Run(cfg *config.Config) {
 		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
 	}
 
-	// Translation Use Case
-	translationUseCase := usecase.NewTranslation(
-		postgresrepo.New(pg),
-		webapi.New(),
-	)
-
 	// Raffle Use Case
 	raffleUseCase := usecase.NewRaffleUseCase(
 		mongodbrepo.NewRaffle(mdb),
@@ -63,17 +54,9 @@ func Run(cfg *config.Config) {
 		webapi.NewSteamAPI(rmqPub),
 	)
 
-	// RabbitMQ RPC Server
-	rmqRouter := amqprpc.NewRouter(translationUseCase)
-
-	rmqServer, err := server.New(cfg.RMQ.URL, cfg.RMQ.ServerExchange, rmqRouter, l)
-	if err != nil {
-		l.Fatal(fmt.Errorf("app - Run - rmqServer - server.New: %w", err))
-	}
-
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, l, translationUseCase, raffleUseCase, steamUseCase)
+	v1.NewRouter(handler, l, raffleUseCase, steamUseCase)
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal
@@ -85,18 +68,11 @@ func Run(cfg *config.Config) {
 		l.Info("app - Run - signal: " + s.String())
 	case err = <-httpServer.Notify():
 		l.Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))
-	case err = <-rmqServer.Notify():
-		l.Error(fmt.Errorf("app - Run - rmqServer.Notify: %w", err))
 	}
 
 	// Shutdown
 	err = httpServer.Shutdown()
 	if err != nil {
 		l.Error(fmt.Errorf("app - Run - httpServer.Shutdown: %w", err))
-	}
-
-	err = rmqServer.Shutdown()
-	if err != nil {
-		l.Error(fmt.Errorf("app - Run - rmqServer.Shutdown: %w", err))
 	}
 }

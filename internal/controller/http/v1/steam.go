@@ -30,7 +30,7 @@ type doSteamRequest struct {
 // @Summary     Create
 // @Description Create a Player Inventory
 // @ID          do-player-inventory
-// @Tags  	    raffle
+// @Tags  	    steam
 // @Accept      json
 // @Produce     json
 // @Param       request body doRaffleRequest true "Set up raffle"

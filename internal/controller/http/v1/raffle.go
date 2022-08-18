@@ -31,8 +31,8 @@ type availableResponse struct {
 
 // @Summary     Show raffles
 // @Description Show all available raffles
-// @ID          raffle
-// @Tags  	    translation
+// @ID          available
+// @Tags  	    raffle
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} availableResponse
