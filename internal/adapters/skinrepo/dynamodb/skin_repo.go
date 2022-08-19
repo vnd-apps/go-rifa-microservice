@@ -5,7 +5,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/core/steam"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
 )
 
@@ -24,7 +24,7 @@ type Skin struct {
 	TotalSold    int                `bson:"totalsold"`
 }
 
-func NewSteamRepo(mdb *mongodb.MongoDB) *PlayerSkinRepo {
+func NewPlayerSkinRepo(mdb *mongodb.MongoDB) *PlayerSkinRepo {
 	return &PlayerSkinRepo{
 		db: &mongodb.MongoCol{
 			Collection: mdb.Database.Collection(playerSkinCollection),
@@ -32,7 +32,7 @@ func NewSteamRepo(mdb *mongodb.MongoDB) *PlayerSkinRepo {
 	}
 }
 
-func (r *PlayerSkinRepo) Create(ctx context.Context, rm steam.Skin) error {
+func (r *PlayerSkinRepo) Create(ctx context.Context, rm skin.Skin) error {
 	rm.ID = primitive.NewObjectID().Hex()
 
 	_, err := r.db.Collection.InsertOne(ctx, rm)

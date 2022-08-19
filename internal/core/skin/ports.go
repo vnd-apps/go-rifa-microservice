@@ -1,10 +1,8 @@
 // Package usecase implements application business logic. Each logic group in own file.
-package usecase
+package skin
 
 import (
 	"context"
-
-	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
 )
 
 //go:generate mockgen -source=steam_interfaces.go -destination=./mocks_steam_test.go -package=usecase_test
@@ -12,14 +10,14 @@ import (
 type (
 	// Steam -.
 	Steam interface {
-		GetPlayerInventory(context.Context, string) (entity.Skin, error)
+		GetPlayerInventory(context.Context, string) (Steam, error)
 	}
 	// SteamWebApi -.
 	SteamWebAPI interface {
-		PlayerItens(string) (entity.Skin, error)
+		PlayerItens(string) (Steam, error)
 	}
 	// RaffleRepo -.
 	PlayerSkinRepo interface {
-		Create(context.Context, entity.Skin) error
+		Create(context.Context, Steam) error
 	}
 )

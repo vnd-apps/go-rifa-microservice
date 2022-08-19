@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/rabbitmq/rmq_pub/pub"
 )
 
@@ -45,26 +45,26 @@ func NewSteamAPI(p *pub.Client) *SteamWebAPI {
 }
 
 // PlayerItens -.
-func (s *SteamWebAPI) PlayerItens(id string) (entity.Skin, error) {
+func (s *SteamWebAPI) PlayerItens(id string) (skin.Skin, error) {
 	res := &Response{}
-	skin := &entity.Skin{
+	skinItem := &skin.Skin{
 		PlayerID: id,
 	}
 
 	err := getSteamInventory(s, res, id)
 	if err != nil {
-		return entity.Skin{}, err
+		return skin.Skin{}, err
 	}
 
-	err = createPlayerInventory(s, res, skin)
+	err = createPlayerInventory(s, res, skinItem)
 	if err != nil {
-		return entity.Skin{}, err
+		return skin.Skin{}, err
 	}
 
-	return *skin, nil
+	return *skinItem, nil
 }
 
-func createPlayerInventory(s *SteamWebAPI, res *Response, skin *entity.Skin) error {
+func createPlayerInventory(s *SteamWebAPI, res *Response, sk *skin.Skin) error {
 	for _, desc := range res.Descriptions {
 		if desc.Marketable != 1 {
 			continue
@@ -72,7 +72,7 @@ func createPlayerInventory(s *SteamWebAPI, res *Response, skin *entity.Skin) err
 
 		for _, tag := range desc.Tags {
 			if tag.Category == _weaponType {
-				skin.Items = append(skin.Items, entity.Item{
+				sk.Items = append(sk.Items, skin.Item{
 					Name:           desc.Name,
 					MarketHashName: desc.MarketHash,
 					Image:          _steamCDNURL + desc.Icon,
