@@ -8,16 +8,10 @@ import (
 //go:generate mockgen -source=steam_interfaces.go -destination=./mocks_steam_test.go -package=usecase_test
 
 type (
-	// Steam -.
-	Steam interface {
-		GetPlayerInventory(context.Context, string) (Steam, error)
-	}
-	// SteamWebApi -.
 	SteamWebAPI interface {
-		PlayerItens(string) (Steam, error)
+		PlayerItens(string) (Skin, error)
 	}
-	// RaffleRepo -.
 	PlayerSkinRepo interface {
-		Create(context.Context, Steam) error
+		Create(context.Context, Skin) error
 	}
 )
