@@ -6,17 +6,21 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
 type raffleRoutes struct {
-	t usecase.Raffle
-	l logger.Interface
+	generateRaffle raffle.GenerateRaffleUseCase
+	listRaffle     raffle.ListRaffleUseCase
+	logger         logger.Interface
 }
 
-func newRaffleRoutes(handler *gin.RouterGroup, t usecase.Raffle, l logger.Interface) {
-	r := &raffleRoutes{t, l}
+func newRaffleRoutes(handler *gin.RouterGroup, gr raffle.GenerateRaffleUseCase, lr raffle.ListRaffleUseCase, l logger.Interface) {
+	r := &raffleRoutes{
+		generateRaffle: gr,
+		listRaffle:     lr,
+		logger:         l,
+	}
 
 	h := handler.Group("/raffle")
 	{
@@ -39,9 +43,9 @@ type availableResponse struct {
 // @Failure     500 {object} response
 // @Router      /raffle/available [get].
 func (r *raffleRoutes) available(c *gin.Context) {
-	raffles, err := r.t.GetAvailableRaffle(c.Request.Context())
+	raffles, err := r.listRaffle.Run(c.Request.Context())
 	if err != nil {
-		r.l.Error(err, "http - v1 - history")
+		r.logger.Error(err, "http - v1 - history")
 		errorResponse(c, http.StatusInternalServerError, "database problems")
 
 		return
@@ -70,13 +74,13 @@ type doRaffleRequest struct {
 func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 	var request doRaffleRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		r.l.Error(err, "http - v1 - doCreateRaffle")
+		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusBadRequest, "invalid request body")
 
 		return
 	}
 
-	err := r.t.Create(
+	err := r.generateRaffle.Run(
 		c.Request.Context(),
 		raffle.Raffle{
 			Name:         request.Name,
@@ -85,7 +89,7 @@ func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 		},
 	)
 	if err != nil {
-		r.l.Error(err, "http - v1 - doCreateRaffle")
+		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusInternalServerError, "raffle service problems")
 
 		return
