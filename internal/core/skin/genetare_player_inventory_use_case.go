@@ -11,14 +11,14 @@ type PlayerInventoryUseCase struct {
 }
 
 // New -.
-func NewSteam(r PlayerSkinRepo, w SteamWebAPI) *PlayerInventoryUseCase {
+func NewPlayerInventoryUseCase(r PlayerSkinRepo, w SteamWebAPI) *PlayerInventoryUseCase {
 	return &PlayerInventoryUseCase{
 		repo:   r,
 		webAPI: w,
 	}
 }
 
-func (uc *PlayerInventoryUseCase) GetPlayerInventory(ctx context.Context, id string) (Skin, error) {
+func (uc *PlayerInventoryUseCase) Run(ctx context.Context, id string) (Skin, error) {
 	skin, err := uc.webAPI.PlayerItens(id)
 	if err != nil {
 		return Skin{}, fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)

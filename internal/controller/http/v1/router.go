@@ -13,7 +13,6 @@ import (
 	_ "github.com/evmartinelli/go-rifa-microservice/docs"
 	customlogger "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/middleware"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
-	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
@@ -24,7 +23,7 @@ import (
 // @version     1.0
 // @host        localhost:8080
 // @BasePath    /v1.
-func NewRouter(handler *gin.Engine, l logger.Interface, r raffle.GenerateRaffleUseCase, lg raffle.ListRaffleUseCase, s skin.PlayerInventoryUseCase) {
+func NewRouter(handler *gin.Engine, l logger.Interface, r raffle.GenerateRaffleUseCase, lg raffle.ListRaffleUseCase) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -44,6 +43,6 @@ func NewRouter(handler *gin.Engine, l logger.Interface, r raffle.GenerateRaffleU
 	h := handler.Group("/v1")
 	{
 		newRaffleRoutes(h, r, lg, l)
-		newSteamRoutes(h, s, l)
+		// newSteamRoutes(h, s, l)
 	}
 }

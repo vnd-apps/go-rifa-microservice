@@ -1,4 +1,4 @@
-package raflerepo
+package rafflerepo
 
 import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/rafflerepo/dynamodb"

@@ -25,7 +25,6 @@ type Raffle struct {
 	TotalSold    int                `bson:"totalsold"`
 }
 
-// New -.
 func NewRaffleRepo(mdb *mongodb.MongoDB) *RaffleRepo {
 	return &RaffleRepo{
 		db: &mongodb.MongoCol{

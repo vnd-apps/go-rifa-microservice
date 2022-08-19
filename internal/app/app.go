@@ -3,6 +3,7 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,27 +11,22 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/evmartinelli/go-rifa-microservice/config"
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/rafflerepo"
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/repo/mongodbrepo"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase/webapi"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/httpserver"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
-	"github.com/evmartinelli/go-rifa-microservice/pkg/postgres"
-	"github.com/evmartinelli/go-rifa-microservice/pkg/rabbitmq/rmq_pub/pub"
 )
 
 // Run creates objects via constructors.
-func Run(cfg *config.Config) {
-	l := logger.New(cfg.Log.Level)
-
-	// Repository
-	pg, err := postgres.New(cfg.PG.URL, postgres.MaxPoolSize(cfg.PG.PoolMax))
+func Run() {
+	cfg, err := config.NewConfig()
 	if err != nil {
-		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
+		log.Fatalf("Config error: %s", err)
 	}
-	defer pg.Close()
+
+	l := logger.New(cfg.Log.Level)
 
 	// Mongo Repository
 	mdb, err := mongodb.New(cfg.MDB.URL, cfg.MDB.Database)
@@ -38,25 +34,16 @@ func Run(cfg *config.Config) {
 		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
 	}
 
-	// Raffle Use Case
-	raffleUseCase := usecase.NewRaffleUseCase(
-		mongodbrepo.NewRaffle(mdb),
-	)
+	// Repo
+	raffleRepo := rafflerepo.NewDynamoDBRaffleRepo(mdb)
 
-	// Steam Use Case
-	rmqPub, err := pub.New(cfg.RMQ.URL, cfg.RMQ.PubExchange)
-	if err != nil {
-		l.Fatal(fmt.Errorf("app - Run - rmqServer - server.New: %w", err))
-	}
-
-	steamUseCase := usecase.NewSteam(
-		mongodbrepo.NewPlayerSkin(mdb),
-		webapi.NewSteamAPI(rmqPub),
-	)
+	// UseCases
+	generateRaffleUseCase := raffle.NewGenerateRaffleUseCase(raffleRepo)
+	listRaffleUseCase := raffle.NewListRaffleUseCase(raffleRepo)
 
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, l, raffleUseCase, steamUseCase)
+	v1.NewRouter(handler, l, *generateRaffleUseCase, *listRaffleUseCase)
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 
 	// Waiting signal

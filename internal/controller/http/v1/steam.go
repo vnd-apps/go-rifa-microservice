@@ -47,7 +47,7 @@ func (r *steamRoutes) doplayerInventory(c *gin.Context) {
 		return
 	}
 
-	skins, err := r.t.GetPlayerInventory(
+	skins, err := r.t.Run(
 		c.Request.Context(),
 		request.SteamID,
 	)
