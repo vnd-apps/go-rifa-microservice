@@ -7,7 +7,7 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/v1.",
+    "basePath": "/v1",
     "paths": {
         "/available/do-create": {
             "post": {
@@ -115,7 +115,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.Skin"
+                            "$ref": "#/definitions/skin.Skin"
                         }
                     },
                     "400": {
@@ -135,21 +135,7 @@
         }
     },
     "definitions": {
-        "entity.Item": {
-            "type": "object",
-            "properties": {
-                "icon_url": {
-                    "type": "string"
-                },
-                "market_hash_name": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "entity.Raffle": {
+        "raffle.Raffle": {
             "type": "object",
             "properties": {
                 "id": {
@@ -178,7 +164,21 @@
                 }
             }
         },
-        "entity.Skin": {
+        "skin.Item": {
+            "type": "object",
+            "properties": {
+                "icon_url": {
+                    "type": "string"
+                },
+                "market_hash_name": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "skin.Skin": {
             "type": "object",
             "properties": {
                 "id": {
@@ -187,7 +187,7 @@
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entity.Item"
+                        "$ref": "#/definitions/skin.Item"
                     }
                 },
                 "steam_id": {
@@ -201,7 +201,7 @@
                 "available": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entity.Raffle"
+                        "$ref": "#/definitions/raffle.Raffle"
                     }
                 }
             }

@@ -122,7 +122,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.Skin"
+                            "$ref": "#/definitions/skin.Skin"
                         }
                     },
                     "400": {
@@ -142,21 +142,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "entity.Item": {
-            "type": "object",
-            "properties": {
-                "icon_url": {
-                    "type": "string"
-                },
-                "market_hash_name": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "entity.Raffle": {
+        "raffle.Raffle": {
             "type": "object",
             "properties": {
                 "id": {
@@ -185,7 +171,21 @@ const docTemplate = `{
                 }
             }
         },
-        "entity.Skin": {
+        "skin.Item": {
+            "type": "object",
+            "properties": {
+                "icon_url": {
+                    "type": "string"
+                },
+                "market_hash_name": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "skin.Skin": {
             "type": "object",
             "properties": {
                 "id": {
@@ -194,7 +194,7 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entity.Item"
+                        "$ref": "#/definitions/skin.Item"
                     }
                 },
                 "steam_id": {
@@ -208,7 +208,7 @@ const docTemplate = `{
                 "available": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entity.Raffle"
+                        "$ref": "#/definitions/raffle.Raffle"
                     }
                 }
             }
@@ -251,7 +251,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/v1.",
+	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Go Clean Template API",
 	Description:      "Using a translation service as an example",

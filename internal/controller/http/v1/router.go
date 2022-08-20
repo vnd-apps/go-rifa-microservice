@@ -22,7 +22,8 @@ import (
 // @description Using a translation service as an example
 // @version     1.0
 // @host        localhost:8080
-// @BasePath    /v1.
+// @BasePath    /v1
+// End.
 func NewRouter(handler *gin.Engine, l logger.Interface, r raffle.GenerateRaffleUseCase, lg raffle.ListRaffleUseCase) {
 	// Options
 	handler.Use(gin.Logger())

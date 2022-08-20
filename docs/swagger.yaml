@@ -1,15 +1,6 @@
-basePath: /v1.
+basePath: /v1
 definitions:
-  entity.Item:
-    properties:
-      icon_url:
-        type: string
-      market_hash_name:
-        type: string
-      name:
-        type: string
-    type: object
-  entity.Raffle:
+  raffle.Raffle:
     properties:
       id:
         example: 61f0c143ad06223fa03910b0
@@ -30,13 +21,22 @@ definitions:
         example: 5
         type: integer
     type: object
-  entity.Skin:
+  skin.Item:
+    properties:
+      icon_url:
+        type: string
+      market_hash_name:
+        type: string
+      name:
+        type: string
+    type: object
+  skin.Skin:
     properties:
       id:
         type: string
       items:
         items:
-          $ref: '#/definitions/entity.Item'
+          $ref: '#/definitions/skin.Item'
         type: array
       steam_id:
         type: string
@@ -45,7 +45,7 @@ definitions:
     properties:
       available:
         items:
-          $ref: '#/definitions/entity.Raffle'
+          $ref: '#/definitions/raffle.Raffle'
         type: array
     type: object
   v1.doRaffleRequest:
@@ -147,7 +147,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.Skin'
+            $ref: '#/definitions/skin.Skin'
         "400":
           description: Bad Request
           schema:

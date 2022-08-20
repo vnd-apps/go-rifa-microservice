@@ -34,7 +34,7 @@ type doSteamRequest struct {
 // @Accept      json
 // @Produce     json
 // @Param       request body doRaffleRequest true "Set up raffle"
-// @Success     200 {object} entity.Skin
+// @Success     200 {object} skin.Skin
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Router      /steam//do-player-inventory [post].
