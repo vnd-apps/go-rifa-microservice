@@ -10,16 +10,14 @@ import (
 )
 
 type raffleRoutes struct {
-	generateRaffle raffle.GenerateRaffleUseCase
-	listRaffle     raffle.ListRaffleUseCase
-	logger         logger.Interface
+	useCases UseCases
+	logger   logger.Interface
 }
 
-func newRaffleRoutes(handler *gin.RouterGroup, gr raffle.GenerateRaffleUseCase, lr raffle.ListRaffleUseCase, l logger.Interface) {
+func newRaffleRoutes(handler *gin.RouterGroup, l logger.Interface, u UseCases) {
 	r := &raffleRoutes{
-		generateRaffle: gr,
-		listRaffle:     lr,
-		logger:         l,
+		useCases: u,
+		logger:   l,
 	}
 
 	h := handler.Group("/raffle")
@@ -43,7 +41,7 @@ type availableResponse struct {
 // @Failure     500 {object} response
 // @Router      /raffle/available [get].
 func (r *raffleRoutes) available(c *gin.Context) {
-	raffles, err := r.listRaffle.Run(c.Request.Context())
+	raffles, err := r.useCases.ListRaffle.Run(c.Request.Context())
 	if err != nil {
 		r.logger.Error(err, "http - v1 - history")
 		errorResponse(c, http.StatusInternalServerError, "database problems")
@@ -80,7 +78,7 @@ func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 		return
 	}
 
-	err := r.generateRaffle.Run(
+	err := r.useCases.GenerateRaffle.Run(
 		c.Request.Context(),
 		raffle.Raffle{
 			Name:         request.Name,

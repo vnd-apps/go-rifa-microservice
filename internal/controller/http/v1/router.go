@@ -12,7 +12,6 @@ import (
 	// Swagger docs.
 	_ "github.com/evmartinelli/go-rifa-microservice/docs"
 	customlogger "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/middleware"
-	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
@@ -24,7 +23,7 @@ import (
 // @host        localhost:8080
 // @BasePath    /v1
 // End.
-func NewRouter(handler *gin.Engine, l logger.Interface, r raffle.GenerateRaffleUseCase, lg raffle.ListRaffleUseCase) {
+func NewRouter(handler *gin.Engine, l logger.Interface, u UseCases) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -43,7 +42,7 @@ func NewRouter(handler *gin.Engine, l logger.Interface, r raffle.GenerateRaffleU
 	// Routers
 	h := handler.Group("/v1")
 	{
-		newRaffleRoutes(h, r, lg, l)
+		newRaffleRoutes(h, l, u)
 		// newSteamRoutes(h, s, l)
 	}
 }

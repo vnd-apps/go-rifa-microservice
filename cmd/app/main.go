@@ -5,5 +5,7 @@ import (
 )
 
 func main() {
-	app.Run()
+	c := app.NewContext()
+	c.Config()
+	c.HTTPServer()
 }
