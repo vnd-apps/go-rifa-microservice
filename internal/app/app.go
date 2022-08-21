@@ -23,56 +23,11 @@ import (
 type Context struct {
 	cfg        *config.Config
 	rafflerepo raffle.RaffleRepo
-	logger     log.Logger
+	logger     *logger.Logger
 }
 
 func NewContext() *Context {
 	return &Context{}
-}
-
-// Run creates objects via constructors.
-func Run() {
-	// cfg, err := config.NewConfig()
-	// if err != nil {
-	// 	log.Fatalf("Config error: %s", err)
-	// }
-
-	// l := logger.New(cfg.Log.Level)
-
-	// // Mongo Repository
-	// mdb, err := mongodb.New(cfg.MDB.URL, cfg.MDB.Database)
-	// if err != nil {
-	// 	l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
-	// }
-
-	// // Repo
-	// raffleRepo := rafflerepo.NewDynamoDBRaffleRepo(mdb)
-
-	// // UseCases
-	// generateRaffleUseCase := raffle.NewGenerateRaffleUseCase(raffleRepo)
-	// listRaffleUseCase := raffle.NewListRaffleUseCase(raffleRepo)
-
-	// // HTTP Server
-	// handler := gin.New()
-	// v1.NewRouter(handler, l, *generateRaffleUseCase, *listRaffleUseCase)
-	// httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
-
-	// // Waiting signal
-	// interrupt := make(chan os.Signal, 1)
-	// signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-
-	// select {
-	// case s := <-interrupt:
-	// 	l.Info("app - Run - signal: " + s.String())
-	// case err = <-httpServer.Notify():
-	// 	l.Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))
-	// }
-
-	// // Shutdown
-	// err = httpServer.Shutdown()
-	// if err != nil {
-	// 	l.Error(fmt.Errorf("app - Run - httpServer.Shutdown: %w", err))
-	// }
 }
 
 func (c *Context) UseCases() *v1.UseCases {
@@ -99,6 +54,7 @@ func (c *Context) PostRepo() raffle.RaffleRepo {
 	if c.rafflerepo == nil {
 		c.rafflerepo = rafflerepo.NewDynamoDBRaffleRepo(c.DB())
 	}
+
 	return c.rafflerepo
 }
 
@@ -126,12 +82,14 @@ func (c *Context) HTTPServer() {
 	handler := gin.New()
 	v1.NewRouter(handler, c.Logger(), *c.UseCases())
 	httpServer := httpserver.New(handler, httpserver.Port(c.cfg.HTTP.Port))
+	c.signal(httpServer)
+}
 
-	// Waiting signal
+func (c *Context) signal(httpServer *httpserver.Server) {
+	var err error
+
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-
-	var err error
 
 	select {
 	case s := <-interrupt:
@@ -140,7 +98,6 @@ func (c *Context) HTTPServer() {
 		c.Logger().Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))
 	}
 
-	// Shutdown
 	err = httpServer.Shutdown()
 	if err != nil {
 		c.Logger().Error(fmt.Errorf("app - Run - httpServer.Shutdown: %w", err))
@@ -148,5 +105,9 @@ func (c *Context) HTTPServer() {
 }
 
 func (c *Context) Logger() *logger.Logger {
-	return logger.New(c.cfg.Log.Level)
+	if c.logger == nil {
+		c.logger = logger.New(c.cfg.Log.Level)
+	}
+
+	return c.logger
 }
