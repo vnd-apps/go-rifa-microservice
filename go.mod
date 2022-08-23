@@ -23,6 +23,7 @@ require (
 require (
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
@@ -54,6 +55,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/gookit/color v1.4.2 // indirect
+	github.com/gosimple/slug v1.12.0
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/itchyny/gojq v0.12.5 // indirect

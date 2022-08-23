@@ -11,9 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/evmartinelli/go-rifa-microservice/config"
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/idgenerator"
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/rafflerepo"
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/shared"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
 	db "github.com/evmartinelli/go-rifa-microservice/pkg/dynamodb"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/httpserver"
@@ -77,6 +79,14 @@ func (c *Context) Config() *config.Config {
 	c.cfg = cfg
 
 	return c.cfg
+}
+
+func (c *Context) UUIDGenerator() shared.IDGenerator {
+	return idgenerator.NewUUIDGenerator()
+}
+
+func (c *Context) SlugGenrator() shared.IDGenerator {
+	return idgenerator.NewSlugGenerator("test")
 }
 
 func (c *Context) HTTPServer() {
