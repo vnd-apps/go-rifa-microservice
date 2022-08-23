@@ -20,15 +20,15 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
-var (
-	DB_TABLE_CONFIG_NAME string = "raffle-table"
-	DB_TABLE_CONFIG_PK   string = "code"
-	DB_TABLE_CONFIG_SK   string = "itemType"
+const (
+	DBTableConfigName string = "raffle-table"
+	DBTableConfigPK   string = "code"
+	DBTableConfigSK   string = "itemType"
 )
 
 type Context struct {
 	cfg        *config.Config
-	rafflerepo raffle.RaffleRepo
+	rafflerepo raffle.Repo
 	logger     *logger.Logger
 }
 
@@ -56,7 +56,7 @@ func (c *Context) PlayerInventoryUseCase() *skin.PlayerInventoryUseCase {
 	return nil
 }
 
-func (c *Context) PostRepo() raffle.RaffleRepo {
+func (c *Context) PostRepo() raffle.Repo {
 	if c.rafflerepo == nil {
 		c.rafflerepo = rafflerepo.NewDynamoDBRaffleRepo(c.DB())
 	}
@@ -64,9 +64,8 @@ func (c *Context) PostRepo() raffle.RaffleRepo {
 	return c.rafflerepo
 }
 
-func (c *Context) DB() *db.DBConfig {
-	db := db.NewDynamoDB(DB_TABLE_CONFIG_NAME, DB_TABLE_CONFIG_PK, DB_TABLE_CONFIG_SK)
-	return db
+func (c *Context) DB() *db.DynamoConfig {
+	return db.NewDynamoDB(DBTableConfigName, DBTableConfigPK, DBTableConfigSK)
 }
 
 func (c *Context) Config() *config.Config {

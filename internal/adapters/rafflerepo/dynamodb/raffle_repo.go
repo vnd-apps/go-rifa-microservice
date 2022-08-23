@@ -3,16 +3,17 @@ package dynamodb
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	db "github.com/evmartinelli/go-rifa-microservice/pkg/dynamodb"
-	"github.com/google/uuid"
 )
 
 type RaffleRepo struct {
-	db *db.DBConfig
+	db *db.DynamoConfig
 }
 
-func NewRaffleRepo(mdb *db.DBConfig) *RaffleRepo {
+func NewRaffleRepo(mdb *db.DynamoConfig) *RaffleRepo {
 	return &RaffleRepo{mdb}
 }
 

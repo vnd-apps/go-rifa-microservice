@@ -7,11 +7,11 @@ import (
 
 // TranslationUseCase -.
 type ListRaffleUseCase struct {
-	repo RaffleRepo
+	repo Repo
 }
 
 // New -.
-func NewListRaffleUseCase(r RaffleRepo) *ListRaffleUseCase {
+func NewListRaffleUseCase(r Repo) *ListRaffleUseCase {
 	return &ListRaffleUseCase{
 		repo: r,
 	}

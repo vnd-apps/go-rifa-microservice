@@ -5,10 +5,10 @@ import (
 )
 
 type GenerateRaffleUseCase struct {
-	repo RaffleRepo
+	repo Repo
 }
 
-func NewGenerateRaffleUseCase(r RaffleRepo) *GenerateRaffleUseCase {
+func NewGenerateRaffleUseCase(r Repo) *GenerateRaffleUseCase {
 	return &GenerateRaffleUseCase{
 		repo: r,
 	}

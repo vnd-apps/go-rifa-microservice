@@ -5,6 +5,6 @@ import (
 	db "github.com/evmartinelli/go-rifa-microservice/pkg/dynamodb"
 )
 
-func NewDynamoDBRaffleRepo(db *db.DBConfig) *dynamodb.RaffleRepo {
-	return dynamodb.NewRaffleRepo(db)
+func NewDynamoDBRaffleRepo(config *db.DynamoConfig) *dynamodb.RaffleRepo {
+	return dynamodb.NewRaffleRepo(config)
 }

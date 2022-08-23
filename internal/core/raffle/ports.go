@@ -7,7 +7,7 @@ import (
 
 //go:generate mockgen -source=raffle_interfaces.go -destination=./mocks_raffle_test.go -package=usecase_test
 
-type RaffleRepo interface {
+type Repo interface {
 	Create(context.Context, Raffle) error
 	GetAvailableRaffle(context.Context) ([]Raffle, error)
 }

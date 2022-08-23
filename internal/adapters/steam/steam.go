@@ -16,7 +16,7 @@ const (
 )
 
 // SteamWebAPI -.
-type SteamWebAPI struct {
+type WebAPI struct {
 	client *resty.Client
 	pub    *pub.Client
 }
@@ -34,18 +34,18 @@ type Response struct {
 }
 
 // New -.
-func NewSteamAPI(p *pub.Client) *SteamWebAPI {
+func NewSteamAPI(p *pub.Client) *WebAPI {
 	client := resty.New()
 	client.SetBaseURL(_steamBaseURL)
 
-	return &SteamWebAPI{
+	return &WebAPI{
 		client: client,
 		pub:    p,
 	}
 }
 
 // PlayerItens -.
-func (s *SteamWebAPI) PlayerItens(id string) (skin.Skin, error) {
+func (s *WebAPI) PlayerItens(id string) (skin.Skin, error) {
 	res := &Response{}
 	skinItem := &skin.Skin{
 		PlayerID: id,
@@ -64,7 +64,7 @@ func (s *SteamWebAPI) PlayerItens(id string) (skin.Skin, error) {
 	return *skinItem, nil
 }
 
-func createPlayerInventory(s *SteamWebAPI, res *Response, sk *skin.Skin) error {
+func createPlayerInventory(s *WebAPI, res *Response, sk *skin.Skin) error {
 	for _, desc := range res.Descriptions {
 		if desc.Marketable != 1 {
 			continue
@@ -89,7 +89,7 @@ func createPlayerInventory(s *SteamWebAPI, res *Response, sk *skin.Skin) error {
 	return nil
 }
 
-func getSteamInventory(s *SteamWebAPI, res *Response, id string) error {
+func getSteamInventory(s *WebAPI, res *Response, id string) error {
 	resp, err := s.client.R().
 		SetResult(&res).
 		SetPathParams(map[string]string{"steam.id": id}).

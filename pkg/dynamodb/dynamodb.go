@@ -11,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
-type DBConfig struct {
+type DynamoConfig struct {
 	DBService  *dynamodb.DynamoDB
 	PrimaryKey string
 	SortKey    string
@@ -19,7 +19,7 @@ type DBConfig struct {
 }
 
 // init setup the session and define table name, primary key and sort key.
-func NewDynamoDB(tn, pk, sk string) *DBConfig {
+func NewDynamoDB(tn, pk, sk string) *DynamoConfig {
 	// Initialize a session that the SDK will use to load
 	// credentials from the shared credentials file ~/.aws/credentials
 	// and region from the shared configuration file ~/.aws/config.
@@ -27,7 +27,7 @@ func NewDynamoDB(tn, pk, sk string) *DBConfig {
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 	// Create DynamoDB client
-	return &DBConfig{
+	return &DynamoConfig{
 		DBService:  dynamodb.New(dbSession),
 		PrimaryKey: pk,
 		SortKey:    sk,
@@ -35,7 +35,7 @@ func NewDynamoDB(tn, pk, sk string) *DBConfig {
 	}
 }
 
-func (dbc *DBConfig) Save(prop interface{}) (interface{}, error) {
+func (dbc *DynamoConfig) Save(prop interface{}) (interface{}, error) {
 	av, err := dynamodbattribute.MarshalMap(prop)
 	if err != nil {
 		log.Fatalf(err.Error())
@@ -54,7 +54,7 @@ func (dbc *DBConfig) Save(prop interface{}) (interface{}, error) {
 	return prop, err
 }
 
-func (dbc *DBConfig) Delete(prop interface{}) (interface{}, error) {
+func (dbc *DynamoConfig) Delete(prop interface{}) (interface{}, error) {
 	av, err := dynamodbattribute.MarshalMap(prop)
 	if err != nil {
 		log.Fatalf(err.Error())
@@ -74,7 +74,7 @@ func (dbc *DBConfig) Delete(prop interface{}) (interface{}, error) {
 	return prop, err
 }
 
-func (dbc *DBConfig) Get(pk, sk string, data interface{}) error {
+func (dbc *DynamoConfig) Get(pk, sk string, data interface{}) error {
 	av := map[string]*dynamodb.AttributeValue{
 		dbc.PrimaryKey: {
 			S: aws.String(pk),
@@ -105,7 +105,7 @@ func (dbc *DBConfig) Get(pk, sk string, data interface{}) error {
 	return err
 }
 
-func (dbc *DBConfig) FindStartingWith(pk, value string, data interface{}) error {
+func (dbc *DynamoConfig) FindStartingWith(pk, value string, data interface{}) error {
 	queryInput := &dynamodb.QueryInput{
 		TableName: aws.String(dbc.TableName),
 		KeyConditions: map[string]*dynamodb.Condition{
@@ -144,7 +144,7 @@ func (dbc *DBConfig) FindStartingWith(pk, value string, data interface{}) error 
 	return err
 }
 
-func (dbc *DBConfig) FindByGsi(value, indexName, indexPk string, data interface{}) error {
+func (dbc *DynamoConfig) FindByGsi(value, indexName, indexPk string, data interface{}) error {
 	queryInput := &dynamodb.QueryInput{
 		TableName: aws.String(dbc.TableName),
 		IndexName: aws.String(indexName),
@@ -176,7 +176,7 @@ func (dbc *DBConfig) FindByGsi(value, indexName, indexPk string, data interface{
 	return err
 }
 
-func (dbc *DBConfig) FindAll(data interface{}) error {
+func (dbc *DynamoConfig) FindAll(data interface{}) error {
 	params := &dynamodb.ScanInput{
 		TableName: aws.String(dbc.TableName),
 	}
