@@ -1,5 +1,8 @@
 package shared
 
-type IDGenerator interface {
+type UUIDGenerator interface {
 	Generate() string
+}
+type SlugGenerator interface {
+	Generate(text string) string
 }

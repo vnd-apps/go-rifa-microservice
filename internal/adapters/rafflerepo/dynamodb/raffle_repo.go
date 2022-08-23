@@ -3,8 +3,6 @@ package dynamodb
 import (
 	"context"
 
-	"github.com/google/uuid"
-
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	db "github.com/evmartinelli/go-rifa-microservice/pkg/dynamodb"
 )
@@ -18,8 +16,6 @@ func NewRaffleRepo(mdb *db.DynamoConfig) *RaffleRepo {
 }
 
 func (r *RaffleRepo) Create(ctx context.Context, rm raffle.Raffle) error {
-	rm.ID = uuid.New().String()
-
 	_, err := r.db.Save(rm)
 	if err != nil {
 		return err

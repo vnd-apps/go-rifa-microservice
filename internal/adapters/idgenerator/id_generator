@@ -1,9 +1,0 @@
-package idgenerator
-
-func NewUUIDGenerator() *uuid.Generator {
-	return uuid.NewGenerator()
-}
-
-func NewSlugGenerator(text string) *slug.Generator {
-	return slug.NewGenerator()
-}

@@ -47,7 +47,7 @@ func (c *Context) UseCases() *v1.UseCases {
 }
 
 func (c *Context) GenerateRaffleUseCase() *raffle.GenerateRaffleUseCase {
-	return raffle.NewGenerateRaffleUseCase(c.PostRepo())
+	return raffle.NewGenerateRaffleUseCase(c.PostRepo(), c.UUIDGenerator(), c.SlugGenrator())
 }
 
 func (c *Context) ListRaffleUseCase() *raffle.ListRaffleUseCase {
@@ -81,12 +81,12 @@ func (c *Context) Config() *config.Config {
 	return c.cfg
 }
 
-func (c *Context) UUIDGenerator() shared.IDGenerator {
+func (c *Context) UUIDGenerator() shared.UUIDGenerator {
 	return idgenerator.NewUUIDGenerator()
 }
 
-func (c *Context) SlugGenrator() shared.IDGenerator {
-	return idgenerator.NewSlugGenerator("test")
+func (c *Context) SlugGenrator() shared.SlugGenerator {
+	return idgenerator.NewSlugGenerator()
 }
 
 func (c *Context) HTTPServer() {
