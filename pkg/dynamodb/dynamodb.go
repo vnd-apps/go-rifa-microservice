@@ -175,3 +175,22 @@ func (dbc *DBConfig) FindByGsi(value, indexName, indexPk string, data interface{
 
 	return err
 }
+
+func (dbc *DBConfig) FindAll(data interface{}) error {
+	params := &dynamodb.ScanInput{
+		TableName: aws.String(dbc.TableName),
+	}
+
+	// Make the DynamoDB Query API call
+	result, err := dbc.DBService.Scan(params)
+	if err != nil {
+		log.Fatalf("Query API call failed: %s", err)
+	}
+
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
+	}
+
+	return err
+}

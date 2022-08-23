@@ -30,7 +30,7 @@ func (r *RaffleRepo) Create(ctx context.Context, rm raffle.Raffle) error {
 func (r *RaffleRepo) GetAvailableRaffle(ctx context.Context) ([]raffle.Raffle, error) {
 	results := []raffle.Raffle{}
 
-	err := r.db.FindByGsi("", "user-index", "user", &results)
+	err := r.db.FindAll(&results)
 	if err != nil {
 		return nil, err
 	}
