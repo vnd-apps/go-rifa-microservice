@@ -15,9 +15,15 @@ import (
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
+	db "github.com/evmartinelli/go-rifa-microservice/pkg/dynamodb"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/httpserver"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
-	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
+)
+
+var (
+	DB_TABLE_CONFIG_NAME string = "raffle-table"
+	DB_TABLE_CONFIG_PK   string = "code"
+	DB_TABLE_CONFIG_SK   string = "itemType"
 )
 
 type Context struct {
@@ -58,13 +64,9 @@ func (c *Context) PostRepo() raffle.RaffleRepo {
 	return c.rafflerepo
 }
 
-func (c *Context) DB() *mongodb.MongoDB {
-	mdb, err := mongodb.New(c.cfg.MDB.URL, c.cfg.MDB.Database)
-	if err != nil {
-		panic(fmt.Errorf("app - Run - postgres.New: %w", err))
-	}
-
-	return mdb
+func (c *Context) DB() *db.DBConfig {
+	db := db.NewDynamoDB(DB_TABLE_CONFIG_NAME, DB_TABLE_CONFIG_PK, DB_TABLE_CONFIG_SK)
+	return db
 }
 
 func (c *Context) Config() *config.Config {

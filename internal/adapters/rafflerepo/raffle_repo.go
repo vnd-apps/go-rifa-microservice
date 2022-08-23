@@ -2,9 +2,9 @@ package rafflerepo
 
 import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/rafflerepo/dynamodb"
-	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
+	db "github.com/evmartinelli/go-rifa-microservice/pkg/dynamodb"
 )
 
-func NewDynamoDBRaffleRepo(db *mongodb.MongoDB) *dynamodb.RaffleRepo {
+func NewDynamoDBRaffleRepo(db *db.DBConfig) *dynamodb.RaffleRepo {
 	return dynamodb.NewRaffleRepo(db)
 }
