@@ -15,7 +15,7 @@ func NewRaffleRepo(mdb *db.DynamoConfig) *RaffleRepo {
 	return &RaffleRepo{mdb}
 }
 
-func (r *RaffleRepo) Create(ctx context.Context, rm raffle.Raffle) error {
+func (r *RaffleRepo) Create(ctx context.Context, rm *raffle.Raffle) error {
 	_, err := r.db.Save(rm)
 	if err != nil {
 		return err

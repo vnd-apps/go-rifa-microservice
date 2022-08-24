@@ -14,7 +14,7 @@ type UseCases struct {
 }
 
 type GenerateRaffleUseCase interface {
-	Run(context.Context, raffle.Raffle) error
+	Run(context.Context, *raffle.Raffle) error
 }
 
 type ListRaffleUseCase interface {

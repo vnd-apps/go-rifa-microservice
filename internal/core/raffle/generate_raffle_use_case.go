@@ -20,8 +20,19 @@ func NewGenerateRaffleUseCase(r Repo, u shared.UUIDGenerator, s shared.SlugGener
 	}
 }
 
-func (uc *GenerateRaffleUseCase) Run(ctx context.Context, model Raffle) error {
+func (uc *GenerateRaffleUseCase) Run(ctx context.Context, model *Raffle) error {
 	model.ID = uc.uuid.Generate()
+	model.Slug = uc.slug.Generate(model.Name)
+
+	for i := 1; i <= model.Quantity; i++ {
+		a := Variation{
+			ID:     uc.uuid.Generate(),
+			Number: i,
+			Name:   "Number",
+			Status: Pending,
+		}
+		model.Variation = append(model.Variation, a)
+	}
 
 	return uc.repo.Create(ctx, model)
 }

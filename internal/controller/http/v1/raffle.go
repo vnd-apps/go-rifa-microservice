@@ -52,12 +52,6 @@ func (r *raffleRoutes) available(c *gin.Context) {
 	c.JSON(http.StatusOK, availableResponse{raffles})
 }
 
-type doRaffleRequest struct {
-	Name         string `json:"name" binding:"required" example:"rifa faca"`
-	Value        int    `json:"value" binding:"required" example:"1"`
-	TotalNumbers int    `json:"totalNumbers" binding:"required" example:"20"`
-}
-
 // @Summary     Create
 // @Description Create a Raffle
 // @ID          do-create
@@ -70,7 +64,7 @@ type doRaffleRequest struct {
 // @Failure     500 {object} response
 // @Router      /available/do-create [post].
 func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
-	var request doRaffleRequest
+	var request raffle.Request
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusBadRequest, "invalid request body")
@@ -80,10 +74,12 @@ func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 
 	err := r.useCases.GenerateRaffle.Run(
 		c.Request.Context(),
-		raffle.Raffle{
-			Name:         request.Name,
-			TotalNumbers: request.TotalNumbers,
-			Value:        request.Value,
+		&raffle.Raffle{
+			Name:        request.Name,
+			Description: request.Description,
+			ImageURL:    request.ImageURL,
+			UnitPrice:   request.UnitPrice,
+			Quantity:    request.Quantity,
 		},
 	)
 	if err != nil {
