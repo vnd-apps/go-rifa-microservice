@@ -32,8 +32,9 @@ type Variation struct {
 type Status string
 
 const (
-	Paid    Status = "paid"
-	Pending Status = "pending"
-	Open    Status = "open"
-	Cloed   Status = "closed"
+	Paid      Status = "paid"
+	Pending   Status = "pending"
+	Available Status = "available"
+	Open      Status = "open"
+	Cloed     Status = "closed"
 )

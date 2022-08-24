@@ -29,7 +29,7 @@ func (uc *GenerateRaffleUseCase) Run(ctx context.Context, model *Raffle) error {
 			ID:     uc.uuid.Generate(),
 			Number: i,
 			Name:   "Number",
-			Status: Pending,
+			Status: Available,
 		}
 		model.Variation = append(model.Variation, a)
 	}
