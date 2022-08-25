@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
 )
@@ -11,6 +12,7 @@ type UseCases struct {
 	GenerateRaffle  GenerateRaffleUseCase
 	ListRaffle      ListRaffleUseCase
 	PlayerInventory PlayerInventoryUseCase
+	PlaceOrder      PlaceOrderUseCase
 }
 
 type GenerateRaffleUseCase interface {
@@ -23,4 +25,8 @@ type ListRaffleUseCase interface {
 
 type PlayerInventoryUseCase interface {
 	Run(ctx context.Context, id string) (skin.Skin, error)
+}
+
+type PlaceOrderUseCase interface {
+	Run(ctx context.Context, model *order.PlaceOrderRequest) (order.PlaceOrderResponse, error)
 }

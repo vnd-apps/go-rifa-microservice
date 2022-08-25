@@ -43,6 +43,6 @@ func NewRouter(handler *gin.Engine, l logger.Interface, u UseCases) {
 	h := handler.Group("/v1")
 	{
 		newRaffleRoutes(h, l, u)
-		// newSteamRoutes(h, s, l)
+		newOrderRoutes(h, l, u)
 	}
 }

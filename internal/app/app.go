@@ -12,8 +12,11 @@ import (
 
 	"github.com/evmartinelli/go-rifa-microservice/config"
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/idgenerator"
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/orderrepo"
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/pix/fake"
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/rafflerepo"
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/shared"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
@@ -43,6 +46,7 @@ func (c *Context) UseCases() *v1.UseCases {
 		GenerateRaffle:  c.GenerateRaffleUseCase(),
 		ListRaffle:      c.ListRaffleUseCase(),
 		PlayerInventory: nil,
+		PlaceOrder:      c.PlaceOrderUseCase(),
 	}
 }
 
@@ -58,12 +62,24 @@ func (c *Context) PlayerInventoryUseCase() *skin.PlayerInventoryUseCase {
 	return nil
 }
 
+func (c *Context) PlaceOrderUseCase() *order.PlaceOrderUseCase {
+	return order.NewPlaceOrderUseCase(c.OrderRepo(), c.PixPayment(), c.UUIDGenerator())
+}
+
 func (c *Context) PostRepo() raffle.Repo {
 	if c.rafflerepo == nil {
 		c.rafflerepo = rafflerepo.NewDynamoDBRaffleRepo(c.DB())
 	}
 
 	return c.rafflerepo
+}
+
+func (c *Context) OrderRepo() order.Repo {
+	return orderrepo.NewDynamoDBOrderRepo(c.DB())
+}
+
+func (c *Context) PixPayment() order.PixPayment {
+	return fake.NewFakePixPayment()
 }
 
 func (c *Context) DB() *db.DynamoConfig {

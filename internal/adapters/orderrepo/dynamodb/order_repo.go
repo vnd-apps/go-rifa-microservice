@@ -27,7 +27,7 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.PlaceOrderRequest
 func (r *OrderRepo) GetOrder(ctx context.Context) (order.PlaceOrderResponse, error) {
 	results := order.PlaceOrderResponse{}
 
-	err := r.db.FindAll(&results)
+	err := r.db.Get("id", "id", &results)
 	if err != nil {
 		return order.PlaceOrderResponse{}, err
 	}

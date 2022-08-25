@@ -13,6 +13,5 @@ type Repo interface {
 }
 
 type PixPayment interface {
-	CreateOrder(ctx context.Context, rm *PlaceOrderRequest) (PlaceOrderResponse, error)
-	GetOrder(ctx context.Context) (PlaceOrderResponse, error)
+	GeneratePix() (Pix, error)
 }
