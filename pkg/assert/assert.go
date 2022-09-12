@@ -8,22 +8,27 @@ import (
 	"testing"
 )
 
+const expectedActual = "\nexpected: %v\n  actual: %v\n"
+
 func Equal(t *testing.T, expected, actual interface{}) {
 	t.Helper()
+
 	if actual != expected {
-		t.Errorf("\nexpected: %v\n  actual: %v\n", expected, actual)
+		t.Errorf(expectedActual, expected, actual)
 	}
 }
 
 func DeepEqual(t *testing.T, expected, actual interface{}) {
 	t.Helper()
+
 	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf("\nexpected: %v\n  actual: %v\n", expected, actual)
+		t.Errorf(expectedActual, expected, actual)
 	}
 }
 
 func Nil(t *testing.T, actual interface{}) {
 	t.Helper()
+
 	if actual != nil {
 		t.Errorf("\n%v should be nil", actual)
 	}
@@ -31,6 +36,7 @@ func Nil(t *testing.T, actual interface{}) {
 
 func NotNil(t *testing.T, actual interface{}) {
 	t.Helper()
+
 	if actual == nil {
 		t.Errorf("\n%v should not be nil", actual)
 	}
@@ -38,6 +44,7 @@ func NotNil(t *testing.T, actual interface{}) {
 
 func True(t *testing.T, actual bool) {
 	t.Helper()
+
 	if !actual {
 		t.Errorf("\n%v should not be true", actual)
 	}
@@ -45,6 +52,7 @@ func True(t *testing.T, actual bool) {
 
 func False(t *testing.T, actual bool) {
 	t.Helper()
+
 	if actual {
 		t.Errorf("\n%v should not be false", actual)
 	}
@@ -52,6 +60,7 @@ func False(t *testing.T, actual bool) {
 
 func Contains(t *testing.T, content, expected string) {
 	t.Helper()
+
 	if !strings.Contains(content, expected) {
 		t.Errorf("\nExpected to contain \"%s\" but it doesn't. \nContent:\n%s", expected, content)
 	}

@@ -17,6 +17,8 @@ type DynamoConfig struct {
 	TableName  string
 }
 
+const marshalError = "Failed to unmarshal Record, %v"
+
 // init setup the session and define table name, primary key and sort key.
 func NewDynamoDB(tn, pk, sk string) *DynamoConfig {
 	// Initialize a session that the SDK will use to load
@@ -96,7 +98,7 @@ func (dbc *DynamoConfig) Get(pk, sk string, data interface{}) error {
 
 	err = dynamodbattribute.UnmarshalMap(result.Item, data)
 	if err != nil {
-		log.Fatalf("Failed to unmarshal Record, %v", err)
+		log.Fatalf(marshalError, err)
 	}
 
 	return err
@@ -165,7 +167,7 @@ func (dbc *DynamoConfig) FindByGsi(value, indexName, indexPk string, data interf
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
 	if err != nil {
-		log.Fatalf("Failed to unmarshal Record, %v", err)
+		log.Fatalf(marshalError, err)
 	}
 
 	return err
@@ -184,7 +186,7 @@ func (dbc *DynamoConfig) FindAll(data interface{}) error {
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
 	if err != nil {
-		log.Fatalf("Failed to unmarshal Record, %v", err)
+		log.Fatalf(marshalError, err)
 	}
 
 	return err
