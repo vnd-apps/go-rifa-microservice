@@ -47,7 +47,7 @@ linter-dotenv: ### check by dotenv linter
 .PHONY: linter-dotenv
 
 test: ### run test
-	go test -v -cover -race `go list ./... | grep -v integration-test`
+	go test -v -race -coverprofile=coverage.out `go list ./... | grep -v integration-test`
 .PHONY: test
 
 integration-test: ### run integration-test
