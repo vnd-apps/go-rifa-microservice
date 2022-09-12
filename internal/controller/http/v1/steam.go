@@ -5,17 +5,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
 type steamRoutes struct {
-	t skin.PlayerInventoryUseCase
-	l logger.Interface
+	useCases UseCases
+	l        logger.Interface
 }
 
-func newSteamRoutes(handler *gin.RouterGroup, t skin.PlayerInventoryUseCase, l logger.Interface) {
-	r := &steamRoutes{t, l}
+func newSteamRoutes(handler *gin.RouterGroup, l logger.Interface, u UseCases) {
+	r := &steamRoutes{u, l}
 
 	h := handler.Group("/steam")
 	{
@@ -47,7 +46,7 @@ func (r *steamRoutes) doplayerInventory(c *gin.Context) {
 		return
 	}
 
-	skins, err := r.t.Run(
+	skins, err := r.useCases.PlayerInventory.Run(
 		c.Request.Context(),
 		request.SteamID,
 	)

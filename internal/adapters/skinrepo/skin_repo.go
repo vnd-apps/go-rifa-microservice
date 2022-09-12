@@ -2,9 +2,9 @@ package skinrepo
 
 import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/skinrepo/dynamodb"
-	"github.com/evmartinelli/go-rifa-microservice/pkg/mongodb"
+	db "github.com/evmartinelli/go-rifa-microservice/pkg/dynamodb"
 )
 
-func NewPlayerSkinRepo(db *mongodb.MongoDB) *dynamodb.PlayerSkinRepo {
-	return dynamodb.NewPlayerSkinRepo(db)
+func NewPlayerSkinRepo(config *db.DynamoConfig) *dynamodb.PlayerSkinRepo {
+	return dynamodb.NewPlayerSkinRepo(config)
 }

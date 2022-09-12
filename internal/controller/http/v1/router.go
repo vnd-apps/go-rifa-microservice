@@ -44,5 +44,6 @@ func NewRouter(handler *gin.Engine, l logger.Interface, u UseCases) {
 	{
 		newRaffleRoutes(h, l, u)
 		newOrderRoutes(h, l, u)
+		newSteamRoutes(h, l, u)
 	}
 }

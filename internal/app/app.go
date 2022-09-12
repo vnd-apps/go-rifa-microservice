@@ -15,6 +15,8 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/orderrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/pix/fake"
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/rafflerepo"
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/skinrepo"
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/steam"
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
@@ -45,7 +47,7 @@ func (c *Context) UseCases() *v1.UseCases {
 	return &v1.UseCases{
 		GenerateRaffle:  c.GenerateRaffleUseCase(),
 		ListRaffle:      c.ListRaffleUseCase(),
-		PlayerInventory: nil,
+		PlayerInventory: c.PlayerInventoryUseCase(),
 		PlaceOrder:      c.PlaceOrderUseCase(),
 	}
 }
@@ -59,7 +61,7 @@ func (c *Context) ListRaffleUseCase() *raffle.ListRaffleUseCase {
 }
 
 func (c *Context) PlayerInventoryUseCase() *skin.PlayerInventoryUseCase {
-	return nil
+	return skin.NewPlayerInventoryUseCase(c.PlayerSkinRepo(), c.SteamWebAPI())
 }
 
 func (c *Context) PlaceOrderUseCase() *order.PlaceOrderUseCase {
@@ -76,6 +78,14 @@ func (c *Context) PostRepo() raffle.Repo {
 
 func (c *Context) OrderRepo() order.Repo {
 	return orderrepo.NewDynamoDBOrderRepo(c.DB())
+}
+
+func (c *Context) PlayerSkinRepo() skin.PlayerSkinRepo {
+	return skinrepo.NewPlayerSkinRepo(c.DB())
+}
+
+func (c *Context) SteamWebAPI() skin.SteamWebAPI {
+	return steam.NewSteamAPI()
 }
 
 func (c *Context) PixPayment() order.PixPayment {
