@@ -2,7 +2,6 @@
 package db
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -67,8 +66,7 @@ func (dbc *DynamoConfig) Delete(prop interface{}) (interface{}, error) {
 
 	_, err = dbc.DBService.DeleteItem(input)
 	if err != nil {
-		log.Fatalf("Got error calling DeetItem:")
-		log.Fatalf(err.Error())
+		log.Fatalf("Got error calling DeleteItem, %v", err)
 	}
 
 	return prop, err
@@ -91,15 +89,14 @@ func (dbc *DynamoConfig) Get(pk, sk string, data interface{}) error {
 		Key:       av,
 	})
 	if err != nil {
-		log.Fatalf("NOT FOUND")
-		log.Fatalf(err.Error())
+		log.Fatalf("NOT FOUND, %v", err)
 
 		return err
 	}
 
 	err = dynamodbattribute.UnmarshalMap(result.Item, data)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
+		log.Fatalf("Failed to unmarshal Record, %v", err)
 	}
 
 	return err
@@ -130,15 +127,14 @@ func (dbc *DynamoConfig) FindStartingWith(pk, value string, data interface{}) er
 
 	result, err := dbc.DBService.Query(queryInput)
 	if err != nil {
-		log.Fatalf("DB:FindStartingWith> NOT FOUND")
-		log.Fatalf(err.Error())
+		log.Fatalf("DB:FindStartingWith> NOT FOUND, %v", err)
 
 		return err
 	}
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
+		log.Fatalf("Failed to unmarshal Record, %v", err)
 	}
 
 	return err
@@ -162,15 +158,14 @@ func (dbc *DynamoConfig) FindByGsi(value, indexName, indexPk string, data interf
 
 	result, err := dbc.DBService.Query(queryInput)
 	if err != nil {
-		log.Fatalf("NOT FOUND")
-		log.Fatalf(err.Error())
+		log.Fatalf("DB:QUERY NOT FOUND, %v", err)
 
 		return err
 	}
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
+		log.Fatalf("Failed to unmarshal Record, %v", err)
 	}
 
 	return err
@@ -189,7 +184,7 @@ func (dbc *DynamoConfig) FindAll(data interface{}) error {
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
+		log.Fatalf("Failed to unmarshal Record, %v", err)
 	}
 
 	return err
