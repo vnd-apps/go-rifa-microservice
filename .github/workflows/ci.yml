@@ -73,7 +73,7 @@ jobs:
           -v \
           -race \
           -coverprofile=coverage.out \
-          ./..."
+          ./internal/..."
       - name: Upload coverage report
         run: bash <(curl -s https://codecov.io/bash)
       - name: SonarCloud Scan
