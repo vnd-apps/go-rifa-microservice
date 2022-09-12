@@ -75,6 +75,11 @@ jobs:
           ./internal/..."
       - name: Upload coverage report
         run: bash <(curl -s https://codecov.io/bash)
+      - name: Analyze with SonarCloud
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Integration tests
         run: "docker-compose up \
