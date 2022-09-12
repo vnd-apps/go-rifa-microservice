@@ -57,7 +57,7 @@ jobs:
         uses: sonatype-nexus-community/nancy-github-action@main
         continue-on-error: true
 
-  tests:
+  test:
     name: runner / tests
     runs-on: ubuntu-latest
     steps:
@@ -72,9 +72,8 @@ jobs:
         run: "go test \
           -v \
           -race \
-          -covermode atomic \
           -coverprofile=coverage.out \
-          ./internal/..."
+          ./..."
       - name: Upload coverage report
         run: bash <(curl -s https://codecov.io/bash)
       - name: SonarCloud Scan
@@ -83,8 +82,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Integration tests
-        run: "docker-compose up \
+  integrationTest:
+    needs: test
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - run: "docker-compose up \
           --build \
           --abort-on-container-exit \
           --exit-code-from integration"
+
