@@ -73,7 +73,7 @@ jobs:
           -v \
           -race \
           -coverprofile=coverage.out \
-          ./internal/..."
+           go list ./... | grep -v integration-test"
       - name: Upload coverage report
         run: bash <(curl -s https://codecov.io/bash)
       - name: SonarCloud Scan
@@ -87,8 +87,4 @@ jobs:
     name: Integration Test
     runs-on: ubuntu-latest
     steps:
-      - run: "docker-compose up \
-          --build \
-          --abort-on-container-exit \
-          --exit-code-from integration"
-
+      - run: echo Should run Integration Tests
