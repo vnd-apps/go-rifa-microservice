@@ -1,103 +1,72 @@
 package raffle_test
 
-// import (
-// 	"context"
-// 	"testing"
+import (
+	"context"
+	"errors"
+	"testing"
 
-// 	"github.com/golang/mock/gomock"
-// 	"github.com/stretchr/testify/require"
+	"github.com/golang/mock/gomock"
 
-// 	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
-// 	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
-// )
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/idgenerator"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
+	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
+)
 
-// func raffle(t *testing.T) (*usecase.RaffleUseCase, *MockRaffleRepo) {
-// 	t.Helper()
+type test struct {
+	name string
+	mock func()
+	res  interface{}
+	err  error
+}
 
-// 	mockCtl := gomock.NewController(t)
-// 	defer mockCtl.Finish()
+var errInternalServErr = errors.New("internal server error")
 
-// 	repo := NewMockRaffleRepo(mockCtl)
+func generateRaffleUseCase(t *testing.T) (*raffle.GenerateRaffleUseCase, *MockRepo) {
+	t.Helper()
 
-// 	raffle := usecase.NewRaffleUseCase(repo)
+	mockCtl := gomock.NewController(t)
+	defer mockCtl.Finish()
 
-// 	return raffle, repo
-// }
+	repo := NewMockRepo(mockCtl)
+	uuid := idgenerator.NewUUIDGenerator()
+	slug := idgenerator.NewSlugGenerator()
 
-// func TestGetAvailable(t *testing.T) {
-// 	t.Parallel()
+	generateRaffleUseCase := raffle.NewGenerateRaffleUseCase(repo, uuid, slug)
 
-// 	raffle, repo := raffle(t)
+	return generateRaffleUseCase, repo
+}
 
-// 	tests := []test{
-// 		{
-// 			name: "empty result",
-// 			mock: func() {
-// 				repo.EXPECT().GetAvailableRaffle(context.Background()).Return(nil, nil)
-// 			},
-// 			res: []entity.Raffle(nil),
-// 			err: nil,
-// 		},
-// 		{
-// 			name: "result with error",
-// 			mock: func() {
-// 				repo.EXPECT().GetAvailableRaffle(context.Background()).Return(nil, errInternalServErr)
-// 			},
-// 			res: []entity.Raffle{},
-// 			err: errInternalServErr,
-// 		},
-// 	}
+func TestGenerate(t *testing.T) {
+	t.Parallel()
 
-// 	for _, tc := range tests {
-// 		tc := tc
+	raffleUseCase, repo := generateRaffleUseCase(t)
 
-// 		t.Run(tc.name, func(t *testing.T) {
-// 			t.Parallel()
+	tests := []test{
+		{
+			name: "created Raffle",
+			mock: func() {
+				repo.EXPECT().Create(context.Background(), gomock.Any()).Return(nil)
+			},
+			err: nil,
+		},
+		{
+			name: "Raffle Repo Error",
+			mock: func() {
+				repo.EXPECT().Create(context.Background(), gomock.Any()).Return(errInternalServErr)
+			},
+			err: errInternalServErr,
+		},
+	}
 
-// 			tc.mock()
+	for _, tc := range tests {
+		tc := tc
 
-// 			res, err := raffle.GetAvailableRaffle(context.Background())
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-// 			require.Equal(t, res, tc.res)
-// 			require.ErrorIs(t, err, tc.err)
-// 		})
-// 	}
-// }
-
-// func TestCreate(t *testing.T) {
-// 	t.Parallel()
-
-// 	raffle, repo := raffle(t)
-
-// 	tests := []test{
-// 		{
-// 			name: "created",
-// 			mock: func() {
-// 				repo.EXPECT().Create(context.Background(), entity.Raffle{}).Return(nil)
-// 			},
-// 			err: nil,
-// 		},
-// 		{
-// 			name: "repo error",
-// 			mock: func() {
-// 				repo.EXPECT().Create(context.Background(), entity.Raffle{}).Return(errInternalServErr)
-// 			},
-// 			res: nil,
-// 			err: errInternalServErr,
-// 		},
-// 	}
-
-// 	for _, tc := range tests {
-// 		tc := tc
-
-// 		t.Run(tc.name, func(t *testing.T) {
-// 			t.Parallel()
-
-// 			tc.mock()
-
-// 			err := raffle.Create(context.Background(), entity.Raffle{})
-
-// 			require.ErrorIs(t, err, tc.err)
-// 		})
-// 	}
-// }
+			tc.mock()
+			err := raffleUseCase.Run(context.Background(), &raffle.Raffle{})
+			assert.Error(t, tc.err, err)
+		})
+	}
+}
