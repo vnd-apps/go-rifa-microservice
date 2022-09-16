@@ -45,14 +45,14 @@ func TestGenerate(t *testing.T) {
 		{
 			name: "Create Raffle",
 			mock: func() {
-				repo.EXPECT().Create(context.Background(), gomock.Any()).Return(nil)
+				repo.EXPECT().Create(context.Background(), gomock.Any()).SetArg(1, raffle.Raffle{}).Return(nil)
 			},
 			err: nil,
 		},
 		{
 			name: "Raffle Repo Error",
 			mock: func() {
-				repo.EXPECT().Create(context.Background(), gomock.Any()).Return(errInternalServErr)
+				repo.EXPECT().Create(context.Background(), gomock.Any()).SetArg(1, raffle.Raffle{}).Return(errInternalServErr)
 			},
 			err: errInternalServErr,
 		},
