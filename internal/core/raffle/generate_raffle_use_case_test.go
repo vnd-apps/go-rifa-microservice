@@ -43,16 +43,9 @@ func TestGenerate(t *testing.T) {
 
 	tests := []test{
 		{
-			name: "Create Raffle With 0 Variations",
+			name: "Create Raffle",
 			mock: func() {
 				repo.EXPECT().Create(context.Background(), gomock.Any()).SetArg(1, raffle.Raffle{}).Return(nil)
-			},
-			err: nil,
-		},
-		{
-			name: "Create Raffle With 10 Variations",
-			mock: func() {
-				repo.EXPECT().Create(context.Background(), gomock.Any()).SetArg(1, raffle.Raffle{Quantity: 10}).Return(nil)
 			},
 			err: nil,
 		},
@@ -72,7 +65,7 @@ func TestGenerate(t *testing.T) {
 			t.Parallel()
 
 			tc.mock()
-			err := raffleUseCase.Run(context.Background(), &raffle.Raffle{})
+			err := raffleUseCase.Run(context.Background(), &raffle.Raffle{Quantity: 5})
 			assert.Equal(t, tc.err, err)
 		})
 	}
