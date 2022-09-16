@@ -43,7 +43,7 @@ func TestGenerate(t *testing.T) {
 
 	tests := []test{
 		{
-			name: "created Raffle",
+			name: "Create Raffle",
 			mock: func() {
 				repo.EXPECT().Create(context.Background(), gomock.Any()).Return(nil)
 			},
