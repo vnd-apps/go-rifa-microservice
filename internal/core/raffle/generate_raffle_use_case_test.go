@@ -66,7 +66,7 @@ func TestGenerate(t *testing.T) {
 
 			tc.mock()
 			err := raffleUseCase.Run(context.Background(), &raffle.Raffle{Quantity: 5})
-			assert.Equal(t, tc.err, err)
+			assert.Error(t, tc.err, err)
 		})
 	}
 }
