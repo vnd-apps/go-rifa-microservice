@@ -45,16 +45,9 @@ func TestGenerate(t *testing.T) {
 		{
 			name: "Create Raffle",
 			mock: func() {
-				repo.EXPECT().Create(context.Background(), gomock.Any()).Return(nil).Times(1)
+				repo.EXPECT().Create(context.Background(), gomock.Any()).Return(nil)
 			},
 			err: nil,
-		},
-		{
-			name: "Raffle Repo Error",
-			mock: func() {
-				repo.EXPECT().Create(context.Background(), gomock.Any()).Return(errInternalServErr).Times(1)
-			},
-			err: errInternalServErr,
 		},
 	}
 
