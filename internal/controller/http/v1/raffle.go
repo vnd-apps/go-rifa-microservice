@@ -58,7 +58,7 @@ func (r *raffleRoutes) available(c *gin.Context) {
 // @Tags  	    raffle
 // @Accept      json
 // @Produce     json
-// @Param       request body doRaffleRequest true "Set up raffle"
+// @Param       request body raffle.Request true "Set up raffle"
 // @Success     201 {object} response
 // @Failure     400 {object} response
 // @Failure     500 {object} response

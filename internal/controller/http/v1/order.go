@@ -20,33 +20,19 @@ func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u UseCases) {
 		logger:   l,
 	}
 
-	h := handler.Group("/raffle")
+	h := handler.Group("/order")
 	{
-		h.GET("/", r.getOrder)
 		h.POST("/", r.doPost)
 	}
 }
 
-// @Summary     Show raffles
-// @Description Show all available raffles
-// @ID          available
-// @Tags  	    raffle
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} availableResponse
-// @Failure     500 {object} response
-// @Router      /order/ [get].
-func (r *orderRoutes) getOrder(c *gin.Context) {
-	c.JSON(http.StatusOK, availableResponse{})
-}
-
 // @Summary     Create
-// @Description Create a Raffle
-// @ID          do-create
-// @Tags  	    raffle
+// @Description Create a Order
+// @ID          do-post
+// @Tags  	    order
 // @Accept      json
 // @Produce     json
-// @Param       request body doRaffleRequest true "Set up raffle"
+// @Param       request body order.PlaceOrderRequest true "Set up order"
 // @Success     201 {object} response
 // @Failure     400 {object} response
 // @Failure     500 {object} response

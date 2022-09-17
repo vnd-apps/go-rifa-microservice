@@ -1,25 +1,98 @@
 basePath: /v1
 definitions:
+  order.Item:
+    properties:
+      id:
+        type: string
+      number:
+        type: integer
+      price:
+        type: integer
+    type: object
+  order.PlaceOrderRequest:
+    properties:
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/order.Item'
+        type: array
+      paymentMethod:
+        type: string
+      productID:
+        type: string
+      total:
+        type: integer
+    type: object
   raffle.Raffle:
+    properties:
+      description:
+        example: Rifa
+        type: string
+      id:
+        example: 61f0c143ad06223fa03910b0
+        type: string
+      imageURL:
+        example: "1"
+        type: string
+      name:
+        example: Rifa
+        type: string
+      quantity:
+        example: 10
+        type: integer
+      slug:
+        example: butterfly-32
+        type: string
+      status:
+        example: Open
+        type: string
+      unitPrice:
+        example: 5
+        type: integer
+      variation:
+        items:
+          $ref: '#/definitions/raffle.Variation'
+        type: array
+    type: object
+  raffle.Request:
+    properties:
+      description:
+        example: Rifa
+        type: string
+      imageURL:
+        example: "1"
+        type: string
+      name:
+        example: Rifa
+        type: string
+      quantity:
+        example: 10
+        type: integer
+      unitPrice:
+        example: 5
+        type: integer
+    required:
+    - description
+    - imageURL
+    - name
+    - quantity
+    - unitPrice
+    type: object
+  raffle.Variation:
     properties:
       id:
         example: 61f0c143ad06223fa03910b0
         type: string
       name:
-        example: Rifa
+        example: Number
         type: string
-      status:
-        example: Available
-        type: string
-      totalNumbers:
-        example: 10
-        type: integer
-      totalSold:
-        example: 1
-        type: integer
-      value:
+      number:
         example: 5
         type: integer
+      status:
+        example: paid
+        type: string
     type: object
   skin.Item:
     properties:
@@ -48,21 +121,13 @@ definitions:
           $ref: '#/definitions/raffle.Raffle'
         type: array
     type: object
-  v1.doRaffleRequest:
+  v1.doSteamRequest:
     properties:
-      name:
-        example: rifa faca
+      steam_id:
+        example: "894012849024820948209"
         type: string
-      totalNumbers:
-        example: 20
-        type: integer
-      value:
-        example: 1
-        type: integer
     required:
-    - name
-    - totalNumbers
-    - value
+    - steam_id
     type: object
   v1.response:
     properties:
@@ -89,7 +154,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/v1.doRaffleRequest'
+          $ref: '#/definitions/raffle.Request'
       produces:
       - application/json
       responses:
@@ -108,6 +173,37 @@ paths:
       summary: Create
       tags:
       - raffle
+  /order/:
+    post:
+      consumes:
+      - application/json
+      description: Create a Order
+      operationId: do-post
+      parameters:
+      - description: Set up order
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/order.PlaceOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Create
+      tags:
+      - order
   /raffle/available:
     get:
       consumes:
@@ -128,19 +224,19 @@ paths:
       summary: Show raffles
       tags:
       - raffle
-  /steam//do-player-inventory:
+  /steam/do-player-inventory:
     post:
       consumes:
       - application/json
       description: Create a Player Inventory
       operationId: do-player-inventory
       parameters:
-      - description: Set up raffle
+      - description: set up steam
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/v1.doRaffleRequest'
+          $ref: '#/definitions/v1.doSteamRequest'
       produces:
       - application/json
       responses:

@@ -21,12 +21,12 @@ func NewPlayerInventoryUseCase(r PlayerSkinRepo, w SteamWebAPI) *PlayerInventory
 func (uc *PlayerInventoryUseCase) Run(ctx context.Context, id string) (Skin, error) {
 	skin, err := uc.webAPI.PlayerItens(id)
 	if err != nil {
-		return Skin{}, fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)
+		return Skin{}, fmt.Errorf("SteamAPI - Error Get Player Items: %w", err)
 	}
 
 	err = uc.repo.Create(ctx, skin)
 	if err != nil {
-		return Skin{}, fmt.Errorf("TranslationWebAPI - Translate - trans.Translate: %w", err)
+		return Skin{}, fmt.Errorf("SteamRepo - Error Creating Itens: %w", err)
 	}
 
 	return skin, nil

@@ -30,7 +30,54 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.doRaffleRequest"
+                            "$ref": "#/definitions/raffle.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/order/": {
+            "post": {
+                "description": "Create a Order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "Create",
+                "operationId": "do-post",
+                "parameters": [
+                    {
+                        "description": "Set up order",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/order.PlaceOrderRequest"
                         }
                     }
                 ],
@@ -86,7 +133,7 @@
                 }
             }
         },
-        "/steam//do-player-inventory": {
+        "/steam/do-player-inventory": {
             "post": {
                 "description": "Create a Player Inventory",
                 "consumes": [
@@ -102,12 +149,12 @@
                 "operationId": "do-player-inventory",
                 "parameters": [
                     {
-                        "description": "Set up raffle",
+                        "description": "set up steam",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.doRaffleRequest"
+                            "$ref": "#/definitions/v1.doSteamRequest"
                         }
                     }
                 ],
@@ -135,7 +182,119 @@
         }
     },
     "definitions": {
+        "order.Item": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                }
+            }
+        },
+        "order.PlaceOrderRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/order.Item"
+                    }
+                },
+                "paymentMethod": {
+                    "type": "string"
+                },
+                "productID": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "raffle.Raffle": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Rifa"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "61f0c143ad06223fa03910b0"
+                },
+                "imageURL": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Rifa"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "slug": {
+                    "type": "string",
+                    "example": "butterfly-32"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Open"
+                },
+                "unitPrice": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "variation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/raffle.Variation"
+                    }
+                }
+            }
+        },
+        "raffle.Request": {
+            "type": "object",
+            "required": [
+                "description",
+                "imageURL",
+                "name",
+                "quantity",
+                "unitPrice"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Rifa"
+                },
+                "imageURL": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Rifa"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "unitPrice": {
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
+        "raffle.Variation": {
             "type": "object",
             "properties": {
                 "id": {
@@ -144,23 +303,15 @@
                 },
                 "name": {
                     "type": "string",
-                    "example": "Rifa"
+                    "example": "Number"
+                },
+                "number": {
+                    "type": "integer",
+                    "example": 5
                 },
                 "status": {
                     "type": "string",
-                    "example": "Available"
-                },
-                "totalNumbers": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "totalSold": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "value": {
-                    "type": "integer",
-                    "example": 5
+                    "example": "paid"
                 }
             }
         },
@@ -206,25 +357,15 @@
                 }
             }
         },
-        "v1.doRaffleRequest": {
+        "v1.doSteamRequest": {
             "type": "object",
             "required": [
-                "name",
-                "totalNumbers",
-                "value"
+                "steam_id"
             ],
             "properties": {
-                "name": {
+                "steam_id": {
                     "type": "string",
-                    "example": "rifa faca"
-                },
-                "totalNumbers": {
-                    "type": "integer",
-                    "example": 20
-                },
-                "value": {
-                    "type": "integer",
-                    "example": 1
+                    "example": "894012849024820948209"
                 }
             }
         },

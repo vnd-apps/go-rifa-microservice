@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-//go:generate mockgen -source=steam_interfaces.go -destination=./mocks_steam_test.go -package=usecase_test
+//go:generate mockgen -source=ports.go -destination=./mock_skin_test.go -package=skin_test
 
 type (
 	SteamWebAPI interface {

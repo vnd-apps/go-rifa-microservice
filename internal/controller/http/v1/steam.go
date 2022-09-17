@@ -18,7 +18,7 @@ func newSteamRoutes(handler *gin.RouterGroup, l logger.Interface, u UseCases) {
 
 	h := handler.Group("/steam")
 	{
-		h.POST("/do-player-inventory", r.doplayerInventory)
+		h.POST("/do-player-inventory", r.doPlayerInventory)
 	}
 }
 
@@ -32,12 +32,12 @@ type doSteamRequest struct {
 // @Tags  	    steam
 // @Accept      json
 // @Produce     json
-// @Param       request body doRaffleRequest true "Set up raffle"
+// @Param       request body doSteamRequest true "set up steam"
 // @Success     200 {object} skin.Skin
 // @Failure     400 {object} response
 // @Failure     500 {object} response
-// @Router      /steam//do-player-inventory [post].
-func (r *steamRoutes) doplayerInventory(c *gin.Context) {
+// @Router      /steam/do-player-inventory [post].
+func (r *steamRoutes) doPlayerInventory(c *gin.Context) {
 	var request doSteamRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.l.Error(err, "http - v1 - doCreateRaffle")
