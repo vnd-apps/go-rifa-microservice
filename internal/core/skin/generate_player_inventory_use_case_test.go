@@ -5,9 +5,10 @@ import (
 	"errors"
 	"testing"
 
+	gomock "github.com/golang/mock/gomock"
+
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
-	gomock "github.com/golang/mock/gomock"
 )
 
 type test struct {
