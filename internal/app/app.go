@@ -28,9 +28,9 @@ import (
 )
 
 const (
-	DBTableConfigName string = "raffle-table"
-	DBTableConfigPK   string = "code"
-	DBTableConfigSK   string = "itemType"
+	DBTableConfigName string = "raffle_table"
+	DBTableConfigPK   string = "PK"
+	DBTableConfigSK   string = "SK"
 )
 
 type Context struct {

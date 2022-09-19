@@ -9,53 +9,6 @@
     "host": "localhost:8080",
     "basePath": "/v1",
     "paths": {
-        "/available/do-create": {
-            "post": {
-                "description": "Create a Raffle",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "raffle"
-                ],
-                "summary": "Create",
-                "operationId": "do-create",
-                "parameters": [
-                    {
-                        "description": "Set up raffle",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/raffle.Request"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/v1.response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/v1.response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.response"
-                        }
-                    }
-                }
-            }
-        },
         "/order/": {
             "post": {
                 "description": "Create a Order",
@@ -103,7 +56,7 @@
                 }
             }
         },
-        "/raffle/available": {
+        "/raffle/": {
             "get": {
                 "description": "Show all available raffles",
                 "consumes": [
@@ -116,12 +69,57 @@
                     "raffle"
                 ],
                 "summary": "Show raffles",
-                "operationId": "available",
+                "operationId": "getAll",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/v1.availableResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a Raffle",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raffle"
+                ],
+                "summary": "Create",
+                "operationId": "do-create",
+                "parameters": [
+                    {
+                        "description": "Set up raffle",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/raffle.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
                         }
                     },
                     "500": {
@@ -224,7 +222,7 @@
             "properties": {
                 "description": {
                     "type": "string",
-                    "example": "Rifa"
+                    "example": "Rifa description"
                 },
                 "id": {
                     "type": "string",
@@ -248,7 +246,7 @@
                 },
                 "status": {
                     "type": "string",
-                    "example": "Open"
+                    "example": "open"
                 },
                 "unitPrice": {
                     "type": "integer",
@@ -349,7 +347,7 @@
         "v1.availableResponse": {
             "type": "object",
             "properties": {
-                "available": {
+                "data": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/raffle.Raffle"

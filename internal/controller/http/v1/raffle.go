@@ -22,24 +22,24 @@ func newRaffleRoutes(handler *gin.RouterGroup, l logger.Interface, u UseCases) {
 
 	h := handler.Group("/raffle")
 	{
-		h.GET("/available", r.available)
-		h.POST("/do-create", r.doCreateRaffle)
+		h.GET("/", r.available)
+		h.POST("/", r.doCreateRaffle)
 	}
 }
 
 type availableResponse struct {
-	Available []raffle.Raffle `json:"available"`
+	Available []raffle.Raffle `json:"data"`
 }
 
 // @Summary     Show raffles
 // @Description Show all available raffles
-// @ID          available
+// @ID          getAll
 // @Tags  	    raffle
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} availableResponse
 // @Failure     500 {object} response
-// @Router      /raffle/available [get].
+// @Router      /raffle/ [get].
 func (r *raffleRoutes) available(c *gin.Context) {
 	raffles, err := r.useCases.ListRaffle.Run(c.Request.Context())
 	if err != nil {
@@ -62,7 +62,7 @@ func (r *raffleRoutes) available(c *gin.Context) {
 // @Success     201 {object} response
 // @Failure     400 {object} response
 // @Failure     500 {object} response
-// @Router      /available/do-create [post].
+// @Router      /raffle/ [post].
 func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 	var request raffle.Request
 	if err := c.ShouldBindJSON(&request); err != nil {

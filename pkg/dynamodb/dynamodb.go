@@ -3,6 +3,7 @@ package db
 
 import (
 	"log"
+	"reflect"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -17,7 +18,10 @@ type DynamoConfig struct {
 	TableName  string
 }
 
-const marshalError = "Failed to unmarshal Record, %v"
+const (
+	marshalError = "Failed to unmarshal Record, %v"
+	maxBatch     = 25
+)
 
 // init setup the session and define table name, primary key and sort key.
 func NewDynamoDB(tn, pk, sk string) *DynamoConfig {
@@ -53,6 +57,70 @@ func (dbc *DynamoConfig) Save(prop interface{}) (interface{}, error) {
 	}
 
 	return prop, err
+}
+
+func InterfaceSlice(slice interface{}) []interface{} {
+	s := reflect.ValueOf(slice)
+	if s.Kind() != reflect.Slice {
+		log.Fatalf("InterfaceSlice() given a non-slice type")
+	}
+
+	ret := make([]interface{}, s.Len())
+
+	for i := 0; i < s.Len(); i++ {
+		ret[i] = s.Index(i).Interface()
+	}
+
+	return ret
+}
+
+func Chunk(array []interface{}, chunkSize int) [][]interface{} {
+	var divided [][]interface{}
+
+	for i := 0; i < len(array); i += chunkSize {
+		end := i + chunkSize
+		if end > len(array) {
+			end = len(array)
+		}
+
+		divided = append(divided, array[i:end])
+	}
+
+	return divided
+}
+
+func (dbc *DynamoConfig) SaveMany(data interface{}) error {
+	batches := Chunk(InterfaceSlice(data), maxBatch)
+
+	for _, dataArray := range batches {
+		items := make([]*dynamodb.WriteRequest, len(dataArray))
+
+		for i, item := range dataArray {
+			av, err := dynamodbattribute.MarshalMap(item)
+			if err != nil {
+				log.Fatalf("Got error calling DeleteItem, %v", err)
+			}
+
+			items[i] = &dynamodb.WriteRequest{
+				PutRequest: &dynamodb.PutRequest{
+					Item: av,
+				},
+			}
+		}
+
+		bwii := &dynamodb.BatchWriteItemInput{
+			RequestItems: map[string][]*dynamodb.WriteRequest{
+				dbc.TableName: items,
+			},
+		}
+
+		_, err := dbc.DBService.BatchWriteItem(bwii)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (dbc *DynamoConfig) Delete(prop interface{}) (interface{}, error) {

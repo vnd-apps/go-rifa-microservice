@@ -27,7 +27,7 @@ definitions:
   raffle.Raffle:
     properties:
       description:
-        example: Rifa
+        example: Rifa description
         type: string
       id:
         example: 61f0c143ad06223fa03910b0
@@ -45,7 +45,7 @@ definitions:
         example: butterfly-32
         type: string
       status:
-        example: Open
+        example: open
         type: string
       unitPrice:
         example: 5
@@ -116,7 +116,7 @@ definitions:
     type: object
   v1.availableResponse:
     properties:
-      available:
+      data:
         items:
           $ref: '#/definitions/raffle.Raffle'
         type: array
@@ -142,37 +142,6 @@ info:
   title: Go Clean Template API
   version: "1.0"
 paths:
-  /available/do-create:
-    post:
-      consumes:
-      - application/json
-      description: Create a Raffle
-      operationId: do-create
-      parameters:
-      - description: Set up raffle
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/raffle.Request'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/v1.response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      summary: Create
-      tags:
-      - raffle
   /order/:
     post:
       consumes:
@@ -204,12 +173,12 @@ paths:
       summary: Create
       tags:
       - order
-  /raffle/available:
+  /raffle/:
     get:
       consumes:
       - application/json
       description: Show all available raffles
-      operationId: available
+      operationId: getAll
       produces:
       - application/json
       responses:
@@ -222,6 +191,36 @@ paths:
           schema:
             $ref: '#/definitions/v1.response'
       summary: Show raffles
+      tags:
+      - raffle
+    post:
+      consumes:
+      - application/json
+      description: Create a Raffle
+      operationId: do-create
+      parameters:
+      - description: Set up raffle
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/raffle.Request'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Create
       tags:
       - raffle
   /steam/do-player-inventory:
