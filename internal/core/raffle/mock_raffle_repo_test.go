@@ -78,3 +78,18 @@ func (mr *MockRepoMockRecorder) GetByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockRepo)(nil).GetByID), ctx, id)
 }
+
+// GetProduct mocks base method.
+func (m *MockRepo) GetProduct(ctx context.Context, id string) (raffle.Raffle, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetProduct", ctx, id)
+	ret0, _ := ret[0].(raffle.Raffle)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetProduct indicates an expected call of GetProduct.
+func (mr *MockRepoMockRecorder) GetProduct(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProduct", reflect.TypeOf((*MockRepo)(nil).GetProduct), ctx, id)
+}

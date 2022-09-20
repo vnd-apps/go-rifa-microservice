@@ -16,7 +16,7 @@ func NewGetRaffleUseCase(r Repo) *GetRaffleUseCase {
 }
 
 func (uc *GetRaffleUseCase) Run(ctx context.Context, id string) (Raffle, error) {
-	res, err := uc.repo.GetByID(ctx, id)
+	res, err := uc.repo.GetProduct(ctx, id)
 	if err != nil {
 		return Raffle{}, fmt.Errorf("errorgetbyid: %w", err)
 	}

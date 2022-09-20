@@ -119,3 +119,21 @@ func (r *RaffleRepo) GetByID(ctx context.Context, id string) (raffle.Raffle, err
 
 	return DynamoToRaffle(&result), nil
 }
+
+func (r *RaffleRepo) GetProduct(ctx context.Context, id string) (raffle.Raffle, error) {
+	raffleDynamoResult := DynamoRaffle{}
+	raffleDynamoItemResult := []DynamoRaffleItem{}
+	raffleResult := raffle.Raffle{}
+
+	err := r.db.GetProduct(id, &raffleDynamoResult, &raffleDynamoItemResult)
+	if err != nil {
+		return raffleResult, err
+	}
+
+	raffleResult = DynamoToRaffle(&raffleDynamoResult)
+	for i := range raffleDynamoItemResult {
+		raffleResult.Variation = append(raffleResult.Variation, DynamoItemToRaffleItem(&raffleDynamoItemResult[i]))
+	}
+
+	return raffleResult, nil
+}

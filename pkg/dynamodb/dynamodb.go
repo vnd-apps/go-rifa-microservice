@@ -267,3 +267,38 @@ func (dbc *DynamoConfig) GetAll(pk string, data interface{}) error {
 
 	return err
 }
+
+func (dbc *DynamoConfig) GetProduct(pk string, data, dataItem interface{}) error {
+	queryInput := &dynamodb.QueryInput{
+		TableName: aws.String(dbc.TableName),
+		KeyConditions: map[string]*dynamodb.Condition{
+			dbc.PrimaryKey: {
+				ComparisonOperator: aws.String("EQ"),
+				AttributeValueList: []*dynamodb.AttributeValue{
+					{
+						S: aws.String(pk),
+					},
+				},
+			},
+		},
+	}
+
+	result, err := dbc.DBService.Query(queryInput)
+	if err != nil {
+		log.Fatalf("NOT FOUND, %v", err)
+
+		return err
+	}
+
+	err = dynamodbattribute.UnmarshalMap(result.Items[aws.Int64Value(result.Count)-1], data)
+	if err != nil {
+		log.Fatalf(marshalError, err)
+	}
+
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items[0:aws.Int64Value(result.Count)-1], dataItem)
+	if err != nil {
+		log.Fatalf(marshalError, err)
+	}
+
+	return err
+}

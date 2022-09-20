@@ -11,4 +11,5 @@ type Repo interface {
 	Create(ctx context.Context, raffle *Raffle) error
 	GetAll(ctx context.Context) ([]Raffle, error)
 	GetByID(ctx context.Context, id string) (Raffle, error)
+	GetProduct(ctx context.Context, id string) (Raffle, error)
 }
