@@ -22,7 +22,8 @@ func newRaffleRoutes(handler *gin.RouterGroup, l logger.Interface, u UseCases) {
 
 	h := handler.Group("/raffle")
 	{
-		h.GET("/", r.available)
+		h.GET("/", r.getAll)
+		h.GET("/:id", r.getbyID)
 		h.POST("/", r.doCreateRaffle)
 	}
 }
@@ -40,7 +41,7 @@ type availableResponse struct {
 // @Success     200 {object} availableResponse
 // @Failure     500 {object} response
 // @Router      /raffle/ [get].
-func (r *raffleRoutes) available(c *gin.Context) {
+func (r *raffleRoutes) getAll(c *gin.Context) {
 	raffles, err := r.useCases.ListRaffle.Run(c.Request.Context())
 	if err != nil {
 		r.logger.Error(err, "http - v1 - history")
@@ -50,6 +51,27 @@ func (r *raffleRoutes) available(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, availableResponse{raffles})
+}
+
+// @Summary     Show raffles
+// @Description Show raffle by ID
+// @ID          getbyID
+// @Tags  	    raffle
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} availableResponse
+// @Failure     500 {object} response
+// @Router      /raffle/:id [get].
+func (r *raffleRoutes) getbyID(c *gin.Context) {
+	raffleResponse, err := r.useCases.GetRaffle.Run(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		r.logger.Error(err, "http - v1 - history")
+		errorResponse(c, http.StatusInternalServerError, "database problems")
+
+		return
+	}
+
+	c.JSON(http.StatusOK, raffleResponse)
 }
 
 // @Summary     Create

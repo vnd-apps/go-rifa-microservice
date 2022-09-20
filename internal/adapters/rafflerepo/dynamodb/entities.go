@@ -3,6 +3,7 @@ package dynamodb
 type DynamoRaffle struct {
 	PK          string
 	SK          string
+	GSI1PK      string
 	ID          string
 	Name        string
 	Description string

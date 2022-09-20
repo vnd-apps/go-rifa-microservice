@@ -5,7 +5,6 @@ import (
 	"fmt"
 )
 
-// TranslationUseCase -.
 type ListRaffleUseCase struct {
 	repo Repo
 }
@@ -18,7 +17,7 @@ func NewListRaffleUseCase(r Repo) *ListRaffleUseCase {
 }
 
 func (uc *ListRaffleUseCase) Run(ctx context.Context) ([]Raffle, error) {
-	res, err := uc.repo.GetAvailableRaffle(ctx)
+	res, err := uc.repo.GetAll(ctx)
 	if err != nil {
 		return []Raffle{}, fmt.Errorf("TranslationUseCase - Translate - s.repo.Store: %w", err)
 	}

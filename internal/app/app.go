@@ -47,6 +47,7 @@ func (c *Context) UseCases() *v1.UseCases {
 	return &v1.UseCases{
 		GenerateRaffle:  c.GenerateRaffleUseCase(),
 		ListRaffle:      c.ListRaffleUseCase(),
+		GetRaffle:       c.GetRaffleUseCase(),
 		PlayerInventory: c.PlayerInventoryUseCase(),
 		PlaceOrder:      c.PlaceOrderUseCase(),
 	}
@@ -58,6 +59,10 @@ func (c *Context) GenerateRaffleUseCase() *raffle.GenerateRaffleUseCase {
 
 func (c *Context) ListRaffleUseCase() *raffle.ListRaffleUseCase {
 	return raffle.NewListRaffleUseCase(c.PostRepo())
+}
+
+func (c *Context) GetRaffleUseCase() *raffle.GetRaffleUseCase {
+	return raffle.NewGetRaffleUseCase(c.PostRepo())
 }
 
 func (c *Context) PlayerInventoryUseCase() *skin.PlayerInventoryUseCase {

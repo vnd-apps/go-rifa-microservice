@@ -36,30 +36,45 @@ func (m *MockRepo) EXPECT() *MockRepoMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockRepo) Create(arg0 context.Context, arg1 *raffle.Raffle) error {
+func (m *MockRepo) Create(ctx context.Context, raffle *raffle.Raffle) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", arg0, arg1)
+	ret := m.ctrl.Call(m, "Create", ctx, raffle)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockRepoMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) Create(ctx, raffle interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockRepo)(nil).Create), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockRepo)(nil).Create), ctx, raffle)
 }
 
-// GetAvailableRaffle mocks base method.
-func (m *MockRepo) GetAvailableRaffle(arg0 context.Context) ([]raffle.Raffle, error) {
+// GetAll mocks base method.
+func (m *MockRepo) GetAll(ctx context.Context) ([]raffle.Raffle, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAvailableRaffle", arg0)
+	ret := m.ctrl.Call(m, "GetAll", ctx)
 	ret0, _ := ret[0].([]raffle.Raffle)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetAvailableRaffle indicates an expected call of GetAvailableRaffle.
-func (mr *MockRepoMockRecorder) GetAvailableRaffle(arg0 interface{}) *gomock.Call {
+// GetAll indicates an expected call of GetAll.
+func (mr *MockRepoMockRecorder) GetAll(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailableRaffle", reflect.TypeOf((*MockRepo)(nil).GetAvailableRaffle), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockRepo)(nil).GetAll), ctx)
+}
+
+// GetByID mocks base method.
+func (m *MockRepo) GetByID(ctx context.Context, id string) (raffle.Raffle, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", ctx, id)
+	ret0, _ := ret[0].(raffle.Raffle)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockRepoMockRecorder) GetByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockRepo)(nil).GetByID), ctx, id)
 }

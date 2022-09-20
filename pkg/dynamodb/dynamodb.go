@@ -23,15 +23,11 @@ const (
 	maxBatch     = 25
 )
 
-// init setup the session and define table name, primary key and sort key.
 func NewDynamoDB(tn, pk, sk string) *DynamoConfig {
-	// Initialize a session that the SDK will use to load
-	// credentials from the shared credentials file ~/.aws/credentials
-	// and region from the shared configuration file ~/.aws/config.
 	dbSession := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	// Create DynamoDB client
+
 	return &DynamoConfig{
 		DBService:  dynamodb.New(dbSession),
 		PrimaryKey: pk,
@@ -148,6 +144,7 @@ func (dbc *DynamoConfig) Get(pk, sk string, data interface{}) error {
 			S: aws.String(pk),
 		},
 	}
+
 	if sk != "" {
 		av[dbc.SortKey] = &dynamodb.AttributeValue{
 			S: aws.String(sk),
@@ -241,15 +238,26 @@ func (dbc *DynamoConfig) FindByGsi(value, indexName, indexPk string, data interf
 	return err
 }
 
-func (dbc *DynamoConfig) FindAll(data interface{}) error {
-	params := &dynamodb.ScanInput{
+func (dbc *DynamoConfig) GetAll(pk string, data interface{}) error {
+	queryInput := &dynamodb.QueryInput{
 		TableName: aws.String(dbc.TableName),
+		KeyConditions: map[string]*dynamodb.Condition{
+			dbc.PrimaryKey: {
+				ComparisonOperator: aws.String("EQ"),
+				AttributeValueList: []*dynamodb.AttributeValue{
+					{
+						S: aws.String(pk),
+					},
+				},
+			},
+		},
 	}
 
-	// Make the DynamoDB Query API call
-	result, err := dbc.DBService.Scan(params)
+	result, err := dbc.DBService.Query(queryInput)
 	if err != nil {
-		log.Fatalf("Query API call failed: %s", err)
+		log.Fatalf("NOT FOUND, %v", err)
+
+		return err
 	}
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)

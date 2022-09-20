@@ -8,6 +8,7 @@ import (
 //go:generate mockgen -source=ports.go -destination=./mock_raffle_repo_test.go -package=raffle_test
 
 type Repo interface {
-	Create(context.Context, *Raffle) error
-	GetAvailableRaffle(context.Context) ([]Raffle, error)
+	Create(ctx context.Context, raffle *Raffle) error
+	GetAll(ctx context.Context) ([]Raffle, error)
+	GetByID(ctx context.Context, id string) (Raffle, error)
 }

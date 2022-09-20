@@ -12,6 +12,8 @@ import (
 const (
 	productType = "RAFFLE"
 	SK          = "P#%v"
+	GSI1PK      = "GSI1PK"
+	GSI1PKIndex = GSI1PK + "-index"
 )
 
 type RaffleRepo struct {
@@ -24,8 +26,9 @@ func NewRaffleRepo(mdb *db.DynamoConfig) *RaffleRepo {
 
 func RaffleToDynamo(r *raffle.Raffle) DynamoRaffle {
 	return DynamoRaffle{
-		PK:          productType,
+		PK:          r.ID,
 		SK:          fmt.Sprintf(SK, r.ID),
+		GSI1PK:      productType,
 		ID:          r.ID,
 		Name:        r.Name,
 		Description: r.Description,
@@ -89,13 +92,30 @@ func (r *RaffleRepo) Create(ctx context.Context, rm *raffle.Raffle) error {
 	return nil
 }
 
-func (r *RaffleRepo) GetAvailableRaffle(ctx context.Context) ([]raffle.Raffle, error) {
-	results := []raffle.Raffle{}
+func (r *RaffleRepo) GetAll(ctx context.Context) ([]raffle.Raffle, error) {
+	results := []DynamoRaffle{}
 
-	err := r.db.FindAll(&results)
+	err := r.db.FindByGsi(productType, GSI1PKIndex, GSI1PK, &results)
 	if err != nil {
 		return nil, err
 	}
 
-	return results, nil
+	raffleResults := make([]raffle.Raffle, 0, len(results))
+
+	for i := range results {
+		raffleResults = append(raffleResults, DynamoToRaffle(&results[i]))
+	}
+
+	return raffleResults, nil
+}
+
+func (r *RaffleRepo) GetByID(ctx context.Context, id string) (raffle.Raffle, error) {
+	result := DynamoRaffle{}
+
+	err := r.db.Get(id, "P#"+id, &result)
+	if err != nil {
+		return raffle.Raffle{}, err
+	}
+
+	return DynamoToRaffle(&result), nil
 }

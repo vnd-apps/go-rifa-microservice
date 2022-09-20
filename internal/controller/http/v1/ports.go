@@ -11,6 +11,7 @@ import (
 type UseCases struct {
 	GenerateRaffle  GenerateRaffleUseCase
 	ListRaffle      ListRaffleUseCase
+	GetRaffle       GetRaffleUseCase
 	PlayerInventory PlayerInventoryUseCase
 	PlaceOrder      PlaceOrderUseCase
 }
@@ -21,6 +22,10 @@ type GenerateRaffleUseCase interface {
 
 type ListRaffleUseCase interface {
 	Run(ctx context.Context) ([]raffle.Raffle, error)
+}
+
+type GetRaffleUseCase interface {
+	Run(ctx context.Context, id string) (raffle.Raffle, error)
 }
 
 type PlayerInventoryUseCase interface {

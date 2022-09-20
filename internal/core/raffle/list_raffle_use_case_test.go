@@ -32,7 +32,7 @@ func TestList(t *testing.T) {
 		{
 			name: "Empty List Raffle",
 			mock: func() {
-				repo.EXPECT().GetAvailableRaffle(context.Background()).Return([]raffle.Raffle{}, nil)
+				repo.EXPECT().GetAll(context.Background()).Return([]raffle.Raffle{}, nil)
 			},
 			err: nil,
 			res: []raffle.Raffle{},
@@ -40,7 +40,7 @@ func TestList(t *testing.T) {
 		{
 			name: "Raffle Repo Error",
 			mock: func() {
-				repo.EXPECT().GetAvailableRaffle(context.Background()).Return(nil, errInternalServErr)
+				repo.EXPECT().GetAll(context.Background()).Return(nil, errInternalServErr)
 			},
 			err: errInternalServErr,
 			res: []raffle.Raffle{},

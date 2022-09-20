@@ -19,7 +19,7 @@ type Raffle struct {
 	ImageURL    string      `json:"imageURL"  example:"1"`
 	UnitPrice   int         `json:"unitPrice"  example:"5"`
 	Quantity    int         `json:"quantity"  example:"10"`
-	Variation   []Variation `json:"variation"`
+	Variation   []Variation `json:"variation,omitempty"`
 }
 
 type Variation struct {
