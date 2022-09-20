@@ -2,6 +2,7 @@
 package db
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 
@@ -19,8 +20,7 @@ type DynamoConfig struct {
 }
 
 const (
-	marshalError = "Failed to unmarshal Record, %v"
-	maxBatch     = 25
+	maxBatch = 25
 )
 
 func NewDynamoDB(tn, pk, sk string) *DynamoConfig {
@@ -39,7 +39,7 @@ func NewDynamoDB(tn, pk, sk string) *DynamoConfig {
 func (dbc *DynamoConfig) Save(prop interface{}) (interface{}, error) {
 	av, err := dynamodbattribute.MarshalMap(prop)
 	if err != nil {
-		log.Fatalf(err.Error())
+		return nil, fmt.Errorf("error saving item - marshal - %w", err)
 	}
 
 	input := &dynamodb.PutItemInput{
@@ -49,7 +49,7 @@ func (dbc *DynamoConfig) Save(prop interface{}) (interface{}, error) {
 
 	_, err = dbc.DBService.PutItem(input)
 	if err != nil {
-		log.Fatalf(err.Error())
+		return nil, fmt.Errorf("error saving item - put - %w", err)
 	}
 
 	return prop, err
@@ -94,7 +94,7 @@ func (dbc *DynamoConfig) SaveMany(data interface{}) error {
 		for i, item := range dataArray {
 			av, err := dynamodbattribute.MarshalMap(item)
 			if err != nil {
-				log.Fatalf("Got error calling DeleteItem, %v", err)
+				return fmt.Errorf("error savemany - marshal - %w", err)
 			}
 
 			items[i] = &dynamodb.WriteRequest{
@@ -112,7 +112,7 @@ func (dbc *DynamoConfig) SaveMany(data interface{}) error {
 
 		_, err := dbc.DBService.BatchWriteItem(bwii)
 		if err != nil {
-			return err
+			return fmt.Errorf("error savemany - batchwrite - %w", err)
 		}
 	}
 
@@ -122,7 +122,7 @@ func (dbc *DynamoConfig) SaveMany(data interface{}) error {
 func (dbc *DynamoConfig) Delete(prop interface{}) (interface{}, error) {
 	av, err := dynamodbattribute.MarshalMap(prop)
 	if err != nil {
-		log.Fatalf(err.Error())
+		return nil, fmt.Errorf("error delete - marshal - %w", err)
 	}
 
 	input := &dynamodb.DeleteItemInput{
@@ -132,7 +132,7 @@ func (dbc *DynamoConfig) Delete(prop interface{}) (interface{}, error) {
 
 	_, err = dbc.DBService.DeleteItem(input)
 	if err != nil {
-		log.Fatalf("Got error calling DeleteItem, %v", err)
+		return nil, fmt.Errorf("error delete - deleteitem - %w", err)
 	}
 
 	return prop, err
@@ -156,14 +156,12 @@ func (dbc *DynamoConfig) Get(pk, sk string, data interface{}) error {
 		Key:       av,
 	})
 	if err != nil {
-		log.Fatalf("NOT FOUND, %v", err)
-
-		return err
+		return fmt.Errorf("NOT FOUND, %w", err)
 	}
 
 	err = dynamodbattribute.UnmarshalMap(result.Item, data)
 	if err != nil {
-		log.Fatalf(marshalError, err)
+		return fmt.Errorf("unmarshalMap, %w", err)
 	}
 
 	return err
@@ -194,14 +192,12 @@ func (dbc *DynamoConfig) FindStartingWith(pk, value string, data interface{}) er
 
 	result, err := dbc.DBService.Query(queryInput)
 	if err != nil {
-		log.Fatalf("DB:FindStartingWith> NOT FOUND, %v", err)
-
-		return err
+		return fmt.Errorf("DB:FindStartingWith> NOT FOUND, %w", err)
 	}
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
 	if err != nil {
-		log.Fatalf("Failed to unmarshal Record, %v", err)
+		return fmt.Errorf("failed to unmarshal record, %w", err)
 	}
 
 	return err
@@ -225,14 +221,12 @@ func (dbc *DynamoConfig) FindByGsi(value, indexName, indexPk string, data interf
 
 	result, err := dbc.DBService.Query(queryInput)
 	if err != nil {
-		log.Fatalf("DB:QUERY NOT FOUND, %v", err)
-
-		return err
+		return fmt.Errorf("DB:QUERY NOT FOUND, %w", err)
 	}
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
 	if err != nil {
-		log.Fatalf(marshalError, err)
+		return fmt.Errorf("failed to unmarshal record, %w", err)
 	}
 
 	return err
@@ -255,14 +249,12 @@ func (dbc *DynamoConfig) GetAll(pk string, data interface{}) error {
 
 	result, err := dbc.DBService.Query(queryInput)
 	if err != nil {
-		log.Fatalf("NOT FOUND, %v", err)
-
-		return err
+		return fmt.Errorf("NOT FOUND, %w", err)
 	}
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
 	if err != nil {
-		log.Fatalf(marshalError, err)
+		return fmt.Errorf("failed to unmarshal record, %w", err)
 	}
 
 	return err
@@ -285,19 +277,17 @@ func (dbc *DynamoConfig) GetProduct(pk string, data, dataItem interface{}) error
 
 	result, err := dbc.DBService.Query(queryInput)
 	if err != nil {
-		log.Fatalf("NOT FOUND, %v", err)
-
-		return err
+		return fmt.Errorf("NOT FOUND, %w", err)
 	}
 
 	err = dynamodbattribute.UnmarshalMap(result.Items[aws.Int64Value(result.Count)-1], data)
 	if err != nil {
-		log.Fatalf(marshalError, err)
+		return fmt.Errorf("failed to unmarshal record, %w", err)
 	}
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items[0:aws.Int64Value(result.Count)-1], dataItem)
 	if err != nil {
-		log.Fatalf(marshalError, err)
+		return fmt.Errorf("failed to unmarshal record, %w", err)
 	}
 
 	return err
