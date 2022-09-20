@@ -2,8 +2,6 @@
 package app
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -104,7 +102,7 @@ func (c *Context) DB() *db.DynamoConfig {
 func (c *Context) Config() *config.Config {
 	cfg, err := config.NewConfig()
 	if err != nil {
-		log.Fatalf("Config error: %s", err)
+		c.Logger().Fatal("Config error: %s", err)
 	}
 
 	c.cfg = cfg
@@ -137,12 +135,12 @@ func (c *Context) signal(httpServer *httpserver.Server) {
 	case s := <-interrupt:
 		c.Logger().Info("app - Run - signal: " + s.String())
 	case err = <-httpServer.Notify():
-		c.Logger().Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))
+		c.Logger().Error("app - Run - httpServer.Notify: %w", err)
 	}
 
 	err = httpServer.Shutdown()
 	if err != nil {
-		c.Logger().Error(fmt.Errorf("app - Run - httpServer.Shutdown: %w", err))
+		c.Logger().Error("app - Run - httpServer.Shutdown: %w", err)
 	}
 }
 
