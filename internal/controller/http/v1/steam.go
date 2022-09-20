@@ -5,21 +5,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
 type steamRoutes struct {
-	t usecase.Steam
-	l logger.Interface
+	useCases *UseCases
+	l        logger.Interface
 }
 
-func newSteamRoutes(handler *gin.RouterGroup, t usecase.Steam, l logger.Interface) {
-	r := &steamRoutes{t, l}
+func newSteamRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
+	r := &steamRoutes{u, l}
 
 	h := handler.Group("/steam")
 	{
-		h.POST("/do-player-inventory", r.doplayerInventory)
+		h.POST("/do-player-inventory", r.doPlayerInventory)
 	}
 }
 
@@ -30,15 +29,15 @@ type doSteamRequest struct {
 // @Summary     Create
 // @Description Create a Player Inventory
 // @ID          do-player-inventory
-// @Tags  	    raffle
+// @Tags  	    steam
 // @Accept      json
 // @Produce     json
-// @Param       request body doRaffleRequest true "Set up raffle"
-// @Success     200 {object} entity.Skin
+// @Param       request body doSteamRequest true "set up steam"
+// @Success     200 {object} skin.Skin
 // @Failure     400 {object} response
 // @Failure     500 {object} response
-// @Router      /steam//do-player-inventory [post].
-func (r *steamRoutes) doplayerInventory(c *gin.Context) {
+// @Router      /steam/do-player-inventory [post].
+func (r *steamRoutes) doPlayerInventory(c *gin.Context) {
 	var request doSteamRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.l.Error(err, "http - v1 - doCreateRaffle")
@@ -47,7 +46,7 @@ func (r *steamRoutes) doplayerInventory(c *gin.Context) {
 		return
 	}
 
-	skin, err := r.t.GetPlayerInventory(
+	skins, err := r.useCases.PlayerInventory.Run(
 		c.Request.Context(),
 		request.SteamID,
 	)
@@ -58,5 +57,5 @@ func (r *steamRoutes) doplayerInventory(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, skin)
+	c.JSON(http.StatusOK, skins)
 }

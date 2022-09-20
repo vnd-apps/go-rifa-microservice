@@ -1,6 +1,100 @@
-basePath: /v1.
+basePath: /v1
 definitions:
-  entity.Item:
+  order.Item:
+    properties:
+      id:
+        type: string
+      number:
+        type: integer
+      price:
+        type: integer
+    type: object
+  order.PlaceOrderRequest:
+    properties:
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/order.Item'
+        type: array
+      paymentMethod:
+        type: string
+      productID:
+        type: string
+      total:
+        type: integer
+    type: object
+  raffle.Raffle:
+    properties:
+      description:
+        example: Rifa description
+        type: string
+      id:
+        example: 61f0c143ad06223fa03910b0
+        type: string
+      imageURL:
+        example: "1"
+        type: string
+      name:
+        example: Rifa
+        type: string
+      quantity:
+        example: 10
+        type: integer
+      slug:
+        example: butterfly-32
+        type: string
+      status:
+        example: open
+        type: string
+      unitPrice:
+        example: 5
+        type: integer
+      variation:
+        items:
+          $ref: '#/definitions/raffle.Variation'
+        type: array
+    type: object
+  raffle.Request:
+    properties:
+      description:
+        example: Rifa
+        type: string
+      imageURL:
+        example: "1"
+        type: string
+      name:
+        example: Rifa
+        type: string
+      quantity:
+        example: 10
+        type: integer
+      unitPrice:
+        example: 5
+        type: integer
+    required:
+    - description
+    - imageURL
+    - name
+    - quantity
+    - unitPrice
+    type: object
+  raffle.Variation:
+    properties:
+      id:
+        example: 61f0c143ad06223fa03910b0
+        type: string
+      name:
+        example: Number
+        type: string
+      number:
+        example: 5
+        type: integer
+      status:
+        example: paid
+        type: string
+    type: object
+  skin.Item:
     properties:
       icon_url:
         type: string
@@ -9,98 +103,31 @@ definitions:
       name:
         type: string
     type: object
-  entity.Raffle:
-    properties:
-      id:
-        example: 61f0c143ad06223fa03910b0
-        type: string
-      name:
-        example: Rifa
-        type: string
-      status:
-        example: Available
-        type: string
-      totalNumbers:
-        example: 10
-        type: integer
-      totalSold:
-        example: 1
-        type: integer
-      value:
-        example: 5
-        type: integer
-    type: object
-  entity.Skin:
+  skin.Skin:
     properties:
       id:
         type: string
       items:
         items:
-          $ref: '#/definitions/entity.Item'
+          $ref: '#/definitions/skin.Item'
         type: array
       steam_id:
         type: string
     type: object
-  entity.Translation:
-    properties:
-      destination:
-        example: en
-        type: string
-      original:
-        example: текст для перевода
-        type: string
-      source:
-        example: auto
-        type: string
-      translation:
-        example: text for translation
-        type: string
-    type: object
   v1.availableResponse:
     properties:
-      available:
+      data:
         items:
-          $ref: '#/definitions/entity.Raffle'
+          $ref: '#/definitions/raffle.Raffle'
         type: array
     type: object
-  v1.doRaffleRequest:
+  v1.doSteamRequest:
     properties:
-      name:
-        example: rifa faca
-        type: string
-      totalNumbers:
-        example: 20
-        type: integer
-      value:
-        example: 1
-        type: integer
-    required:
-    - name
-    - totalNumbers
-    - value
-    type: object
-  v1.doTranslateRequest:
-    properties:
-      destination:
-        example: en
-        type: string
-      original:
-        example: текст для перевода
-        type: string
-      source:
-        example: auto
+      steam_id:
+        example: "894012849024820948209"
         type: string
     required:
-    - destination
-    - original
-    - source
-    type: object
-  v1.historyResponse:
-    properties:
-      history:
-        items:
-          $ref: '#/definitions/entity.Translation'
-        type: array
+    - steam_id
     type: object
   v1.response:
     properties:
@@ -115,7 +142,57 @@ info:
   title: Go Clean Template API
   version: "1.0"
 paths:
-  /available/do-create:
+  /order/:
+    post:
+      consumes:
+      - application/json
+      description: Create a Order
+      operationId: do-post
+      parameters:
+      - description: Set up order
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/order.PlaceOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Create
+      tags:
+      - order
+  /raffle/:
+    get:
+      consumes:
+      - application/json
+      description: Show all available raffles
+      operationId: getAll
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.availableResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Show raffles
+      tags:
+      - raffle
     post:
       consumes:
       - application/json
@@ -127,7 +204,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/v1.doRaffleRequest'
+          $ref: '#/definitions/raffle.Request'
       produces:
       - application/json
       responses:
@@ -146,46 +223,26 @@ paths:
       summary: Create
       tags:
       - raffle
-  /raffle/available:
-    get:
-      consumes:
-      - application/json
-      description: Show all available raffles
-      operationId: raffle
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/v1.availableResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      summary: Show raffles
-      tags:
-      - translation
-  /steam//do-player-inventory:
+  /steam/do-player-inventory:
     post:
       consumes:
       - application/json
       description: Create a Player Inventory
       operationId: do-player-inventory
       parameters:
-      - description: Set up raffle
+      - description: set up steam
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/v1.doRaffleRequest'
+          $ref: '#/definitions/v1.doSteamRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.Skin'
+            $ref: '#/definitions/skin.Skin'
         "400":
           description: Bad Request
           schema:
@@ -196,56 +253,5 @@ paths:
             $ref: '#/definitions/v1.response'
       summary: Create
       tags:
-      - raffle
-  /translation/do-translate:
-    post:
-      consumes:
-      - application/json
-      description: Translate a text
-      operationId: do-translate
-      parameters:
-      - description: Set up translation
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/v1.doTranslateRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entity.Translation'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      summary: Translate
-      tags:
-      - translation
-  /translation/history:
-    get:
-      consumes:
-      - application/json
-      description: Show all translation history
-      operationId: history
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/v1.historyResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      summary: Show history
-      tags:
-      - translation
+      - steam
 swagger: "2.0"

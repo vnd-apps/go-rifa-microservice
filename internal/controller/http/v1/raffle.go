@@ -5,43 +5,46 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/entity"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
 type raffleRoutes struct {
-	t usecase.Raffle
-	l logger.Interface
+	useCases *UseCases
+	logger   logger.Interface
 }
 
-func newRaffleRoutes(handler *gin.RouterGroup, t usecase.Raffle, l logger.Interface) {
-	r := &raffleRoutes{t, l}
+func newRaffleRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
+	r := &raffleRoutes{
+		useCases: u,
+		logger:   l,
+	}
 
 	h := handler.Group("/raffle")
 	{
-		h.GET("/available", r.available)
-		h.POST("/do-create", r.doCreateRaffle)
+		h.GET("/", r.getAll)
+		h.GET("/:id", r.getbyID)
+		h.POST("/", r.doCreateRaffle)
 	}
 }
 
 type availableResponse struct {
-	Available []entity.Raffle `json:"available"`
+	Available []raffle.Raffle `json:"data"`
 }
 
 // @Summary     Show raffles
 // @Description Show all available raffles
-// @ID          raffle
-// @Tags  	    translation
+// @ID          getAll
+// @Tags  	    raffle
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} availableResponse
 // @Failure     500 {object} response
-// @Router      /raffle/available [get].
-func (r *raffleRoutes) available(c *gin.Context) {
-	raffles, err := r.t.GetAvailableRaffle(c.Request.Context())
+// @Router      /raffle/ [get].
+func (r *raffleRoutes) getAll(c *gin.Context) {
+	raffles, err := r.useCases.ListRaffle.Run(c.Request.Context())
 	if err != nil {
-		r.l.Error(err, "http - v1 - history")
+		r.logger.Error(err, "http - v1 - history")
 		errorResponse(c, http.StatusInternalServerError, "database problems")
 
 		return
@@ -50,10 +53,25 @@ func (r *raffleRoutes) available(c *gin.Context) {
 	c.JSON(http.StatusOK, availableResponse{raffles})
 }
 
-type doRaffleRequest struct {
-	Name         string `json:"name" binding:"required" example:"rifa faca"`
-	Value        int    `json:"value" binding:"required" example:"1"`
-	TotalNumbers int    `json:"totalNumbers" binding:"required" example:"20"`
+// @Summary     Show raffles
+// @Description Show raffle by ID
+// @ID          getbyID
+// @Tags  	    raffle
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} availableResponse
+// @Failure     500 {object} response
+// @Router      /raffle/:id [get].
+func (r *raffleRoutes) getbyID(c *gin.Context) {
+	raffleResponse, err := r.useCases.GetRaffle.Run(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		r.logger.Error(err, "http - v1 - history")
+		errorResponse(c, http.StatusInternalServerError, "database problems")
+
+		return
+	}
+
+	c.JSON(http.StatusOK, raffleResponse)
 }
 
 // @Summary     Create
@@ -62,30 +80,32 @@ type doRaffleRequest struct {
 // @Tags  	    raffle
 // @Accept      json
 // @Produce     json
-// @Param       request body doRaffleRequest true "Set up raffle"
+// @Param       request body raffle.Request true "Set up raffle"
 // @Success     201 {object} response
 // @Failure     400 {object} response
 // @Failure     500 {object} response
-// @Router      /available/do-create [post].
+// @Router      /raffle/ [post].
 func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
-	var request doRaffleRequest
+	var request raffle.Request
 	if err := c.ShouldBindJSON(&request); err != nil {
-		r.l.Error(err, "http - v1 - doCreateRaffle")
+		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusBadRequest, "invalid request body")
 
 		return
 	}
 
-	err := r.t.Create(
+	err := r.useCases.GenerateRaffle.Run(
 		c.Request.Context(),
-		entity.Raffle{
-			Name:         request.Name,
-			TotalNumbers: request.TotalNumbers,
-			Value:        request.Value,
+		&raffle.Raffle{
+			Name:        request.Name,
+			Description: request.Description,
+			ImageURL:    request.ImageURL,
+			UnitPrice:   request.UnitPrice,
+			Quantity:    request.Quantity,
 		},
 	)
 	if err != nil {
-		r.l.Error(err, "http - v1 - doCreateRaffle")
+		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusInternalServerError, "raffle service problems")
 
 		return

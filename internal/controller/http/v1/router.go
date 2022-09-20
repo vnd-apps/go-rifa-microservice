@@ -12,7 +12,6 @@ import (
 	// Swagger docs.
 	_ "github.com/evmartinelli/go-rifa-microservice/docs"
 	customlogger "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/middleware"
-	"github.com/evmartinelli/go-rifa-microservice/internal/usecase"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
@@ -22,8 +21,9 @@ import (
 // @description Using a translation service as an example
 // @version     1.0
 // @host        localhost:8080
-// @BasePath    /v1.
-func NewRouter(handler *gin.Engine, l logger.Interface, t usecase.Translation, r usecase.Raffle, s usecase.Steam) {
+// @BasePath    /v1
+// End.
+func NewRouter(handler *gin.Engine, l logger.Interface, u *UseCases) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -42,8 +42,8 @@ func NewRouter(handler *gin.Engine, l logger.Interface, t usecase.Translation, r
 	// Routers
 	h := handler.Group("/v1")
 	{
-		newTranslationRoutes(h, t, l)
-		newRaffleRoutes(h, r, l)
-		newSteamRoutes(h, s, l)
+		newRaffleRoutes(h, l, u)
+		newOrderRoutes(h, l, u)
+		newSteamRoutes(h, l, u)
 	}
 }
