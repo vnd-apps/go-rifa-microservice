@@ -26,17 +26,19 @@ func NewRaffleRepo(mdb *db.DynamoConfig) *RaffleRepo {
 
 func RaffleToDynamo(r *raffle.Raffle) DynamoRaffle {
 	return DynamoRaffle{
-		PK:          r.ID,
-		SK:          fmt.Sprintf(SK, r.ID),
-		GSI1PK:      productType,
-		ID:          r.ID,
-		Name:        r.Name,
-		Description: r.Description,
-		Slug:        r.Slug,
-		Status:      string(r.Status),
-		ImageURL:    r.ImageURL,
-		UnitPrice:   r.UnitPrice,
-		Quantity:    r.Quantity,
+		PK:           r.ID,
+		SK:           fmt.Sprintf(SK, r.ID),
+		GSI1PK:       productType,
+		ID:           r.ID,
+		Name:         r.Name,
+		Description:  r.Description,
+		Slug:         r.Slug,
+		Status:       string(r.Status),
+		ImageURL:     r.ImageURL,
+		UnitPrice:    r.UnitPrice,
+		Quantity:     r.Quantity,
+		UserLimit:    r.UserLimit,
+		SortedNumber: r.SortedNumber,
 	}
 }
 
@@ -53,14 +55,16 @@ func RaffleItemToDynamoItem(r *raffle.Variation) DynamoRaffleItem {
 
 func DynamoToRaffle(dyn *DynamoRaffle) raffle.Raffle {
 	return raffle.Raffle{
-		ID:          dyn.ID,
-		Name:        dyn.Name,
-		Description: dyn.Description,
-		Slug:        dyn.Slug,
-		Status:      raffle.Status(dyn.Status),
-		ImageURL:    dyn.ImageURL,
-		UnitPrice:   dyn.UnitPrice,
-		Quantity:    dyn.Quantity,
+		ID:           dyn.ID,
+		Name:         dyn.Name,
+		Description:  dyn.Description,
+		Slug:         dyn.Slug,
+		Status:       raffle.Status(dyn.Status),
+		ImageURL:     dyn.ImageURL,
+		UnitPrice:    dyn.UnitPrice,
+		Quantity:     dyn.Quantity,
+		UserLimit:    dyn.UserLimit,
+		SortedNumber: dyn.SortedNumber,
 	}
 }
 
