@@ -120,7 +120,7 @@ func (c *Context) SlugGenrator() shared.SlugGenerator {
 
 func (c *Context) HTTPServer() {
 	handler := gin.New()
-	v1.NewRouter(handler, c.Logger(), *c.UseCases())
+	v1.NewRouter(handler, c.Logger(), c.UseCases())
 	httpServer := httpserver.New(handler, httpserver.Port(c.cfg.HTTP.Port))
 	c.signal(httpServer)
 }

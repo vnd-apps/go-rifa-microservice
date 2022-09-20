@@ -10,11 +10,11 @@ import (
 )
 
 type orderRoutes struct {
-	useCases UseCases
+	useCases *UseCases
 	logger   logger.Interface
 }
 
-func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u UseCases) {
+func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
 	r := &orderRoutes{
 		useCases: u,
 		logger:   l,

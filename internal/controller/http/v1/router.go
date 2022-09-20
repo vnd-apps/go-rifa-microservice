@@ -23,7 +23,7 @@ import (
 // @host        localhost:8080
 // @BasePath    /v1
 // End.
-func NewRouter(handler *gin.Engine, l logger.Interface, u UseCases) {
+func NewRouter(handler *gin.Engine, l logger.Interface, u *UseCases) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())

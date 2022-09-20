@@ -9,11 +9,11 @@ import (
 )
 
 type steamRoutes struct {
-	useCases UseCases
+	useCases *UseCases
 	l        logger.Interface
 }
 
-func newSteamRoutes(handler *gin.RouterGroup, l logger.Interface, u UseCases) {
+func newSteamRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
 	r := &steamRoutes{u, l}
 
 	h := handler.Group("/steam")
