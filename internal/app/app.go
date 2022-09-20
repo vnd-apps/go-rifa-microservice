@@ -102,7 +102,7 @@ func (c *Context) DB() *db.DynamoConfig {
 func (c *Context) Config() *config.Config {
 	cfg, err := config.NewConfig()
 	if err != nil {
-		c.Logger().Fatal("Config error: %s", err)
+		c.Logger().Fatal("Config read error: %s", err)
 	}
 
 	c.cfg = cfg
