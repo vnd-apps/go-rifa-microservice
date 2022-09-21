@@ -33,5 +33,5 @@ type PlayerInventoryUseCase interface {
 }
 
 type PlaceOrderUseCase interface {
-	Run(ctx context.Context, model *order.PlaceOrderRequest) (order.PlaceOrderResponse, error)
+	Run(ctx context.Context, model *order.Request) (order.Order, error)
 }

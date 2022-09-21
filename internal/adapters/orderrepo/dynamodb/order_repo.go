@@ -15,21 +15,21 @@ func NewOrderRepo(mdb *db.DynamoConfig) *OrderRepo {
 	return &OrderRepo{mdb}
 }
 
-func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.PlaceOrderRequest) (order.PlaceOrderResponse, error) {
+func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Request) (order.Order, error) {
 	_, err := r.db.Save(rm)
 	if err != nil {
-		return order.PlaceOrderResponse{}, err
+		return order.Order{}, err
 	}
 
-	return order.PlaceOrderResponse{}, nil
+	return order.Order{}, nil
 }
 
-func (r *OrderRepo) GetOrder(ctx context.Context) (order.PlaceOrderResponse, error) {
-	results := order.PlaceOrderResponse{}
+func (r *OrderRepo) GetOrder(ctx context.Context) (order.Order, error) {
+	results := order.Order{}
 
 	err := r.db.Get("id", "id", &results)
 	if err != nil {
-		return order.PlaceOrderResponse{}, err
+		return order.Order{}, err
 	}
 
 	return results, nil

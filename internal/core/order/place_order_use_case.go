@@ -16,11 +16,11 @@ func NewPlaceOrderUseCase(orderRepo Repo, pixPayment PixPayment, uuid shared.UUI
 	return &PlaceOrderUseCase{orderRepo: orderRepo, pixPayment: pixPayment, uuid: uuid}
 }
 
-func (u *PlaceOrderUseCase) Run(ctx context.Context, model *PlaceOrderRequest) (PlaceOrderResponse, error) {
+func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (Order, error) {
 	_, err := u.orderRepo.CreateOrder(ctx, model)
 	if err != nil {
-		return PlaceOrderResponse{}, err
+		return Order{}, err
 	}
 
-	return PlaceOrderResponse{}, nil
+	return Order{}, nil
 }
