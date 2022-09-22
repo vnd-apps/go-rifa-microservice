@@ -33,6 +33,7 @@ $ make compose-up
 $ make run
 ```
 
+
 Integration tests (can be run in CI):
 ```sh
 # DB, app + migrations, integration tests
