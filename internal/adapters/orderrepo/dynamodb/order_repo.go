@@ -2,9 +2,15 @@ package dynamodb
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	db "github.com/evmartinelli/go-rifa-microservice/pkg/dynamodb"
+)
+
+const (
+	PK = "P#%v#U#%v"
+	SK = "O#%v"
 )
 
 type OrderRepo struct {
@@ -24,12 +30,12 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Request) (order.O
 	return order.Order{}, nil
 }
 
-func (r *OrderRepo) GetOrder(ctx context.Context) (order.Order, error) {
-	results := order.Order{}
+func (r *OrderRepo) GetUserOrders(ctx context.Context, pid string) ([]order.Order, error) {
+	results := []order.Order{}
 
-	err := r.db.Get("id", "id", &results)
+	err := r.db.GetAll(fmt.Sprintf(PK, pid, pid), &results)
 	if err != nil {
-		return order.Order{}, err
+		return []order.Order{}, err
 	}
 
 	return results, nil

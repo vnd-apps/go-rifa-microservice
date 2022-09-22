@@ -1,21 +1,12 @@
 basePath: /v1
 definitions:
-  order.Item:
-    properties:
-      id:
-        type: string
-      number:
-        type: integer
-      price:
-        type: integer
-    type: object
-  order.PlaceOrderRequest:
+  order.Request:
     properties:
       id:
         type: string
       items:
         items:
-          $ref: '#/definitions/order.Item'
+          type: integer
         type: array
       paymentMethod:
         type: string
@@ -44,11 +35,17 @@ definitions:
       slug:
         example: butterfly-32
         type: string
+      sortedNumber:
+        example: 10
+        type: integer
       status:
         example: open
         type: string
       unitPrice:
         example: 5
+        type: integer
+      userLimit:
+        example: 10
         type: integer
       variation:
         items:
@@ -154,7 +151,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/order.PlaceOrderRequest'
+          $ref: '#/definitions/order.Request'
       produces:
       - application/json
       responses:
@@ -221,6 +218,26 @@ paths:
           schema:
             $ref: '#/definitions/v1.response'
       summary: Create
+      tags:
+      - raffle
+  /raffle/:id:
+    get:
+      consumes:
+      - application/json
+      description: Show raffle by ID
+      operationId: getbyID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.availableResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Show raffles
       tags:
       - raffle
   /steam/do-player-inventory:

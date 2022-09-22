@@ -32,7 +32,7 @@ func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
 // @Tags  	    order
 // @Accept      json
 // @Produce     json
-// @Param       request body order.PlaceOrderRequest true "Set up order"
+// @Param       request body order.Request true "Set up order"
 // @Success     201 {object} response
 // @Failure     400 {object} response
 // @Failure     500 {object} response

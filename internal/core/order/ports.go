@@ -8,8 +8,8 @@ import (
 //go:generate mockgen -source=raffle_interfaces.go -destination=./mocks_raffle_test.go -package=usecase_test
 
 type Repo interface {
-	CreateOrder(ctx context.Context, rm *Request) (Order, error)
-	GetOrder(ctx context.Context) (Order, error)
+	CreateOrder(ctx context.Context, r *Request) (Order, error)
+	GetUserOrders(ctx context.Context, pid string) ([]Order, error)
 }
 
 type PixPayment interface {
