@@ -37,7 +37,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/order.PlaceOrderRequest"
+                            "$ref": "#/definitions/order.Request"
                         }
                     }
                 ],
@@ -138,6 +138,36 @@ const docTemplate = `{
                 }
             }
         },
+        "/raffle/:id": {
+            "get": {
+                "description": "Show raffle by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "raffle"
+                ],
+                "summary": "Show raffles",
+                "operationId": "getbyID",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.availableResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
         "/steam/do-player-inventory": {
             "post": {
                 "description": "Create a Player Inventory",
@@ -187,21 +217,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "order.Item": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "number": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "integer"
-                }
-            }
-        },
-        "order.PlaceOrderRequest": {
+        "order.Request": {
             "type": "object",
             "properties": {
                 "id": {
@@ -210,7 +226,7 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/order.Item"
+                        "type": "integer"
                     }
                 },
                 "paymentMethod": {
@@ -251,6 +267,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "butterfly-32"
                 },
+                "sortedNumber": {
+                    "type": "integer",
+                    "example": 10
+                },
                 "status": {
                     "type": "string",
                     "example": "open"
@@ -258,6 +278,10 @@ const docTemplate = `{
                 "unitPrice": {
                     "type": "integer",
                     "example": 5
+                },
+                "userLimit": {
+                    "type": "integer",
+                    "example": 10
                 },
                 "variation": {
                     "type": "array",

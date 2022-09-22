@@ -32,13 +32,13 @@ func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
 // @Tags  	    order
 // @Accept      json
 // @Produce     json
-// @Param       request body order.PlaceOrderRequest true "Set up order"
+// @Param       request body order.Request true "Set up order"
 // @Success     201 {object} response
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Router      /order/ [post].
 func (r *orderRoutes) doPost(c *gin.Context) {
-	var request order.PlaceOrderRequest
+	var request order.Request
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.logger.Error(err, "http - v1 - createOrder")
 		errorResponse(c, http.StatusBadRequest, "invalid request body")

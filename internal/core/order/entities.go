@@ -1,19 +1,20 @@
 package order
 
-type PlaceOrderRequest struct {
+type Request struct {
 	ID            string
 	ProductID     string
 	Total         int
 	PaymentMethod PaymentMethod
-	Items         []Item
+	Items         []int
 }
 
-type PlaceOrderResponse struct {
+type Order struct {
 	ID            string
 	ProductID     string
+	UserID        string
 	Total         int
 	PaymentMethod PaymentMethod
-	Items         []Item
+	Items         []int
 	Pix           Pix
 }
 
@@ -22,12 +23,6 @@ type Pix struct {
 	Status       string
 	QRCode       string
 	QRCodeBase64 string
-}
-
-type Item struct {
-	ID     string
-	Number int
-	Price  int
 }
 
 type PaymentMethod string

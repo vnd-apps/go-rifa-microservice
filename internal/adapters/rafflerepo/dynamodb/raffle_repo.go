@@ -116,7 +116,7 @@ func (r *RaffleRepo) GetAll(ctx context.Context) ([]raffle.Raffle, error) {
 func (r *RaffleRepo) GetByID(ctx context.Context, id string) (raffle.Raffle, error) {
 	result := DynamoRaffle{}
 
-	err := r.db.Get(id, "P#"+id, &result)
+	err := r.db.Get(id, fmt.Sprintf(SK, id), &result)
 	if err != nil {
 		return raffle.Raffle{}, err
 	}

@@ -52,15 +52,15 @@ func (c *Context) UseCases() *v1.UseCases {
 }
 
 func (c *Context) GenerateRaffleUseCase() *raffle.GenerateRaffleUseCase {
-	return raffle.NewGenerateRaffleUseCase(c.PostRepo(), c.UUIDGenerator(), c.SlugGenrator())
+	return raffle.NewGenerateRaffleUseCase(c.RaffleRepo(), c.UUIDGenerator(), c.SlugGenrator())
 }
 
 func (c *Context) ListRaffleUseCase() *raffle.ListRaffleUseCase {
-	return raffle.NewListRaffleUseCase(c.PostRepo())
+	return raffle.NewListRaffleUseCase(c.RaffleRepo())
 }
 
 func (c *Context) GetRaffleUseCase() *raffle.GetRaffleUseCase {
-	return raffle.NewGetRaffleUseCase(c.PostRepo())
+	return raffle.NewGetRaffleUseCase(c.RaffleRepo())
 }
 
 func (c *Context) PlayerInventoryUseCase() *skin.PlayerInventoryUseCase {
@@ -68,10 +68,10 @@ func (c *Context) PlayerInventoryUseCase() *skin.PlayerInventoryUseCase {
 }
 
 func (c *Context) PlaceOrderUseCase() *order.PlaceOrderUseCase {
-	return order.NewPlaceOrderUseCase(c.OrderRepo(), c.PixPayment(), c.UUIDGenerator())
+	return order.NewPlaceOrderUseCase(c.OrderRepo(), c.RaffleRepo(), c.PixPayment(), c.UUIDGenerator())
 }
 
-func (c *Context) PostRepo() raffle.Repo {
+func (c *Context) RaffleRepo() raffle.Repo {
 	if c.rafflerepo == nil {
 		c.rafflerepo = rafflerepo.NewDynamoDBRaffleRepo(c.DB())
 	}
