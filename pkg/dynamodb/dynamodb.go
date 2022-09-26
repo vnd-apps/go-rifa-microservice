@@ -237,7 +237,7 @@ func (dbc *DynamoConfig) FindByGsi(value, indexName, indexPk string, data interf
 	return err
 }
 
-func (dbc *DynamoConfig) GetAll(pk string, data interface{}) error {
+func (dbc *DynamoConfig) GetAllItems(pk string, data interface{}) error {
 	queryInput := &dynamodb.QueryInput{
 		TableName: aws.String(dbc.TableName),
 		KeyConditions: map[string]*dynamodb.Condition{
@@ -258,39 +258,6 @@ func (dbc *DynamoConfig) GetAll(pk string, data interface{}) error {
 	}
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
-	if err != nil {
-		return fmt.Errorf(failedMarshal, err)
-	}
-
-	return err
-}
-
-func (dbc *DynamoConfig) GetProduct(pk string, data, dataItem interface{}) error {
-	queryInput := &dynamodb.QueryInput{
-		TableName: aws.String(dbc.TableName),
-		KeyConditions: map[string]*dynamodb.Condition{
-			dbc.PrimaryKey: {
-				ComparisonOperator: aws.String("EQ"),
-				AttributeValueList: []*dynamodb.AttributeValue{
-					{
-						S: aws.String(pk),
-					},
-				},
-			},
-		},
-	}
-
-	result, err := dbc.DBService.Query(queryInput)
-	if err != nil {
-		return fmt.Errorf(notFound, err)
-	}
-
-	err = dynamodbattribute.UnmarshalMap(result.Items[aws.Int64Value(result.Count)-1], data)
-	if err != nil {
-		return fmt.Errorf(failedMarshal, err)
-	}
-
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Items[0:aws.Int64Value(result.Count)-1], dataItem)
 	if err != nil {
 		return fmt.Errorf(failedMarshal, err)
 	}

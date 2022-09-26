@@ -10,10 +10,11 @@ import (
 )
 
 const (
-	productType = "RAFFLE"
-	SK          = "P#%v"
-	GSI1PK      = "GSI1PK"
-	GSI1PKIndex = GSI1PK + "-index"
+	productType     = "RAFFLE"
+	productItemType = productType + "ITEM"
+	SK              = "P#%v"
+	GSI1PK          = "GSI1PK"
+	GSI1PKIndex     = GSI1PK + "-index"
 )
 
 type RaffleRepo struct {
@@ -39,21 +40,23 @@ func RaffleToDynamo(r *raffle.Raffle) DynamoRaffle {
 		Quantity:     r.Quantity,
 		UserLimit:    r.UserLimit,
 		SortedNumber: r.SortedNumber,
+		ItemType:     productType,
 	}
 }
 
 func RaffleItemToDynamoItem(r *raffle.Variation) DynamoRaffleItem {
 	return DynamoRaffleItem{
-		PK:     r.ID,
-		SK:     strconv.Itoa(r.Number),
-		ID:     r.ID,
-		Number: r.Number,
-		Name:   r.Name,
-		Status: string(r.Status),
+		PK:       r.ID,
+		SK:       strconv.Itoa(r.Number),
+		ID:       r.ID,
+		Number:   r.Number,
+		Name:     r.Name,
+		Status:   string(r.Status),
+		ItemType: productItemType,
 	}
 }
 
-func DynamoToRaffle(dyn *DynamoRaffle) raffle.Raffle {
+func DynamoToRaffle(dyn *DynamoRecRaffle) raffle.Raffle {
 	return raffle.Raffle{
 		ID:           dyn.ID,
 		Name:         dyn.Name,
@@ -68,7 +71,7 @@ func DynamoToRaffle(dyn *DynamoRaffle) raffle.Raffle {
 	}
 }
 
-func DynamoItemToRaffleItem(dyn *DynamoRaffleItem) raffle.Variation {
+func DynamoItemToRaffleItem(dyn *DynamoRecRaffle) raffle.Variation {
 	return raffle.Variation{
 		ID:     dyn.ID,
 		Number: dyn.Number,
@@ -97,7 +100,7 @@ func (r *RaffleRepo) Create(ctx context.Context, rm *raffle.Raffle) error {
 }
 
 func (r *RaffleRepo) GetAll(ctx context.Context) ([]raffle.Raffle, error) {
-	results := []DynamoRaffle{}
+	results := []DynamoRecRaffle{}
 
 	err := r.db.FindByGsi(productType, GSI1PKIndex, GSI1PK, &results)
 	if err != nil {
@@ -114,7 +117,7 @@ func (r *RaffleRepo) GetAll(ctx context.Context) ([]raffle.Raffle, error) {
 }
 
 func (r *RaffleRepo) GetByID(ctx context.Context, id string) (raffle.Raffle, error) {
-	result := DynamoRaffle{}
+	result := DynamoRecRaffle{}
 
 	err := r.db.Get(id, fmt.Sprintf(SK, id), &result)
 	if err != nil {
@@ -125,19 +128,30 @@ func (r *RaffleRepo) GetByID(ctx context.Context, id string) (raffle.Raffle, err
 }
 
 func (r *RaffleRepo) GetProduct(ctx context.Context, id string) (raffle.Raffle, error) {
-	raffleDynamoResult := DynamoRaffle{}
-	raffleDynamoItemResult := []DynamoRaffleItem{}
-	raffleResult := raffle.Raffle{}
+	dynamoRaffleRec := []DynamoRecRaffle{}
 
-	err := r.db.GetProduct(id, &raffleDynamoResult, &raffleDynamoItemResult)
+	err := r.db.GetAllItems(id, &dynamoRaffleRec)
 	if err != nil {
-		return raffleResult, err
+		return raffle.Raffle{}, err
 	}
 
-	raffleResult = DynamoToRaffle(&raffleDynamoResult)
-	for i := range raffleDynamoItemResult {
-		raffleResult.Variation = append(raffleResult.Variation, DynamoItemToRaffleItem(&raffleDynamoItemResult[i]))
+	return DynamoToProduct(dynamoRaffleRec), nil
+}
+
+func DynamoToProduct(dynamoRaffleRec []DynamoRecRaffle) raffle.Raffle {
+	var raffleResult raffle.Raffle
+
+	var raffleItems []raffle.Variation
+
+	for i := range dynamoRaffleRec {
+		if dynamoRaffleRec[i].ItemType == productType {
+			raffleResult = DynamoToRaffle(&dynamoRaffleRec[i])
+		} else if dynamoRaffleRec[i].ItemType == productItemType {
+			raffleItems = append(raffleItems, DynamoItemToRaffleItem(&dynamoRaffleRec[i]))
+		}
 	}
 
-	return raffleResult, nil
+	raffleResult.Variation = raffleItems
+
+	return raffleResult
 }
