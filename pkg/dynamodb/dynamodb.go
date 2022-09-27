@@ -60,6 +60,37 @@ func (dbc *DynamoConfig) Save(prop interface{}) (interface{}, error) {
 	return prop, err
 }
 
+func (dbc *DynamoConfig) Update(item, pk, sk string) error {
+	input := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":r": {
+				S: aws.String(item),
+			},
+		},
+		ExpressionAttributeNames: map[string]*string{
+			"#stat": aws.String("Status"),
+		},
+		TableName: aws.String(dbc.TableName),
+		Key: map[string]*dynamodb.AttributeValue{
+			dbc.PrimaryKey: {
+				S: aws.String(pk),
+			},
+			dbc.SortKey: {
+				S: aws.String(sk),
+			},
+		},
+		ReturnValues:     aws.String("UPDATED_NEW"),
+		UpdateExpression: aws.String("set #stat = :r"),
+	}
+
+	_, err := dbc.DBService.UpdateItem(input)
+	if err != nil {
+		return fmt.Errorf("error update item - %w", err)
+	}
+
+	return nil
+}
+
 func InterfaceSlice(slice interface{}) []interface{} {
 	s := reflect.ValueOf(slice)
 	if s.Kind() != reflect.Slice {

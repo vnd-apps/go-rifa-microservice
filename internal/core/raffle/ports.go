@@ -12,4 +12,5 @@ type Repo interface {
 	GetAll(ctx context.Context) ([]Raffle, error)
 	GetByID(ctx context.Context, id string) (Raffle, error)
 	GetProduct(ctx context.Context, id string) (Raffle, error)
+	UpdateItems(ctx context.Context, itens []Variation) error
 }

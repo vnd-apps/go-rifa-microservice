@@ -29,7 +29,7 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (Order, err
 		ID:            u.uuid.Generate(),
 		ProductID:     model.ProductID,
 		Items:         model.Items,
-		UserID:        "GUID",
+		UserID:        "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
 		PaymentMethod: PIX,
 	}
 
@@ -49,10 +49,6 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (Order, err
 		}
 	}
 
-	if err != nil {
-		return order, err
-	}
-
 	for _, v := range order.Items {
 		if !checkAvaliability(raffleItem.Variation, v) {
 			return order, errUnavaliable
@@ -64,9 +60,14 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (Order, err
 		return order, err
 	}
 
+	err = u.updateItemStatus(ctx, &raffleItem)
+	if err != nil {
+		return order, err
+	}
+
 	order.Total = len(order.Items) * raffleItem.UnitPrice
 
-	_, err = u.orderRepo.CreateOrder(ctx, model)
+	_, err = u.orderRepo.CreateOrder(ctx, &order)
 	if err != nil {
 		return order, err
 	}
@@ -82,4 +83,17 @@ func checkAvaliability(s []raffle.Variation, e int) bool {
 	}
 
 	return false
+}
+
+func (u *PlaceOrderUseCase) updateItemStatus(ctx context.Context, s *raffle.Raffle) error {
+	for _, v := range s.Variation {
+		v.Status = raffle.Pending
+	}
+
+	err := u.raffleRepo.UpdateItems(ctx, s.Variation)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

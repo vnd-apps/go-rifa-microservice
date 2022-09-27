@@ -138,6 +138,19 @@ func (r *RaffleRepo) GetProduct(ctx context.Context, id string) (raffle.Raffle, 
 	return DynamoToProduct(dynamoRaffleRec), nil
 }
 
+func (r *RaffleRepo) UpdateItems(ctx context.Context, items []raffle.Variation) error {
+	for i := range items {
+		dynRaffleItem := RaffleItemToDynamoItem(&items[i])
+
+		err := r.db.Update(string(items[i].Status), dynRaffleItem.PK, dynRaffleItem.SK)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func DynamoToProduct(dynamoRaffleRec []DynamoRecRaffle) raffle.Raffle {
 	var raffleResult raffle.Raffle
 
