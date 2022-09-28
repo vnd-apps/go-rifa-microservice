@@ -1,11 +1,8 @@
 package order
 
 type Request struct {
-	ID            string
-	ProductID     string
-	Total         int
-	PaymentMethod PaymentMethod
-	Items         []int
+	ProductID string `json:"productID" binding:"required" example:"30dd879c-ee2f-11db-8314-0800200c9a66"`
+	Items     []int  `json:"numbers" binding:"required" example:"1,2"`
 }
 
 type Order struct {

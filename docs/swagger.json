@@ -212,24 +212,24 @@
     "definitions": {
         "order.Request": {
             "type": "object",
+            "required": [
+                "numbers",
+                "productID"
+            ],
             "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "items": {
+                "numbers": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
-                },
-                "paymentMethod": {
-                    "type": "string"
+                    },
+                    "example": [
+                        1,
+                        2
+                    ]
                 },
                 "productID": {
-                    "type": "string"
-                },
-                "total": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "30dd879c-ee2f-11db-8314-0800200c9a66"
                 }
             }
         },

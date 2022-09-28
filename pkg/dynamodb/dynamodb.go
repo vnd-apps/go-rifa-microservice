@@ -79,7 +79,6 @@ func (dbc *DynamoConfig) Update(item, pk, sk string) error {
 				S: aws.String(sk),
 			},
 		},
-		ReturnValues:     aws.String("UPDATED_NEW"),
 		UpdateExpression: aws.String("set #stat = :r"),
 	}
 

@@ -60,9 +60,11 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (Order, err
 		return order, err
 	}
 
-	err = u.updateItemStatus(ctx, &raffleItem)
-	if err != nil {
-		return order, err
+	for _, v := range order.Items {
+		err = u.updateItemStatus(ctx, &raffleItem, v)
+		if err != nil {
+			return order, err
+		}
 	}
 
 	order.Total = len(order.Items) * raffleItem.UnitPrice
@@ -78,16 +80,18 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (Order, err
 func checkAvaliability(s []raffle.Variation, e int) bool {
 	for _, a := range s {
 		if a.Number == e && a.Status != raffle.Available {
-			return true
+			return false
 		}
 	}
 
-	return false
+	return true
 }
 
-func (u *PlaceOrderUseCase) updateItemStatus(ctx context.Context, s *raffle.Raffle) error {
-	for _, v := range s.Variation {
-		v.Status = raffle.Pending
+func (u *PlaceOrderUseCase) updateItemStatus(ctx context.Context, s *raffle.Raffle, v int) error {
+	for i := range s.Variation {
+		if s.Variation[i].Number == v {
+			s.Variation[i].Status = raffle.Pending
+		}
 	}
 
 	err := u.raffleRepo.UpdateItems(ctx, s.Variation)

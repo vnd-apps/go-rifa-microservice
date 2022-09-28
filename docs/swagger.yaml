@@ -2,18 +2,19 @@ basePath: /v1
 definitions:
   order.Request:
     properties:
-      id:
-        type: string
-      items:
+      numbers:
+        example:
+        - 1
+        - 2
         items:
           type: integer
         type: array
-      paymentMethod:
-        type: string
       productID:
+        example: 30dd879c-ee2f-11db-8314-0800200c9a66
         type: string
-      total:
-        type: integer
+    required:
+    - numbers
+    - productID
     type: object
   raffle.Raffle:
     properties:
