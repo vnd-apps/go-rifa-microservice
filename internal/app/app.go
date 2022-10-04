@@ -35,6 +35,7 @@ type Context struct {
 	cfg        *config.Config
 	rafflerepo raffle.Repo
 	logger     *logger.Logger
+	db         *db.DynamoConfig
 }
 
 func NewContext() *Context {
@@ -96,7 +97,11 @@ func (c *Context) PixPayment() order.PixPayment {
 }
 
 func (c *Context) DB() *db.DynamoConfig {
-	return db.NewDynamoDB(DBTableConfigName, DBTableConfigPK, DBTableConfigSK)
+	if c.db == nil {
+		c.db = db.NewDynamoDB(DBTableConfigName, DBTableConfigPK, DBTableConfigSK)
+	}
+
+	return c.db
 }
 
 func (c *Context) Config() *config.Config {

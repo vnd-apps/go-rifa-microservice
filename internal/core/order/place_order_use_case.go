@@ -91,6 +91,8 @@ func (u *PlaceOrderUseCase) updateItemStatus(ctx context.Context, s *raffle.Raff
 	for i := range s.Variation {
 		if s.Variation[i].Number == v {
 			s.Variation[i].Status = raffle.Pending
+
+			break
 		}
 	}
 

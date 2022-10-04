@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
 
 const (
@@ -18,7 +19,7 @@ const (
 )
 
 type DynamoConfig struct {
-	DBService  *dynamodb.DynamoDB
+	DBService  dynamodbiface.DynamoDBAPI
 	PrimaryKey string
 	SortKey    string
 	TableName  string
