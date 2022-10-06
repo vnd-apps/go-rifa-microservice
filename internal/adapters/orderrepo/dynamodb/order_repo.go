@@ -35,7 +35,7 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Order) (order.Ord
 func (r *OrderRepo) GetUserOrders(ctx context.Context, pid string) ([]order.Order, error) {
 	results := []order.Order{}
 
-	err := r.db.GetAllItems(fmt.Sprintf(OrderPK, pid, pid), &results)
+	err := r.db.Query(fmt.Sprintf(OrderPK, pid, pid), &results)
 	if err != nil {
 		return []order.Order{}, err
 	}

@@ -88,15 +88,16 @@ func checkAvaliability(s []raffle.Variation, e int) bool {
 }
 
 func (u *PlaceOrderUseCase) updateItemStatus(ctx context.Context, s *raffle.Raffle, v int) error {
+	updateVariation := make([]raffle.Variation, 0)
+
 	for i := range s.Variation {
 		if s.Variation[i].Number == v {
 			s.Variation[i].Status = raffle.Pending
-
-			break
+			updateVariation = append(updateVariation, s.Variation[i])
 		}
 	}
 
-	err := u.raffleRepo.UpdateItems(ctx, s.Variation)
+	err := u.raffleRepo.UpdateItems(ctx, updateVariation)
 	if err != nil {
 		return err
 	}
