@@ -38,15 +38,8 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (Order, err
 		return order, err
 	}
 
-	if raffleItem.UserLimit != 0 {
-		existingOrder, errGet := u.orderRepo.GetUserOrders(ctx, order.ProductID)
-		if err != nil {
-			return order, errGet
-		}
-
-		if existingOrder != nil {
-			return order, errReachedLimit
-		}
+	if u.hasUserLimit(raffleItem.UserLimit) && u.hasOrder(ctx, &order) {
+		return order, errReachedLimit
 	}
 
 	for _, v := range order.Items {
@@ -103,4 +96,21 @@ func (u *PlaceOrderUseCase) updateItemStatus(ctx context.Context, s *raffle.Raff
 	}
 
 	return nil
+}
+
+func (u *PlaceOrderUseCase) hasUserLimit(userLimit int) bool {
+	return userLimit != 0
+}
+
+func (u *PlaceOrderUseCase) hasOrder(ctx context.Context, order *Order) bool {
+	existingOrder, errGet := u.orderRepo.GetUserOrders(ctx, order.ProductID)
+	if errGet != nil {
+		return false
+	}
+
+	if existingOrder != nil {
+		return true
+	}
+
+	return false
 }
