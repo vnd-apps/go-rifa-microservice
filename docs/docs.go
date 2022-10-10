@@ -416,8 +416,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/v1",
 	Schemes:          []string{},
-	Title:            "Go Clean Template API",
-	Description:      "Using a translation service as an example",
+	Title:            "Go Rifa Microservice",
+	Description:      "Microservice for Rifa",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

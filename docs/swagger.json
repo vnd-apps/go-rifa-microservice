@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Using a translation service as an example",
-        "title": "Go Clean Template API",
+        "description": "Microservice for Rifa",
+        "title": "Go Rifa Microservice",
         "contact": {},
         "version": "1.0"
     },
