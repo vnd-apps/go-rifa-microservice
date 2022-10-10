@@ -22,8 +22,9 @@ type DynamoConfig struct {
 }
 
 const (
-	maxBatch int    = 25
-	status   string = "Status"
+	maxBatch      int    = 25
+	status        string = "Status"
+	errorMarshall string = "Couldn't unmarshal response. Here's why: %v"
 )
 
 func NewDynamoDB(tn, pk, sk string) *DynamoConfig {
@@ -73,7 +74,7 @@ func Chunk(array []interface{}, chunkSize int) [][]interface{} {
 func (dbc *DynamoConfig) Save(prop interface{}) (interface{}, error) {
 	av, err := attributevalue.MarshalMap(prop)
 	if err != nil {
-		log.Printf("Couldn't unmarshal response. Here's why: %v\n", err)
+		log.Printf(errorMarshall, err)
 
 		return nil, err
 	}
@@ -100,7 +101,7 @@ func (dbc *DynamoConfig) SaveMany(data interface{}) error {
 		for _, item := range dataArray {
 			av, err := attributevalue.MarshalMap(item)
 			if err != nil {
-				log.Printf("Couldn't unmarshal response. Here's why: %v\n", err)
+				log.Printf(errorMarshall, err)
 
 				return err
 			}
@@ -130,7 +131,7 @@ func (dbc *DynamoConfig) SaveMany(data interface{}) error {
 func (dbc *DynamoConfig) Delete(prop interface{}) (interface{}, error) {
 	av, err := attributevalue.MarshalMap(prop)
 	if err != nil {
-		log.Printf("Couldn't unmarshal response. Here's why: %v\n", err)
+		log.Printf(errorMarshall, err)
 
 		return nil, err
 	}
@@ -174,7 +175,7 @@ func (dbc *DynamoConfig) Get(pk, sk string, data interface{}) error {
 
 	err = attributevalue.UnmarshalMap(response.Item, &data)
 	if err != nil {
-		log.Printf("Couldn't unmarshal response. Here's why: %v\n", err)
+		log.Printf(errorMarshall, err)
 
 		return err
 	}
@@ -277,14 +278,14 @@ func (dbc *DynamoConfig) Query(pk string, data interface{}) error {
 		KeyConditionExpression:    expr.KeyCondition(),
 	})
 	if err != nil {
-		log.Printf("Couldn't query for pk = %v. Here's why: %v\n", pk, err)
+		log.Printf("Couldn't query for pk = %v. Here's why: %v\n", keyEx, err)
 
 		return err
 	}
 
 	err = attributevalue.UnmarshalListOfMaps(response.Items, &data)
 	if err != nil {
-		log.Printf("Couldn't unmarshal query response. Here's why: %v\n", err)
+		log.Printf(errorMarshall, err)
 
 		return err
 	}
@@ -321,7 +322,7 @@ func (dbc *DynamoConfig) QueryByGSI(value, indexName, indexPk string, data inter
 
 	err = attributevalue.UnmarshalListOfMaps(response.Items, &data)
 	if err != nil {
-		log.Printf("Couldn't unmarshal query response. Here's why: %v\n", err)
+		log.Printf(errorMarshall, err)
 
 		return err
 	}
