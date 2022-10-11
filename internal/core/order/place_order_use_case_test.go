@@ -50,6 +50,22 @@ func TestCreateOrder(t *testing.T) {
 		require.Nil(t, res)
 	})
 
+	t.Run("Given a product with user Limit, it returns error since the user is buying more then allowed", func(t *testing.T) {
+		t.Parallel()
+
+		repo.EXPECT().CreateOrder(context.Background(), order.Order{}).Return(order.Order{}, nil)
+		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{}, nil)
+		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{UserLimit: 1}, nil)
+		raffleRepo.EXPECT().UpdateItems(gomock.Any(), gomock.Any()).Return(nil)
+		pix.EXPECT().GeneratePix().Return(order.Pix{}, nil)
+
+		expectederr := order.ErrReachedLimit
+
+		res, err := orderUseCase.Run(context.Background(), &order.Request{Items: []int{1, 2}})
+		require.Error(t, expectederr, err)
+		require.Nil(t, res)
+	})
+
 	t.Run("Given a product without user Limit, it returns a order", func(t *testing.T) {
 		t.Parallel()
 
