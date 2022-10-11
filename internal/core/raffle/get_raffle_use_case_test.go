@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	mock_raffle "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/mock_raffle"
+	mock_raffle "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
 )

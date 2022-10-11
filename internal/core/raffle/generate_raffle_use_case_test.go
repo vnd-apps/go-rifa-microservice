@@ -8,7 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/idgenerator"
-	mock_raffle "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/mock_raffle"
+	mock_raffle "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
 )

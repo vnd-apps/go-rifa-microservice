@@ -1,55 +1,74 @@
 basePath: /v1
 definitions:
-  orderRequest:
+  order.Request:
     properties:
       numbers:
+        example:
+        - 1
+        - 2
         items:
           type: integer
         type: array
       productID:
+        example: 30dd879c-ee2f-11db-8314-0800200c9a66
         type: string
     required:
     - numbers
     - productID
     type: object
-  raffleRaffle:
+  raffle.Raffle:
     properties:
       description:
+        example: Rifa description
         type: string
       id:
+        example: 61f0c143ad06223fa03910b0
         type: string
       imageURL:
+        example: "1"
         type: string
       name:
+        example: Rifa
         type: string
       quantity:
+        example: 10
         type: integer
       slug:
+        example: butterfly-32
         type: string
       sortedNumber:
+        example: 10
         type: integer
       status:
+        example: open
         type: string
       unitPrice:
+        example: 5
         type: integer
       userLimit:
+        example: 10
         type: integer
       variation:
         items:
-          $ref: '#/definitions/raffleVariation'
+          $ref: '#/definitions/raffle.Variation'
         type: array
     type: object
-  raffleRequest:
+  raffle.Request:
     properties:
       description:
+        example: Rifa
         type: string
       imageURL:
+        example: "1"
         type: string
       name:
+        example: Rifa
         type: string
       quantity:
+        example: 10
         type: integer
       unitPrice:
+        example: 5
         type: integer
     required:
     - description
@@ -58,18 +77,22 @@ definitions:
     - quantity
     - unitPrice
     type: object
-  raffleVariation:
+  raffle.Variation:
     properties:
       id:
+        example: 61f0c143ad06223fa03910b0
         type: string
       name:
+        example: Number
         type: string
       number:
+        example: 5
         type: integer
       status:
+        example: paid
         type: string
     type: object
-  skinItem:
+  skin.Item:
     properties:
       icon_url:
         type: string
@@ -78,34 +101,36 @@ definitions:
       name:
         type: string
     type: object
-  skinSkin:
+  skin.Skin:
     properties:
       id:
         type: string
       items:
         items:
-          $ref: '#/definitions/skinItem'
+          $ref: '#/definitions/skin.Item'
         type: array
       steam_id:
         type: string
     type: object
-  v1availableResponse:
+  v1.availableResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/raffleRaffle'
+          $ref: '#/definitions/raffle.Raffle'
         type: array
     type: object
-  v1doSteamRequest:
+  v1.doSteamRequest:
     properties:
       steam_id:
+        example: "894012849024820948209"
         type: string
     required:
     - steam_id
     type: object
-  v1response:
+  v1.response:
     properties:
       error:
+        example: message
         type: string
     type: object
 host: localhost:8080
@@ -113,7 +138,7 @@ info:
   contact: {}
   description: Microservice for Rifa
   title: Go Rifa Microservice
-  version: "10"
+  version: "1.0"
 paths:
   /order/:
     post:
@@ -127,22 +152,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/orderRequest'
+          $ref: '#/definitions/order.Request'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
       summary: Create
       tags:
       - order
@@ -158,11 +183,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/v1availableResponse'
+            $ref: '#/definitions/v1.availableResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
       summary: Show raffles
       tags:
       - raffle
@@ -177,22 +202,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/raffleRequest'
+          $ref: '#/definitions/raffle.Request'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
       summary: Create
       tags:
       - raffle
@@ -208,11 +233,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/v1availableResponse'
+            $ref: '#/definitions/v1.availableResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
       summary: Show raffles
       tags:
       - raffle
@@ -228,23 +253,23 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/v1doSteamRequest'
+          $ref: '#/definitions/v1.doSteamRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/skinSkin'
+            $ref: '#/definitions/skin.Skin'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1response'
+            $ref: '#/definitions/v1.response'
       summary: Create
       tags:
       - steam
-swagger: "20"
+swagger: "2.0"
