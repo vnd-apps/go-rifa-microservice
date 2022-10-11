@@ -6,17 +6,18 @@ import (
 
 	"github.com/golang/mock/gomock"
 
+	mock_raffle "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/mock_raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
 )
 
-func getRaffleUseCase(t *testing.T) (*raffle.GetRaffleUseCase, *MockRepo) {
+func getRaffleUseCase(t *testing.T) (*raffle.GetRaffleUseCase, *mock_raffle.MockRepo) {
 	t.Helper()
 
 	mockCtl := gomock.NewController(t)
 	defer mockCtl.Finish()
 
-	repo := NewMockRepo(mockCtl)
+	repo := mock_raffle.NewMockRepo(mockCtl)
 
 	getRaffleUseCase := raffle.NewGetRaffleUseCase(repo)
 
