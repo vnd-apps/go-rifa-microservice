@@ -38,6 +38,9 @@ func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
 // @Failure     500 {object} response
 // @Router      /order/ [post].
 func (r *orderRoutes) doPost(c *gin.Context) {
+	token := c.Request.Header["Authorization"]
+	r.logger.Info(token[1])
+
 	var request order.Request
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.logger.Error(err, "http - v1 - createOrder")
