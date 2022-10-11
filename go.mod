@@ -10,7 +10,7 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
-	github.com/ilyakaznacheev/cleanenv v1.3.0
+	github.com/ilyakaznacheev/cleanenv v1.4.0
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/prometheus/client_golang v1.13.0
 	github.com/rs/zerolog v1.28.0
