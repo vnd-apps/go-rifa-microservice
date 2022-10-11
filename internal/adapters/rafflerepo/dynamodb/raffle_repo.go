@@ -102,7 +102,7 @@ func (r *RaffleRepo) Create(ctx context.Context, rm *raffle.Raffle) error {
 func (r *RaffleRepo) GetAll(ctx context.Context) ([]raffle.Raffle, error) {
 	results := []DynamoRecRaffle{}
 
-	err := r.db.FindByGsi(productType, GSI1PKIndex, GSI1PK, &results)
+	err := r.db.QueryByGSI(productType, GSI1PKIndex, GSI1PK, &results)
 	if err != nil {
 		return nil, err
 	}
@@ -130,12 +130,28 @@ func (r *RaffleRepo) GetByID(ctx context.Context, id string) (raffle.Raffle, err
 func (r *RaffleRepo) GetProduct(ctx context.Context, id string) (raffle.Raffle, error) {
 	dynamoRaffleRec := []DynamoRecRaffle{}
 
-	err := r.db.GetAllItems(id, &dynamoRaffleRec)
+	err := r.db.Query(id, &dynamoRaffleRec)
 	if err != nil {
 		return raffle.Raffle{}, err
 	}
 
 	return DynamoToProduct(dynamoRaffleRec), nil
+}
+
+func (r *RaffleRepo) UpdateItems(ctx context.Context, items []raffle.Variation) error {
+	itemsSK := make([]string, len(items))
+
+	for i := range items {
+		dynRaffleItem := RaffleItemToDynamoItem(&items[i])
+		itemsSK[i] = dynRaffleItem.SK
+	}
+
+	err := r.db.UpdateMany(items[0].ID, string(raffle.Pending), itemsSK)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func DynamoToProduct(dynamoRaffleRec []DynamoRecRaffle) raffle.Raffle {

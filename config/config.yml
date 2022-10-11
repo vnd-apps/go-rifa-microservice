@@ -1,5 +1,5 @@
 app:
-  name: 'go-clean-template'
+  name: 'go-rifa-microservice'
   version: '1.0.0'
 
 http:
@@ -7,15 +7,4 @@ http:
 
 logger:
   log_level: 'debug'
-  rollbar_env: 'go-clean-template'
-
-postgres:
-  pool_max: 2
-
-mongodb:
-  database: 'db-rifas'
-
-rabbitmq:
-  rpc_server_exchange: 'rpc_server'
-  rpc_client_exchange: 'rpc_client'
-  rpc_pub_exchange: 'pub_skins'
+  rollbar_env: 'go-rifa-microservice'

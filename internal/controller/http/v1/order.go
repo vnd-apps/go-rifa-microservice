@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -38,6 +39,9 @@ func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
 // @Failure     500 {object} response
 // @Router      /order/ [post].
 func (r *orderRoutes) doPost(c *gin.Context) {
+	token := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
+	r.logger.Info(token)
+
 	var request order.Request
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.logger.Error(err, "http - v1 - createOrder")

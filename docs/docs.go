@@ -219,24 +219,24 @@ const docTemplate = `{
     "definitions": {
         "order.Request": {
             "type": "object",
+            "required": [
+                "numbers",
+                "productID"
+            ],
             "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "items": {
+                "numbers": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
-                },
-                "paymentMethod": {
-                    "type": "string"
+                    },
+                    "example": [
+                        1,
+                        2
+                    ]
                 },
                 "productID": {
-                    "type": "string"
-                },
-                "total": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "30dd879c-ee2f-11db-8314-0800200c9a66"
                 }
             }
         },
@@ -416,8 +416,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/v1",
 	Schemes:          []string{},
-	Title:            "Go Clean Template API",
-	Description:      "Using a translation service as an example",
+	Title:            "Go Rifa Microservice",
+	Description:      "Microservice for Rifa",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

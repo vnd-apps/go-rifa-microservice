@@ -1,63 +1,44 @@
-// Package mongodb implements mongodb connection.
 package db
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"reflect"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-)
-
-const (
-	notFound      = "NOT FOUND, %w"
-	failedMarshal = "failed to unmarshal record, %w"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 type DynamoConfig struct {
-	DBService  *dynamodb.DynamoDB
+	DBService  *dynamodb.Client
 	PrimaryKey string
 	SortKey    string
 	TableName  string
 }
 
 const (
-	maxBatch = 25
+	maxBatch      int    = 25
+	status        string = "Status"
+	errorMarshall string = "Couldn't unmarshal response. Here's why: %v"
 )
 
 func NewDynamoDB(tn, pk, sk string) *DynamoConfig {
-	dbSession := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
+	dbCfg, err := config.LoadDefaultConfig(context.TODO(), config.WithSharedConfigProfile(config.DefaultSharedConfigProfile))
+	if err != nil {
+		log.Fatalf("Unable to LoadDB")
+	}
 
 	return &DynamoConfig{
-		DBService:  dynamodb.New(dbSession),
+		DBService:  dynamodb.NewFromConfig(dbCfg),
 		PrimaryKey: pk,
 		SortKey:    sk,
 		TableName:  tn,
 	}
-}
-
-func (dbc *DynamoConfig) Save(prop interface{}) (interface{}, error) {
-	av, err := dynamodbattribute.MarshalMap(prop)
-	if err != nil {
-		return nil, fmt.Errorf(failedMarshal, err)
-	}
-
-	input := &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: aws.String(dbc.TableName),
-	}
-
-	_, err = dbc.DBService.PutItem(input)
-	if err != nil {
-		return nil, fmt.Errorf("error saving item - put - %w", err)
-	}
-
-	return prop, err
 }
 
 func InterfaceSlice(slice interface{}) []interface{} {
@@ -90,32 +71,55 @@ func Chunk(array []interface{}, chunkSize int) [][]interface{} {
 	return divided
 }
 
+func (dbc *DynamoConfig) Save(prop interface{}) (interface{}, error) {
+	av, err := attributevalue.MarshalMap(prop)
+	if err != nil {
+		log.Printf(errorMarshall, err)
+
+		return nil, err
+	}
+
+	input := &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String(dbc.TableName),
+	}
+
+	_, err = dbc.DBService.PutItem(context.TODO(), input)
+	if err != nil {
+		return nil, fmt.Errorf("error saving item - put - %w", err)
+	}
+
+	return prop, err
+}
+
 func (dbc *DynamoConfig) SaveMany(data interface{}) error {
 	batches := Chunk(InterfaceSlice(data), maxBatch)
 
 	for _, dataArray := range batches {
-		items := make([]*dynamodb.WriteRequest, len(dataArray))
+		items := []types.WriteRequest{}
 
-		for i, item := range dataArray {
-			av, err := dynamodbattribute.MarshalMap(item)
+		for _, item := range dataArray {
+			av, err := attributevalue.MarshalMap(item)
 			if err != nil {
-				return fmt.Errorf(failedMarshal, err)
+				log.Printf(errorMarshall, err)
+
+				return err
 			}
 
-			items[i] = &dynamodb.WriteRequest{
-				PutRequest: &dynamodb.PutRequest{
+			items = append(items, types.WriteRequest{
+				PutRequest: &types.PutRequest{
 					Item: av,
 				},
-			}
+			})
 		}
 
 		bwii := &dynamodb.BatchWriteItemInput{
-			RequestItems: map[string][]*dynamodb.WriteRequest{
+			RequestItems: map[string][]types.WriteRequest{
 				dbc.TableName: items,
 			},
 		}
 
-		_, err := dbc.DBService.BatchWriteItem(bwii)
+		_, err := dbc.DBService.BatchWriteItem(context.TODO(), bwii)
 		if err != nil {
 			return fmt.Errorf("error savemany - batchwrite - %w", err)
 		}
@@ -125,9 +129,11 @@ func (dbc *DynamoConfig) SaveMany(data interface{}) error {
 }
 
 func (dbc *DynamoConfig) Delete(prop interface{}) (interface{}, error) {
-	av, err := dynamodbattribute.MarshalMap(prop)
+	av, err := attributevalue.MarshalMap(prop)
 	if err != nil {
-		return nil, fmt.Errorf(failedMarshal, err)
+		log.Printf(errorMarshall, err)
+
+		return nil, err
 	}
 
 	input := &dynamodb.DeleteItemInput{
@@ -135,7 +141,7 @@ func (dbc *DynamoConfig) Delete(prop interface{}) (interface{}, error) {
 		TableName: aws.String(dbc.TableName),
 	}
 
-	_, err = dbc.DBService.DeleteItem(input)
+	_, err = dbc.DBService.DeleteItem(context.TODO(), input)
 	if err != nil {
 		return nil, fmt.Errorf("error delete - deleteitem - %w", err)
 	}
@@ -144,122 +150,181 @@ func (dbc *DynamoConfig) Delete(prop interface{}) (interface{}, error) {
 }
 
 func (dbc *DynamoConfig) Get(pk, sk string, data interface{}) error {
-	av := map[string]*dynamodb.AttributeValue{
-		dbc.PrimaryKey: {
-			S: aws.String(pk),
-		},
+	primaryKey := map[string]string{
+		dbc.PrimaryKey: pk,
 	}
 
 	if sk != "" {
-		av[dbc.SortKey] = &dynamodb.AttributeValue{
-			S: aws.String(sk),
-		}
+		primaryKey[dbc.SortKey] = sk
 	}
 
-	result, err := dbc.DBService.GetItem(&dynamodb.GetItemInput{
+	key, err := attributevalue.MarshalMap(primaryKey)
+	if err != nil {
+		return err
+	}
+
+	response, err := dbc.DBService.GetItem(context.TODO(), &dynamodb.GetItemInput{
+		Key:       key,
 		TableName: aws.String(dbc.TableName),
-		Key:       av,
 	})
 	if err != nil {
-		return fmt.Errorf(notFound, err)
+		log.Printf("Couldn't get info about. Here's why: %v\n", err)
+
+		return err
 	}
 
-	err = dynamodbattribute.UnmarshalMap(result.Item, data)
+	err = attributevalue.UnmarshalMap(response.Item, &data)
 	if err != nil {
-		return fmt.Errorf(failedMarshal, err)
+		log.Printf(errorMarshall, err)
+
+		return err
 	}
 
 	return err
 }
 
-func (dbc *DynamoConfig) FindStartingWith(pk, value string, data interface{}) error {
-	queryInput := &dynamodb.QueryInput{
-		TableName: aws.String(dbc.TableName),
-		KeyConditions: map[string]*dynamodb.Condition{
-			dbc.PrimaryKey: {
-				ComparisonOperator: aws.String("EQ"),
-				AttributeValueList: []*dynamodb.AttributeValue{
-					{
-						S: aws.String(pk),
-					},
-				},
-			},
-			dbc.SortKey: {
-				ComparisonOperator: aws.String("BEGINS_WITH"),
-				AttributeValueList: []*dynamodb.AttributeValue{
-					{
-						S: aws.String(value),
-					},
-				},
-			},
-		},
+func (dbc *DynamoConfig) Update(item, pk, sk string) error {
+	primaryKey := map[string]string{
+		dbc.PrimaryKey: pk,
+		dbc.SortKey:    sk,
 	}
 
-	result, err := dbc.DBService.Query(queryInput)
+	key, err := attributevalue.MarshalMap(primaryKey)
 	if err != nil {
-		return fmt.Errorf(notFound, err)
+		return err
 	}
 
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
+	upd := expression.
+		Set(expression.Name(status), expression.Value(item))
+
+	expr, err := expression.NewBuilder().WithUpdate(upd).Build()
 	if err != nil {
-		return fmt.Errorf(failedMarshal, err)
+		return err
+	}
+
+	input := &dynamodb.UpdateItemInput{
+		TableName:                 &dbc.TableName,
+		Key:                       key,
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		UpdateExpression:          expr.Update(),
+	}
+
+	_, err = dbc.DBService.UpdateItem(context.TODO(), input)
+
+	return err
+}
+
+func (dbc *DynamoConfig) UpdateMany(pk, value string, sks []string) error {
+	upd := expression.
+		Set(expression.Name(status), expression.Value(value))
+
+	expr, errBuilder := expression.NewBuilder().WithUpdate(upd).Build()
+	if errBuilder != nil {
+		return errBuilder
+	}
+
+	transactItems := make([]types.TransactWriteItem, len(sks))
+
+	for idx, itemID := range sks {
+		primaryKey := map[string]string{
+			dbc.PrimaryKey: pk,
+			dbc.SortKey:    itemID,
+		}
+
+		key, err := attributevalue.MarshalMap(primaryKey)
+		if err != nil {
+			return err
+		}
+
+		update := types.Update{
+			TableName:                 aws.String(dbc.TableName),
+			Key:                       key,
+			ExpressionAttributeNames:  expr.Names(),
+			ExpressionAttributeValues: expr.Values(),
+			UpdateExpression:          expr.Update(),
+		}
+		transactItems[idx] = types.TransactWriteItem{Update: &update}
+	}
+
+	_, err := dbc.DBService.TransactWriteItems(context.TODO(), &dynamodb.TransactWriteItemsInput{
+		TransactItems: transactItems,
+	})
+	if err != nil {
+		return err
 	}
 
 	return err
 }
 
-func (dbc *DynamoConfig) FindByGsi(value, indexName, indexPk string, data interface{}) error {
-	queryInput := &dynamodb.QueryInput{
-		TableName: aws.String(dbc.TableName),
-		IndexName: aws.String(indexName),
-		KeyConditions: map[string]*dynamodb.Condition{
-			indexPk: {
-				ComparisonOperator: aws.String("EQ"),
-				AttributeValueList: []*dynamodb.AttributeValue{
-					{
-						S: aws.String(value),
-					},
-				},
-			},
-		},
+func (dbc *DynamoConfig) Query(pk string, data interface{}) error {
+	var err error
+
+	var response *dynamodb.QueryOutput
+
+	keyEx := expression.Key(dbc.PrimaryKey).Equal(expression.Value(pk))
+
+	expr, err := expression.NewBuilder().WithKeyCondition(keyEx).Build()
+	if err != nil {
+		log.Printf("Couldn't build epxression for query. Here's why: %v\n", err)
+
+		return err
 	}
 
-	result, err := dbc.DBService.Query(queryInput)
+	response, err = dbc.DBService.Query(context.TODO(), &dynamodb.QueryInput{
+		TableName:                 aws.String(dbc.TableName),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		KeyConditionExpression:    expr.KeyCondition(),
+	})
 	if err != nil {
-		return fmt.Errorf(notFound, err)
+		log.Printf("Couldn't query for pk = %v. Here's why: %v\n", keyEx, err)
+
+		return err
 	}
 
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
+	err = attributevalue.UnmarshalListOfMaps(response.Items, &data)
 	if err != nil {
-		return fmt.Errorf(failedMarshal, err)
+		log.Printf(errorMarshall, err)
+
+		return err
 	}
 
 	return err
 }
 
-func (dbc *DynamoConfig) GetAllItems(pk string, data interface{}) error {
-	queryInput := &dynamodb.QueryInput{
-		TableName: aws.String(dbc.TableName),
-		KeyConditions: map[string]*dynamodb.Condition{
-			dbc.PrimaryKey: {
-				ComparisonOperator: aws.String("EQ"),
-				AttributeValueList: []*dynamodb.AttributeValue{
-					{
-						S: aws.String(pk),
-					},
-				},
-			},
-		},
+func (dbc *DynamoConfig) QueryByGSI(value, indexName, indexPk string, data interface{}) error {
+	var err error
+
+	var response *dynamodb.QueryOutput
+
+	keyEx := expression.Key(indexPk).Equal(expression.Value(value))
+
+	expr, err := expression.NewBuilder().WithKeyCondition(keyEx).Build()
+	if err != nil {
+		log.Printf("Couldn't build epxression for query. Here's why: %v\n", err)
+
+		return err
 	}
 
-	result, err := dbc.DBService.Query(queryInput)
+	response, err = dbc.DBService.Query(context.TODO(), &dynamodb.QueryInput{
+		TableName:                 aws.String(dbc.TableName),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		KeyConditionExpression:    expr.KeyCondition(),
+		IndexName:                 &indexName,
+	})
 	if err != nil {
-		return fmt.Errorf(notFound, err)
+		log.Printf("Couldn't query for GSI = %v. Here's why: %v\n", indexName, err)
+
+		return err
 	}
 
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, data)
+	err = attributevalue.UnmarshalListOfMaps(response.Items, &data)
 	if err != nil {
-		return fmt.Errorf(failedMarshal, err)
+		log.Printf(errorMarshall, err)
+
+		return err
 	}
 
 	return err

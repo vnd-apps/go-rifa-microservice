@@ -17,10 +17,10 @@ import (
 
 // NewRouter -.
 // Swagger spec:
-// @title       Go Clean Template API
-// @description Using a translation service as an example
-// @version     1.0
-// @host        localhost:8080
+// @Title       Go Rifa Microservice
+// @description Microservice for Rifa
+// @Version     1.0
+// @Host        localhost:8080
 // @BasePath    /v1
 // End.
 func NewRouter(handler *gin.Engine, l logger.Interface, u *UseCases) {
