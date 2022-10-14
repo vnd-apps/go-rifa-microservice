@@ -35,13 +35,14 @@ func TestCreateOrder(t *testing.T) {
 
 	orderUseCase, repo, raffleRepo, pix := placeOrderUseCase(t)
 
+	repo.EXPECT().CreateOrder(context.Background(), gomock.Any()).AnyTimes().Return(order.Order{}, nil)
+	pix.EXPECT().GeneratePix().AnyTimes().Return(order.Pix{}, nil)
+
 	t.Run("Given a product with user Limit, it returns error since the user has order", func(t *testing.T) {
 		t.Parallel()
 
-		repo.EXPECT().CreateOrder(context.Background(), order.Order{}).Return(order.Order{}, nil)
 		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{{ID: "ID2"}, {ID: "ID2"}}, nil)
 		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{UserLimit: 1}, nil)
-		pix.EXPECT().GeneratePix().Return(order.Pix{}, nil)
 
 		expectederr := order.ErrReachedLimit
 
@@ -53,11 +54,9 @@ func TestCreateOrder(t *testing.T) {
 	t.Run("Given a product with user Limit, it returns error since the user is buying more then allowed", func(t *testing.T) {
 		t.Parallel()
 
-		repo.EXPECT().CreateOrder(context.Background(), order.Order{}).Return(order.Order{}, nil)
 		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{}, nil)
 		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{UserLimit: 1}, nil)
 		raffleRepo.EXPECT().UpdateItems(gomock.Any(), gomock.Any()).Return(nil)
-		pix.EXPECT().GeneratePix().Return(order.Pix{}, nil)
 
 		expectederr := order.ErrReachedLimit
 
@@ -69,10 +68,8 @@ func TestCreateOrder(t *testing.T) {
 	t.Run("Given a product without user Limit, it returns a order", func(t *testing.T) {
 		t.Parallel()
 
-		repo.EXPECT().CreateOrder(context.Background(), gomock.Any()).Return(order.Order{}, nil)
 		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{{ID: "ID2"}, {ID: "ID2"}}, nil)
 		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{}, nil)
-		pix.EXPECT().GeneratePix().Return(order.Pix{}, nil)
 
 		res, err := orderUseCase.Run(context.Background(), &order.Request{})
 		require.Nil(t, err)
