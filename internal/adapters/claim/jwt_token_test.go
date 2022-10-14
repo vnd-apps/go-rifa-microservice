@@ -7,15 +7,15 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
 )
 
-func TestUUIDGenerator(t *testing.T) {
+func TestGetUserNameToken(t *testing.T) {
 	t.Parallel()
-	t.Run("It generates a v4 uuid", func(t *testing.T) {
+	t.Run("It return an username given a jwt token", func(t *testing.T) {
 		t.Parallel()
 		token := ""
 		claims, err := claim.NewClaims().GetUsername(token)
 		if err != nil {
 			assert.NotNil(t, err)
 		}
-		assert.Nil(t, claims)
+		assert.NotNil(t, claims)
 	})
 }

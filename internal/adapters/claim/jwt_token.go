@@ -3,7 +3,6 @@ package claim
 import (
 	"context"
 	"errors"
-	"log"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -59,20 +58,21 @@ func (c *CognitoClaims) GetUsername(tokenString string) (*string, error) {
 	})
 	if err != nil {
 		// This place can throw expiration error
-		log.Printf("token problem: %s", err)
+		return nil, errInvalidToken
 	}
 
 	// Check if token is valid
 	if !token.Valid {
-		log.Println("token is invalid")
+		return nil, errInvalidToken
 	}
 
 	return &cognitoClaims.Username, nil
 }
 
 var (
-	errSignIn      = errors.New("unexpected signing method")
-	errKID         = errors.New("kid header not found")
-	errKeyNotFound = errors.New("key not found")
-	errTokenKey    = errors.New("failed to create token key")
+	errSignIn       = errors.New("unexpected signing method")
+	errKID          = errors.New("kid header not found")
+	errKeyNotFound  = errors.New("key not found")
+	errTokenKey     = errors.New("failed to create token key")
+	errInvalidToken = errors.New("token is invalid or expired")
 )
