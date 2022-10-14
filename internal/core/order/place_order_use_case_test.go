@@ -2,36 +2,28 @@ package order_test
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/idgenerator"
-	mock_raffle "github.com/evmartinelli/go-rifa-microservice/internal/core/mock"
+	mock_order "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/order"
+	mock_raffle "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
-	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
 )
 
-type test struct {
-	name string
-	mock func()
-	err  error
-}
-
-var errReachedLimit = errors.New("user reached the limit")
-
-func placeOrderUseCase(t *testing.T) (uc *order.PlaceOrderUseCase, or *MockRepo, rr *mock_raffle.MockRepo, p *MockPixPayment) {
+func placeOrderUseCase(t *testing.T) (uc *order.PlaceOrderUseCase, or *mock_order.MockRepo, rr *mock_raffle.MockRepo, p *mock_order.MockPixPayment) {
 	t.Helper()
 
 	mockCtl := gomock.NewController(t)
 	defer mockCtl.Finish()
 
-	orderRepo := NewMockRepo(mockCtl)
+	orderRepo := mock_order.NewMockRepo(mockCtl)
 	raffleRepo := mock_raffle.NewMockRepo(mockCtl)
 	uuid := idgenerator.NewUUIDGenerator()
-	pix := NewMockPixPayment(mockCtl)
+	pix := mock_order.NewMockPixPayment(mockCtl)
 
 	placeOrderUseCase := order.NewPlaceOrderUseCase(orderRepo, raffleRepo, pix, uuid)
 
@@ -43,29 +35,44 @@ func TestCreateOrder(t *testing.T) {
 
 	orderUseCase, repo, raffleRepo, pix := placeOrderUseCase(t)
 
-	tests := []test{
-		{
-			name: "User Reached Limit",
-			mock: func() {
-				repo.EXPECT().CreateOrder(context.Background(), order.Order{}).Return(order.Order{}, nil)
-				repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{}, nil)
-				raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{UserLimit: 1}, nil)
-				pix.EXPECT().GeneratePix().Return(order.Pix{}, nil)
-			},
-			err: errReachedLimit,
-		},
-	}
+	repo.EXPECT().CreateOrder(context.Background(), gomock.Any()).AnyTimes().Return(order.Order{}, nil)
+	pix.EXPECT().GeneratePix().AnyTimes().Return(order.Pix{}, nil)
 
-	for _, tc := range tests {
-		tc := tc
+	t.Run("Given a product with user Limit, it returns error since the user has order", func(t *testing.T) {
+		t.Parallel()
 
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
+		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{{ID: "ID2"}, {ID: "ID2"}}, nil)
+		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{UserLimit: 1}, nil)
 
-			tc.mock()
-			res, err := orderUseCase.Run(context.Background(), &order.Request{})
-			assert.NotNil(t, err)
-			assert.NotNil(t, res)
-		})
-	}
+		expectederr := order.ErrReachedLimit
+
+		res, err := orderUseCase.Run(context.Background(), &order.Request{})
+		require.Error(t, expectederr, err)
+		require.Nil(t, res)
+	})
+
+	t.Run("Given a product with user Limit, it returns error since the user is buying more then allowed", func(t *testing.T) {
+		t.Parallel()
+
+		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{}, nil)
+		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{UserLimit: 1}, nil)
+		raffleRepo.EXPECT().UpdateItems(gomock.Any(), gomock.Any()).Return(nil)
+
+		expectederr := order.ErrReachedLimit
+
+		res, err := orderUseCase.Run(context.Background(), &order.Request{Items: []int{1, 2}})
+		require.Error(t, expectederr, err)
+		require.Nil(t, res)
+	})
+
+	t.Run("Given a product without user Limit, it returns a order", func(t *testing.T) {
+		t.Parallel()
+
+		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{{ID: "ID2"}, {ID: "ID2"}}, nil)
+		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{}, nil)
+
+		res, err := orderUseCase.Run(context.Background(), &order.Request{})
+		require.Nil(t, err)
+		require.Contains(t, res.PaymentMethod, "pix")
+	})
 }

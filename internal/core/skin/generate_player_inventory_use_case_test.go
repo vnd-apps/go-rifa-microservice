@@ -5,8 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 
+	mock_skin "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/skin"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
 )
@@ -20,14 +21,14 @@ type test struct {
 
 var errInternalServErr = errors.New("internal server error")
 
-func generatePlayerInventory(t *testing.T) (*skin.PlayerInventoryUseCase, *MockPlayerSkinRepo, *MockSteamWebAPI) {
+func generatePlayerInventory(t *testing.T) (*skin.PlayerInventoryUseCase, *mock_skin.MockPlayerSkinRepo, *mock_skin.MockSteamWebAPI) {
 	t.Helper()
 
 	mockCtl := gomock.NewController(t)
 	defer mockCtl.Finish()
 
-	repo := NewMockPlayerSkinRepo(mockCtl)
-	webapi := NewMockSteamWebAPI(mockCtl)
+	repo := mock_skin.NewMockPlayerSkinRepo(mockCtl)
+	webapi := mock_skin.NewMockSteamWebAPI(mockCtl)
 
 	playerInventoryUseCase := skin.NewPlayerInventoryUseCase(repo, webapi)
 

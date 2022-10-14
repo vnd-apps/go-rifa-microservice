@@ -2,7 +2,6 @@ package order
 
 import (
 	"context"
-	"errors"
 
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/shared"
@@ -15,17 +14,12 @@ type PlaceOrderUseCase struct {
 	uuid       shared.UUIDGenerator
 }
 
-var (
-	errReachedLimit = errors.New("user reached the limit")
-	errUnavaliable  = errors.New("item unavailable")
-)
-
 func NewPlaceOrderUseCase(orderRepo Repo, raffleRepo raffle.Repo, pixPayment PixPayment, uuid shared.UUIDGenerator) *PlaceOrderUseCase {
 	return &PlaceOrderUseCase{orderRepo: orderRepo, raffleRepo: raffleRepo, pixPayment: pixPayment, uuid: uuid}
 }
 
-func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (Order, error) {
-	order := Order{
+func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (*Order, error) {
+	order := &Order{
 		ID:            u.uuid.Generate(),
 		ProductID:     model.ProductID,
 		Items:         model.Items,
@@ -35,38 +29,38 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (Order, err
 
 	raffleItem, err := u.raffleRepo.GetProduct(ctx, order.ProductID)
 	if err != nil {
-		return order, err
+		return nil, err
 	}
 
 	if u.hasUserLimit(raffleItem.UserLimit) {
-		if u.hasOrder(ctx, &order, raffleItem.UserLimit) {
-			return order, errReachedLimit
+		if u.hasOrder(ctx, order, raffleItem.UserLimit) {
+			return nil, ErrReachedLimit
 		}
 	}
 
 	for _, v := range order.Items {
 		if !checkAvaliability(raffleItem.Variation, v) {
-			return order, errUnavaliable
+			return nil, ErrUnavaliable
 		}
 	}
 
 	order.Pix, err = u.pixPayment.GeneratePix()
 	if err != nil {
-		return order, err
+		return nil, err
 	}
 
 	for _, v := range order.Items {
 		err = u.updateItemStatus(ctx, &raffleItem, v)
 		if err != nil {
-			return order, err
+			return nil, err
 		}
 	}
 
 	order.Total = len(order.Items) * raffleItem.UnitPrice
 
-	_, err = u.orderRepo.CreateOrder(ctx, &order)
+	_, err = u.orderRepo.CreateOrder(ctx, order)
 	if err != nil {
-		return order, err
+		return nil, err
 	}
 
 	return order, nil

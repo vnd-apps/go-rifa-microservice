@@ -8,6 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/idgenerator"
+	mock_raffle "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
 )
@@ -21,13 +22,13 @@ type test struct {
 
 var errInternalServErr = errors.New("internal server error")
 
-func generateRaffleUseCase(t *testing.T) (*raffle.GenerateRaffleUseCase, *MockRepo) {
+func generateRaffleUseCase(t *testing.T) (*raffle.GenerateRaffleUseCase, *mock_raffle.MockRepo) {
 	t.Helper()
 
 	mockCtl := gomock.NewController(t)
 	defer mockCtl.Finish()
 
-	repo := NewMockRepo(mockCtl)
+	repo := mock_raffle.NewMockRepo(mockCtl)
 	uuid := idgenerator.NewUUIDGenerator()
 	slug := idgenerator.NewSlugGenerator()
 

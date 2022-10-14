@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-//go:generate mockgen -source=ports.go -destination=../mock/mock_raffle_repo.go
+//go:generate mockgen -source=ports.go -destination=../mock/raffle/mock_raffle.go
 
 type Repo interface {
 	Create(ctx context.Context, raffle *Raffle) error
