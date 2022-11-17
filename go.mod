@@ -25,7 +25,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.25 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.19 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.26 // indirect
-	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.13.20 // indirect
+	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.13.24 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.19 // indirect
@@ -51,9 +51,9 @@ require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.17.10
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.10.0
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.10.4
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.4.26
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.17.3
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.17.5
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
