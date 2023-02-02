@@ -52,7 +52,7 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.18.10
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.10.10
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.4.36
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.4.37
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.18.1
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
