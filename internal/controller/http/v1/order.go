@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/claim"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
@@ -39,9 +40,6 @@ func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
 // @Failure     500 {object} response
 // @Router      /order/ [post].
 func (r *orderRoutes) doPost(c *gin.Context) {
-	token := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
-	r.logger.Info(token)
-
 	var request order.Request
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.logger.Error(err, "http - v1 - createOrder")
@@ -50,7 +48,17 @@ func (r *orderRoutes) doPost(c *gin.Context) {
 		return
 	}
 
-	res, err := r.useCases.PlaceOrder.Run(c.Request.Context(), &request)
+	token := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
+
+	UserID, err := claim.NewClaims().GetUsername(token)
+	if err != nil {
+		r.logger.Error(err, "http - v1 - createOrder")
+		errorResponse(c, http.StatusUnauthorized, "invalid token")
+
+		return
+	}
+
+	res, err := r.useCases.PlaceOrder.Run(c.Request.Context(), &request, *UserID)
 	if err != nil {
 		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusInternalServerError, "raffle service problems")

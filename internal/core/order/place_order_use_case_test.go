@@ -46,7 +46,7 @@ func TestCreateOrder(t *testing.T) {
 
 		expectederr := order.ErrReachedLimit
 
-		res, err := orderUseCase.Run(context.Background(), &order.Request{})
+		res, err := orderUseCase.Run(context.Background(), &order.Request{}, "")
 		require.Error(t, expectederr, err)
 		require.Nil(t, res)
 	})
@@ -60,7 +60,7 @@ func TestCreateOrder(t *testing.T) {
 
 		expectederr := order.ErrReachedLimit
 
-		res, err := orderUseCase.Run(context.Background(), &order.Request{Items: []int{1, 2}})
+		res, err := orderUseCase.Run(context.Background(), &order.Request{Items: []int{1, 2}}, "")
 		require.Error(t, expectederr, err)
 		require.Nil(t, res)
 	})
@@ -71,7 +71,7 @@ func TestCreateOrder(t *testing.T) {
 		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{{ID: "ID2"}, {ID: "ID2"}}, nil)
 		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{}, nil)
 
-		res, err := orderUseCase.Run(context.Background(), &order.Request{})
+		res, err := orderUseCase.Run(context.Background(), &order.Request{}, "")
 		require.Nil(t, err)
 		require.Contains(t, res.PaymentMethod, "pix")
 	})

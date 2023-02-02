@@ -18,13 +18,13 @@ func NewPlaceOrderUseCase(orderRepo Repo, raffleRepo raffle.Repo, pixPayment Pix
 	return &PlaceOrderUseCase{orderRepo: orderRepo, raffleRepo: raffleRepo, pixPayment: pixPayment, uuid: uuid}
 }
 
-func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (*Order, error) {
+func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, userID string) (*Order, error) {
 	order := &Order{
 		ID:            u.uuid.Generate(),
 		ProductID:     model.ProductID,
 		Items:         model.Items,
-		UserID:        "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
 		PaymentMethod: PIX,
+		UserID:        userID,
 	}
 
 	raffleItem, err := u.raffleRepo.GetProduct(ctx, order.ProductID)
