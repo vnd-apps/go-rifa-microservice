@@ -1,102 +1,169 @@
 package logger
 
 import (
-	"fmt"
-	"os"
-	"strings"
+	"context"
+	"io"
+	"time"
 
-	"github.com/rs/zerolog"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	gormlogger "gorm.io/gorm/logger"
 )
 
-// Interface -.
-type Interface interface {
-	Debug(message interface{}, args ...interface{})
-	Info(message string, args ...interface{})
-	Warn(message string, args ...interface{})
-	Error(message interface{}, args ...interface{})
-	Fatal(message interface{}, args ...interface{})
-}
-
-// Logger -.
 type Logger struct {
-	logger *zerolog.Logger
+	*zap.SugaredLogger
 }
 
-var _ Interface = (*Logger)(nil)
+type GormLogger struct {
+	*Logger
+	gormlogger.Config
+}
 
-// New -.
-func New(level string) *Logger {
-	var l zerolog.Level
+type FxLogger struct {
+	*Logger
+}
 
-	switch strings.ToLower(level) {
-	case "error":
-		l = zerolog.ErrorLevel
-	case "warn":
-		l = zerolog.WarnLevel
-	case "info":
-		l = zerolog.InfoLevel
-	case "debug":
-		l = zerolog.DebugLevel
-	default:
-		l = zerolog.InfoLevel
+type GinLogger struct {
+	*Logger
+}
+
+func NewLogger(logLevel, env string) *Logger {
+	config := zap.NewProductionConfig()
+
+	if env == "dev" {
+		config = zap.NewDevelopmentConfig()
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	}
 
-	zerolog.SetGlobalLevel(l)
+	var level zapcore.Level
 
-	skipFrameCount := 3
-	logger := zerolog.New(os.Stdout).With().Timestamp().CallerWithSkipFrameCount(zerolog.CallerSkipFrameCount + skipFrameCount).Logger()
+	switch logLevel {
+	case "debug":
+		level = zapcore.DebugLevel
+	case "info":
+		level = zapcore.InfoLevel
+	case "warn":
+		level = zapcore.WarnLevel
+	case "error":
+		level = zapcore.ErrorLevel
+	case "fatal":
+		level = zapcore.FatalLevel
+	default:
+		level = zap.PanicLevel
+	}
+
+	config.Level.SetLevel(level)
+
+	zapLogger, err := config.Build()
+	if err != nil {
+		panic("Failed to create logger")
+	}
+
+	globalLog := zapLogger.Sugar()
 
 	return &Logger{
-		logger: &logger,
+		SugaredLogger: globalLog,
 	}
 }
 
-// Debug -.
-func (l *Logger) Debug(message interface{}, args ...interface{}) {
-	l.msg("debug", message, args...)
-}
-
-// Info -.
-func (l *Logger) Info(message string, args ...interface{}) {
-	l.log(message, args...)
-}
-
-// Warn -.
-func (l *Logger) Warn(message string, args ...interface{}) {
-	l.log(message, args...)
-}
-
-// Error -.
-func (l *Logger) Error(message interface{}, args ...interface{}) {
-	if l.logger.GetLevel() == zerolog.DebugLevel {
-		l.Debug(message, args...)
-	}
-
-	l.msg("error", message, args...)
-}
-
-// Fatal -.
-func (l *Logger) Fatal(message interface{}, args ...interface{}) {
-	l.msg("fatal", message, args...)
-
-	os.Exit(1)
-}
-
-func (l *Logger) log(message string, args ...interface{}) {
-	if len(args) == 0 {
-		l.logger.Info().Msg(message)
-	} else {
-		l.logger.Info().Msgf(message, args...)
+func newSugaredLogger(logger *zap.Logger) *Logger {
+	return &Logger{
+		SugaredLogger: logger.Sugar(),
 	}
 }
 
-func (l *Logger) msg(level string, message interface{}, args ...interface{}) {
-	switch msg := message.(type) {
-	case error:
-		l.log(msg.Error(), args...)
-	case string:
-		l.log(msg, args...)
-	default:
-		l.log(fmt.Sprintf("%s message %v has unknown type %v", level, message, msg), args...)
+func (l *Logger) GetGormLogger() gormlogger.Interface {
+	skipFrameCount := 3
+
+	logger := l.WithOptions(
+		zap.AddCaller(),
+		zap.AddCallerSkip(skipFrameCount),
+	).Desugar()
+
+	return &GormLogger{
+		Logger: newSugaredLogger(logger),
+		Config: gormlogger.Config{
+			LogLevel: gormlogger.Info,
+		},
 	}
+}
+
+func (l *Logger) GetGinLogger() io.Writer {
+	logger := l.WithOptions(
+		zap.WithCaller(false),
+	).Desugar()
+
+	return GinLogger{
+		Logger: newSugaredLogger(logger),
+	}
+}
+
+// ------ GORM logger interface implementation -----
+
+func (l *GormLogger) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
+	newlogger := *l
+	newlogger.LogLevel = level
+
+	return &newlogger
+}
+
+func (l GormLogger) Info(ctx context.Context, str string, args ...interface{}) {
+	if l.LogLevel >= gormlogger.Info {
+		l.Debugf(str, args...)
+	}
+}
+
+func (l GormLogger) Warn(ctx context.Context, str string, args ...interface{}) {
+	if l.LogLevel >= gormlogger.Warn {
+		l.Warnf(str, args...)
+	}
+}
+
+func (l GormLogger) Error(ctx context.Context, str string, args ...interface{}) {
+	if l.LogLevel >= gormlogger.Error {
+		l.Errorf(str, args...)
+	}
+}
+
+func (l GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
+	if l.LogLevel <= 0 {
+		return
+	}
+
+	elapsed := time.Since(begin)
+
+	if l.LogLevel >= gormlogger.Info {
+		sql, rows := fc()
+		l.Debug("[", elapsed.Milliseconds(), " ms, ", rows, " rows] ", "sql -> ", sql)
+
+		return
+	}
+
+	if l.LogLevel >= gormlogger.Warn {
+		sql, rows := fc()
+		l.SugaredLogger.Warn("[", elapsed.Milliseconds(), " ms, ", rows, " rows] ", "sql -> ", sql)
+
+		return
+	}
+
+	if l.LogLevel >= gormlogger.Error {
+		sql, rows := fc()
+		l.SugaredLogger.Error("[", elapsed.Milliseconds(), " ms, ", rows, " rows] ", "sql -> ", sql)
+
+		return
+	}
+}
+
+func (l FxLogger) Printf(str string, args ...interface{}) {
+	if len(args) > 0 {
+		l.Debugf(str, args)
+	}
+
+	l.Debug(str)
+}
+
+func (l GinLogger) Write(p []byte) (n int, err error) {
+	l.Info(string(p))
+
+	return len(p), nil
 }

@@ -7,4 +7,5 @@ http:
 
 logger:
   log_level: 'debug'
+  log_env: 'dev'
   rollbar_env: 'go-rifa-microservice'

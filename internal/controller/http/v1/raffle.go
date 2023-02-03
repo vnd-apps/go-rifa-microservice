@@ -11,10 +11,10 @@ import (
 
 type raffleRoutes struct {
 	useCases *UseCases
-	logger   logger.Interface
+	logger   *logger.Logger
 }
 
-func newRaffleRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
+func newRaffleRoutes(handler *gin.RouterGroup, l *logger.Logger, u *UseCases) {
 	r := &raffleRoutes{
 		useCases: u,
 		logger:   l,

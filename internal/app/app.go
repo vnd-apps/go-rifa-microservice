@@ -151,7 +151,7 @@ func (c *Context) signal(httpServer *httpserver.Server) {
 
 func (c *Context) Logger() *logger.Logger {
 	if c.logger == nil {
-		c.logger = logger.New(c.cfg.Log.Level)
+		c.logger = logger.NewLogger(c.cfg.Log.Level, c.cfg.Log.Environment)
 	}
 
 	return c.logger

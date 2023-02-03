@@ -23,11 +23,11 @@ import (
 // @Host        localhost:8080
 // @BasePath    /v1
 // End.
-func NewRouter(handler *gin.Engine, l logger.Interface, u *UseCases) {
+func NewRouter(handler *gin.Engine, l *logger.Logger, u *UseCases) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
-	handler.Use(customlogger.RequestLoggerMiddleware(l))
+	handler.Use(customlogger.RequestLoggerMiddleware(*l))
 
 	// Swagger
 	swaggerHandler := ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "DISABLE_SWAGGER_HTTP_HANDLER")
