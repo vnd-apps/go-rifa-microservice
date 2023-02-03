@@ -9,7 +9,7 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
-func RequestLoggerMiddleware(l logger.Logger) gin.HandlerFunc {
+func RequestLoggerMiddleware(l *logger.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var buf bytes.Buffer
 		tee := io.TeeReader(c.Request.Body, &buf)
