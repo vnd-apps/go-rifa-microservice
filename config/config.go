@@ -12,6 +12,7 @@ type (
 		App  `yaml:"app"`
 		HTTP `yaml:"http"`
 		Log  `yaml:"logger"`
+		DB   `yaml:"postgres"`
 	}
 
 	// App -.
@@ -29,6 +30,11 @@ type (
 	Log struct {
 		Level       string `env-required:"true" yaml:"log_level" env:"LOG_LEVEL"`
 		Environment string `env-required:"true" yaml:"log_env"   env:"LOG_ENV"`
+	}
+
+	DB struct {
+		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
+		URL     string `env-required:"true"                 env:"PG_URL"`
 	}
 )
 

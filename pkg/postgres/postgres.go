@@ -1,4 +1,4 @@
-package lib
+package db
 
 import (
 	"gorm.io/driver/postgres"
@@ -18,7 +18,7 @@ type Database struct {
 	*gorm.DB
 }
 
-func NewDatabase(url string, log logger.Logger) Database {
+func NewDatabase(url string, log *logger.Logger) *Database {
 	log.Info("opening db connection")
 
 	db, err := gorm.Open(postgres.Open(url), &gorm.Config{Logger: log.GetGormLogger()})
@@ -38,7 +38,7 @@ func NewDatabase(url string, log logger.Logger) Database {
 	sqlDB.SetMaxOpenConns(maxOpenConns)
 	sqlDB.SetConnMaxLifetime(connMaxLifetime)
 
-	return Database{
+	return &Database{
 		DB: db,
 	}
 }

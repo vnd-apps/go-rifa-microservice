@@ -9,3 +9,6 @@ logger:
   log_level: 'debug'
   log_env: 'dev'
   rollbar_env: 'go-rifa-microservice'
+
+postgres:
+  pool_max: 2

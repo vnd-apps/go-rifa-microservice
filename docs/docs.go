@@ -240,9 +240,34 @@ const docTemplate = `{
                 }
             }
         },
+        "raffle.Numbers": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "61f0c143ad06223fa03910b0"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Number"
+                },
+                "number": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "status": {
+                    "type": "string",
+                    "example": "paid"
+                }
+            }
+        },
         "raffle.Raffle": {
             "type": "object",
             "properties": {
+                "PrizeDrawNumber": {
+                    "type": "integer",
+                    "example": 10
+                },
                 "description": {
                     "type": "string",
                     "example": "Rifa description"
@@ -259,6 +284,12 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Rifa"
                 },
+                "numbers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/raffle.Numbers"
+                    }
+                },
                 "quantity": {
                     "type": "integer",
                     "example": 10
@@ -266,10 +297,6 @@ const docTemplate = `{
                 "slug": {
                     "type": "string",
                     "example": "butterfly-32"
-                },
-                "sortedNumber": {
-                    "type": "integer",
-                    "example": 10
                 },
                 "status": {
                     "type": "string",
@@ -282,12 +309,6 @@ const docTemplate = `{
                 "userLimit": {
                     "type": "integer",
                     "example": 10
-                },
-                "variation": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/raffle.Variation"
-                    }
                 }
             }
         },
@@ -320,27 +341,6 @@ const docTemplate = `{
                 "unitPrice": {
                     "type": "integer",
                     "example": 5
-                }
-            }
-        },
-        "raffle.Variation": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string",
-                    "example": "61f0c143ad06223fa03910b0"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "Number"
-                },
-                "number": {
-                    "type": "integer",
-                    "example": 5
-                },
-                "status": {
-                    "type": "string",
-                    "example": "paid"
                 }
             }
         },
