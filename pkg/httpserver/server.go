@@ -66,3 +66,7 @@ func (s *Server) Shutdown() error {
 
 	return s.server.Shutdown(ctx)
 }
+
+func (s *Server) Start() error {
+	return s.server.ListenAndServe()
+}
