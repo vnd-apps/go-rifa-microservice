@@ -11,7 +11,7 @@ type Order struct {
 	ID            string
 	ProductID     string
 	UserID        string
-	Total         int
+	Total         float32
 	PaymentMethod PaymentMethod
 	Items         []int
 	Pix           Pix

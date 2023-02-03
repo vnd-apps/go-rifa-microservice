@@ -3,11 +3,11 @@
 package raffle
 
 type Request struct {
-	Name        string `json:"name" binding:"required" example:"Rifa"`
-	Description string `json:"description" binding:"required" example:"Rifa"`
-	ImageURL    string `json:"imageURL" binding:"required" example:"1"`
-	UnitPrice   int    `json:"unitPrice" binding:"required" example:"5"`
-	Quantity    int    `json:"quantity" binding:"required" example:"10"`
+	Name        string  `json:"name" binding:"required" example:"Rifa"`
+	Description string  `json:"description" binding:"required" example:"Rifa"`
+	ImageURL    string  `json:"imageURL" binding:"required" example:"1"`
+	UnitPrice   float32 `json:"unitPrice" binding:"required" example:"5"`
+	Quantity    int     `json:"quantity" binding:"required" example:"10"`
 }
 
 type Raffle struct {
@@ -17,7 +17,7 @@ type Raffle struct {
 	Slug            string    `json:"slug"  example:"butterfly-32"`
 	Status          Status    `json:"status"  example:"open"`
 	ImageURL        string    `json:"imageURL"  example:"1"`
-	UnitPrice       int       `json:"unitPrice"  example:"5"`
+	UnitPrice       float32   `json:"unitPrice"  example:"5"`
 	UserLimit       int       `json:"userLimit,omitempty"  example:"10"`
 	Quantity        int       `json:"quantity"  example:"10"`
 	PrizeDrawNumber int       `json:"PrizeDrawNumber,omitempty"  example:"10"`

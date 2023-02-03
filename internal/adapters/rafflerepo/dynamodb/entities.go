@@ -11,7 +11,7 @@ type DynamoRaffle struct {
 	Status       string
 	ImageURL     string
 	ItemType     string
-	UnitPrice    int
+	UnitPrice    float32
 	Quantity     int
 	UserLimit    int
 	SortedNumber int
@@ -38,7 +38,7 @@ type DynamoRecRaffle struct {
 	Status       string
 	ImageURL     string
 	ItemType     string
-	UnitPrice    int
+	UnitPrice    float32
 	Quantity     int
 	UserLimit    int
 	SortedNumber int

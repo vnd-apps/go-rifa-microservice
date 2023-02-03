@@ -56,7 +56,7 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, userID stri
 		}
 	}
 
-	order.Total = len(order.Items) * raffleItem.UnitPrice
+	order.Total = float32(len(order.Items)) * raffleItem.UnitPrice
 
 	_, err = u.orderRepo.CreateOrder(ctx, order)
 	if err != nil {

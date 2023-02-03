@@ -7,7 +7,7 @@ type DynamoOrder struct {
 	ID            string
 	ProductID     string
 	UserID        string
-	Total         int
+	Total         float32
 	PaymentMethod string
 	Items         []int
 	Pix           struct {

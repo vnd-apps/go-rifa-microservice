@@ -59,9 +59,18 @@ mock: ### run mockery
 .PHONY: mock
 
 migrate-create:  ### create new migration
-	migrate create -ext sql -dir migrations 'migrate_name'
+	migrate create -ext sql -dir db/migration 'migrate_name'
 .PHONY: migrate-create
 
+db_url ?= postgres://user:pass@localhost:5432/dev_db?sslmode=disable
+
 migrate-up: ### migration up
-	migrate -path migrations -database '$(PG_URL)?sslmode=disable' up
+	migrate -path db/migration -database $(db_url) up
 .PHONY: migrate-up
+
+migrate-down: ### migration down
+	migrate -path db/migration -database $(db_url) down
+.PHONY: migrate-down
+
+install_golang_migrate:
+	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
