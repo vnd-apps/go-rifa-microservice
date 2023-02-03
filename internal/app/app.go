@@ -131,7 +131,6 @@ func (c *Context) signal(httpServer *httpserver.Server) {
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-
 	select {
 	case s := <-interrupt:
 		c.Logger().Info("app - Run - signal: " + s.String())
