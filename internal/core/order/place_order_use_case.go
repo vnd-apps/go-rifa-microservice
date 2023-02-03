@@ -39,7 +39,7 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, userID stri
 	}
 
 	for _, v := range order.Items {
-		if !checkAvaliability(raffleItem.Variation, v) {
+		if !checkAvaliability(raffleItem.Numbers, v) {
 			return nil, ErrUnavaliable
 		}
 	}
@@ -66,7 +66,7 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, userID stri
 	return order, nil
 }
 
-func checkAvaliability(s []raffle.Variation, e int) bool {
+func checkAvaliability(s []raffle.Numbers, e int) bool {
 	for _, a := range s {
 		if a.Number == e && a.Status != raffle.Available {
 			return false
@@ -77,12 +77,12 @@ func checkAvaliability(s []raffle.Variation, e int) bool {
 }
 
 func (u *PlaceOrderUseCase) updateItemStatus(ctx context.Context, s *raffle.Raffle, v int) error {
-	updateVariation := make([]raffle.Variation, 0)
+	updateVariation := make([]raffle.Numbers, 0)
 
-	for i := range s.Variation {
-		if s.Variation[i].Number == v {
-			s.Variation[i].Status = raffle.Pending
-			updateVariation = append(updateVariation, s.Variation[i])
+	for i := range s.Numbers {
+		if s.Numbers[i].Number == v {
+			s.Numbers[i].Status = raffle.Pending
+			updateVariation = append(updateVariation, s.Numbers[i])
 		}
 	}
 

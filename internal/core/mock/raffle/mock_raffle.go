@@ -95,7 +95,7 @@ func (mr *MockRepoMockRecorder) GetProduct(ctx, id interface{}) *gomock.Call {
 }
 
 // UpdateItems mocks base method.
-func (m *MockRepo) UpdateItems(ctx context.Context, itens []raffle.Variation) error {
+func (m *MockRepo) UpdateItems(ctx context.Context, itens []raffle.Numbers) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateItems", ctx, itens)
 	ret0, _ := ret[0].(error)

@@ -11,20 +11,20 @@ type Request struct {
 }
 
 type Raffle struct {
-	ID           string      `json:"id"  example:"61f0c143ad06223fa03910b0"`
-	Name         string      `json:"name"  example:"Rifa"`
-	Description  string      `json:"description"  example:"Rifa description"`
-	Slug         string      `json:"slug"  example:"butterfly-32"`
-	Status       Status      `json:"status"  example:"open"`
-	ImageURL     string      `json:"imageURL"  example:"1"`
-	UnitPrice    int         `json:"unitPrice"  example:"5"`
-	Quantity     int         `json:"quantity"  example:"10"`
-	UserLimit    int         `json:"userLimit,omitempty"  example:"10"`
-	SortedNumber int         `json:"sortedNumber,omitempty"  example:"10"`
-	Variation    []Variation `json:"variation,omitempty"`
+	ID              string    `json:"id"  example:"61f0c143ad06223fa03910b0"`
+	Name            string    `json:"name"  example:"Rifa"`
+	Description     string    `json:"description"  example:"Rifa description"`
+	Slug            string    `json:"slug"  example:"butterfly-32"`
+	Status          Status    `json:"status"  example:"open"`
+	ImageURL        string    `json:"imageURL"  example:"1"`
+	UnitPrice       int       `json:"unitPrice"  example:"5"`
+	UserLimit       int       `json:"userLimit,omitempty"  example:"10"`
+	Quantity        int       `json:"quantity"  example:"10"`
+	PrizeDrawNumber int       `json:"PrizeDrawNumber,omitempty"  example:"10"`
+	Numbers         []Numbers `json:"numbers,omitempty"`
 }
 
-type Variation struct {
+type Numbers struct {
 	ID     string     `json:"id"  example:"61f0c143ad06223fa03910b0"`
 	Number int        `json:"number"  example:"5"`
 	Name   string     `json:"name"  example:"Number"`

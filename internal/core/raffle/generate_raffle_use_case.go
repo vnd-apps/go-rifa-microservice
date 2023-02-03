@@ -26,13 +26,13 @@ func (uc *GenerateRaffleUseCase) Run(ctx context.Context, model *Raffle) error {
 	model.Status = Open
 
 	for i := 1; i <= model.Quantity; i++ {
-		a := Variation{
+		a := Numbers{
 			ID:     model.ID,
 			Number: i,
 			Name:   "Number",
 			Status: Available,
 		}
-		model.Variation = append(model.Variation, a)
+		model.Numbers = append(model.Numbers, a)
 	}
 
 	return uc.repo.Create(ctx, model)
