@@ -13,7 +13,7 @@ type Raffle struct {
 }
 
 type RaffleNumbers struct {
-	Slug   string
+	Slug   string `gorm:"column:raffle_slug"`
 	Number int
 	Status string
 }

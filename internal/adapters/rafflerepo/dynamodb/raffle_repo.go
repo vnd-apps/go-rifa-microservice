@@ -50,7 +50,7 @@ func RaffleItemToDynamoItem(r *raffle.Numbers) DynamoRaffleItem {
 		SK:       strconv.Itoa(r.Number),
 		ID:       r.ID,
 		Number:   r.Number,
-		Name:     r.Name,
+		Name:     r.Slug,
 		Status:   string(r.Status),
 		ItemType: productItemType,
 	}
@@ -75,7 +75,7 @@ func DynamoItemToRaffleItem(dyn *DynamoRecRaffle) raffle.Numbers {
 	return raffle.Numbers{
 		ID:     dyn.ID,
 		Number: dyn.Number,
-		Name:   dyn.Name,
+		Slug:   dyn.Slug,
 		Status: raffle.ItemStatus(dyn.Status),
 	}
 }

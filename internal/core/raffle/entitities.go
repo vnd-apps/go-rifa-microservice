@@ -27,7 +27,7 @@ type Raffle struct {
 type Numbers struct {
 	ID     string     `json:"id"  example:"61f0c143ad06223fa03910b0"`
 	Number int        `json:"number"  example:"5"`
-	Name   string     `json:"name"  example:"Number"`
+	Slug   string     `json:"name"  example:"Number"`
 	Status ItemStatus `json:"status"  example:"paid"`
 }
 

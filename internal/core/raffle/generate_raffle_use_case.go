@@ -29,7 +29,7 @@ func (uc *GenerateRaffleUseCase) Run(ctx context.Context, model *Raffle) error {
 		a := Numbers{
 			ID:     model.ID,
 			Number: i,
-			Name:   "Number",
+			Slug:   model.Slug,
 			Status: Available,
 		}
 		model.Numbers = append(model.Numbers, a)
