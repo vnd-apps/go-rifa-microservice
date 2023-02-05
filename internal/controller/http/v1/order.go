@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/claim"
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/shared/claim"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
