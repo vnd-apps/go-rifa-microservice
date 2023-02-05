@@ -15,8 +15,35 @@ func NewOrderRepo(db *postgres.Database) *OrderRepo {
 	return &OrderRepo{db}
 }
 
-func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Order) (order.Order, error) {
-	return order.Order{}, nil
+func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Order) error {
+	insertedOrder := &Order{
+		ProductID:     rm.ProductID,
+		UserID:        rm.UserID,
+		Total:         rm.Total,
+		PaymentMethod: string(rm.PaymentMethod),
+	}
+	tx := r.db.Begin()
+	tx.Create(&insertedOrder)
+
+	for _, v := range rm.Items {
+		tx.Create(&OrderItems{
+			OrderID: insertedOrder.ID,
+			Numbers: v,
+		})
+	}
+
+	tx.Create(&PixPayment{
+		OrderID:      insertedOrder.ID,
+		QRCode:       rm.Pix.QRCode,
+		QRCodeBase64: rm.Pix.QRCodeBase64,
+		Status:       rm.Pix.Status,
+	})
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *OrderRepo) GetUserOrders(ctx context.Context, pid string) ([]order.Order, error) {

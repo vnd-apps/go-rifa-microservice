@@ -303,7 +303,7 @@ const docTemplate = `{
                     "example": "open"
                 },
                 "unitPrice": {
-                    "type": "integer",
+                    "type": "number",
                     "example": 5
                 },
                 "userLimit": {
@@ -339,7 +339,7 @@ const docTemplate = `{
                     "example": 10
                 },
                 "unitPrice": {
-                    "type": "integer",
+                    "type": "number",
                     "example": 5
                 }
             }

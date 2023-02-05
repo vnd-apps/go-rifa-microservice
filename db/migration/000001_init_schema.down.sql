@@ -1,5 +1,4 @@
 BEGIN;
-
   DROP INDEX orders_raffle_slug_idx;
   DROP INDEX orders_user_id_idx;
   DROP TABLE order_items;

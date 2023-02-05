@@ -36,12 +36,11 @@ func (m *MockRepo) EXPECT() *MockRepoMockRecorder {
 }
 
 // CreateOrder mocks base method.
-func (m *MockRepo) CreateOrder(ctx context.Context, r *order.Order) (order.Order, error) {
+func (m *MockRepo) CreateOrder(ctx context.Context, r *order.Order) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateOrder", ctx, r)
-	ret0, _ := ret[0].(order.Order)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // CreateOrder indicates an expected call of CreateOrder.

@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS "orders"
   status varchar(255) NOT NULL
 );
 
-CREATE TABLE order_items (
+CREATE TABLE IF NOT EXISTS order_items (
   id serial PRIMARY KEY,
   order_id integer REFERENCES "orders"(id),
   number integer NOT NULL

@@ -59,7 +59,7 @@ mock: ### run mockery
 .PHONY: mock
 
 migrate-create:  ### create new migration
-	migrate create -ext sql -dir db/migration 'migrate_name'
+	migrate create -ext sql -dir db/migration -seq $(migrate_name)
 .PHONY: migrate-create
 
 db_url ?= postgres://user:pass@localhost:5432/dev_db?sslmode=disable

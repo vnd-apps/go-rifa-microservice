@@ -296,7 +296,7 @@
                     "example": "open"
                 },
                 "unitPrice": {
-                    "type": "integer",
+                    "type": "number",
                     "example": 5
                 },
                 "userLimit": {
@@ -332,7 +332,7 @@
                     "example": 10
                 },
                 "unitPrice": {
-                    "type": "integer",
+                    "type": "number",
                     "example": 5
                 }
             }
