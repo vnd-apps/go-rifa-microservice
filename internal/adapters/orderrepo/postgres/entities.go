@@ -1,20 +1,25 @@
 package postgres
 
+import "gorm.io/gorm"
+
 type Order struct {
-	ID            int64
-	ProductID     string
+	gorm.Model
+	RaffleSlug    string
 	UserID        string
 	Total         float32
-	PaymentMethod string
+	PaymentMethod int
+	Status        string
 }
 
 type OrderItems struct {
-	OrderID int64
-	Numbers int
+	gorm.Model
+	OrderID uint
+	Number  int
 }
 
 type PixPayment struct {
-	OrderID      int64
+	gorm.Model
+	OrderID      uint
 	Status       string
 	QRCode       string
 	QRCodeBase64 string

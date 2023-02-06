@@ -94,7 +94,18 @@ func (r *RaffleRepo) GetProduct(ctx context.Context, id string) (raffle.Raffle, 
 }
 
 func (r *RaffleRepo) UpdateItems(ctx context.Context, itens []raffle.Numbers) error {
-	panic("not implemented yet")
+	tx := r.db.Begin()
+	for _, v := range itens {
+		if err := tx.Where(&RaffleNumbers{Slug: v.Slug, Number: v.Number}).Updates(&RaffleNumbers{Status: string(raffle.Pending)}).Error; err != nil {
+			return err
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func ToRaffle(r *Raffle) raffle.Raffle {

@@ -17,10 +17,11 @@ func NewOrderRepo(db *postgres.Database) *OrderRepo {
 
 func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Order) error {
 	insertedOrder := &Order{
-		ProductID:     rm.ProductID,
+		RaffleSlug:    rm.ProductID,
 		UserID:        rm.UserID,
 		Total:         rm.Total,
-		PaymentMethod: string(rm.PaymentMethod),
+		PaymentMethod: int(rm.PaymentMethod),
+		Status:        rm.Status,
 	}
 	tx := r.db.Begin()
 	tx.Create(&insertedOrder)
@@ -28,7 +29,7 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Order) error {
 	for _, v := range rm.Items {
 		tx.Create(&OrderItems{
 			OrderID: insertedOrder.ID,
-			Numbers: v,
+			Number:  v,
 		})
 	}
 

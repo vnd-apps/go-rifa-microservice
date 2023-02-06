@@ -25,6 +25,7 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, userID stri
 		Items:         model.Items,
 		PaymentMethod: PIX,
 		UserID:        userID,
+		Status:        string(Created),
 	}
 
 	raffleItem, err := u.raffleRepo.GetProduct(ctx, order.ProductID)

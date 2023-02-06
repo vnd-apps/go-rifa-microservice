@@ -2,11 +2,9 @@ package v1
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/shared/claim"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
@@ -48,17 +46,9 @@ func (r *orderRoutes) doPost(c *gin.Context) {
 		return
 	}
 
-	token := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
+	UserID := "vnd-user-01"
 
-	UserID, err := claim.NewClaims().GetUsername(token)
-	if err != nil {
-		r.logger.Error(err, "http - v1 - createOrder")
-		errorResponse(c, http.StatusUnauthorized, "invalid token")
-
-		return
-	}
-
-	res, err := r.useCases.PlaceOrder.Run(c.Request.Context(), &request, *UserID)
+	res, err := r.useCases.PlaceOrder.Run(c.Request.Context(), &request, UserID)
 	if err != nil {
 		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusInternalServerError, "raffle service problems")

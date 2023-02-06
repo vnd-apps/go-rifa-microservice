@@ -52,7 +52,7 @@ func OrderToDynamo(o *order.Order) DynamoOrder {
 		ProductID:     o.ProductID,
 		UserID:        o.UserID,
 		Total:         o.Total,
-		PaymentMethod: string(o.PaymentMethod),
+		PaymentMethod: int(o.PaymentMethod),
 		Items:         o.Items,
 		Pix:           o.Pix,
 		ItemType:      ItemType,

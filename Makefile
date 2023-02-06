@@ -72,5 +72,9 @@ migrate-down: ### migration down
 	migrate -path db/migration -database $(db_url) down
 .PHONY: migrate-down
 
+db_force:
+	migrate -database $(db_url) -path db/migration force $(version)
+.PHONY: db_force
+
 install_golang_migrate:
 	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest

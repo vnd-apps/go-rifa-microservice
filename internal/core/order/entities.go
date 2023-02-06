@@ -15,6 +15,7 @@ type Order struct {
 	PaymentMethod PaymentMethod
 	Items         []int
 	Pix           Pix
+	Status        string
 }
 
 type Pix struct {
@@ -24,10 +25,21 @@ type Pix struct {
 	QRCodeBase64 string
 }
 
-type PaymentMethod string
+type (
+	PaymentMethod int
+	Status        string
+)
 
 const (
-	PIX = "pix"
+	Created Status = "created"
+	Paid    Status = "paid"
+)
+
+const (
+	PIX     = iota + 1 // 1
+	DEBIT              // 2
+	CREDIT             // 3
+	INVOICE            // 4
 )
 
 var (
