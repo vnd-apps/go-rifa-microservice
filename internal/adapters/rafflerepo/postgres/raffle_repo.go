@@ -37,7 +37,8 @@ func (r *RaffleRepo) Create(ctx context.Context, rm *raffle.Raffle) error {
 		})
 	}
 
-	if err := tx.Commit().Error; err != nil {
+	err := tx.Commit().Error
+	if err != nil {
 		return err
 	}
 
@@ -48,7 +49,8 @@ func (r *RaffleRepo) GetAll(ctx context.Context) ([]raffle.Raffle, error) {
 	var models []Raffle
 	raffleResults := make([]raffle.Raffle, 0, len(models))
 
-	if err := r.db.Where(&Raffle{Status: string(raffle.Open)}).Find(&models).Error; err != nil {
+	err := r.db.Where(&Raffle{Status: string(raffle.Open)}).Find(&models).Error
+	if err != nil {
 		return nil, err
 	}
 
@@ -62,7 +64,8 @@ func (r *RaffleRepo) GetAll(ctx context.Context) ([]raffle.Raffle, error) {
 func (r *RaffleRepo) GetByID(ctx context.Context, id string) (raffle.Raffle, error) {
 	var models Raffle
 
-	if err := r.db.Where(&Raffle{Slug: id}).First(&models).Error; err != nil {
+	err := r.db.Where(&Raffle{Slug: id}).First(&models).Error
+	if err != nil {
 		return raffle.Raffle{}, err
 	}
 
@@ -76,13 +79,15 @@ func (r *RaffleRepo) GetProduct(ctx context.Context, id string) (raffle.Raffle, 
 
 	tx := r.db.Begin()
 
-	if err := tx.Where(&Raffle{Slug: id}).First(&models).Error; err != nil {
+	err := tx.Where(&Raffle{Slug: id}).First(&models).Error
+	if err != nil {
 		return raffle.Raffle{}, err
 	}
 
 	result := ToRaffle(&models)
 
-	if err := tx.Where(&RaffleNumbers{Slug: id}).Find(&itemModels).Error; err != nil {
+	err = tx.Where(&RaffleNumbers{Slug: id}).Find(&itemModels).Error
+	if err != nil {
 		return raffle.Raffle{}, err
 	}
 
@@ -101,7 +106,8 @@ func (r *RaffleRepo) UpdateItems(ctx context.Context, itens []raffle.Numbers) er
 		}
 	}
 
-	if err := tx.Commit().Error; err != nil {
+	err := tx.Commit().Error
+	if err != nil {
 		return err
 	}
 
