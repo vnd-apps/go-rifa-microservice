@@ -35,7 +35,7 @@ func TestCreateOrder(t *testing.T) {
 
 	orderUseCase, repo, raffleRepo, pix := placeOrderUseCase(t)
 
-	repo.EXPECT().CreateOrder(context.Background(), gomock.Any()).AnyTimes().Return(order.Order{}, nil)
+	repo.EXPECT().CreateOrder(context.Background(), gomock.Any()).AnyTimes().Return(nil)
 	pix.EXPECT().GeneratePix().AnyTimes().Return(order.Pix{}, nil)
 
 	t.Run("Given a product with user Limit, it returns error since the user has order", func(t *testing.T) {
@@ -73,6 +73,6 @@ func TestCreateOrder(t *testing.T) {
 
 		res, err := orderUseCase.Run(context.Background(), &order.Request{}, "")
 		require.Nil(t, err)
-		require.Contains(t, res.PaymentMethod, "pix")
+		require.Equal(t, int(res.PaymentMethod), int(order.PIX))
 	})
 }
