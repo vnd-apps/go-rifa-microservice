@@ -70,8 +70,9 @@ func TestCreateOrder(t *testing.T) {
 
 		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{{ID: "ID2"}, {ID: "ID2"}}, nil)
 		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{}, nil)
+		raffleRepo.EXPECT().UpdateItems(gomock.Any(), gomock.Any()).Return(nil)
 
-		res, err := orderUseCase.Run(context.Background(), &order.Request{}, "")
+		res, err := orderUseCase.Run(context.Background(), &order.Request{ProductID: "mockID", Items: []int{1}}, "")
 		require.Nil(t, err)
 		require.Equal(t, int(res.PaymentMethod), int(order.PIX))
 	})
