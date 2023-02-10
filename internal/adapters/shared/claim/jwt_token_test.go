@@ -3,7 +3,7 @@ package claim_test
 import (
 	"testing"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/claim"
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/shared/claim"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
 )
 

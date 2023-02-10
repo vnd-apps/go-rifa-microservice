@@ -7,7 +7,7 @@ import (
 
 //go:generate mockgen -source=ports.go -destination=../mock/order/mock_order.go
 type Repo interface {
-	CreateOrder(ctx context.Context, r *Order) (Order, error)
+	CreateOrder(ctx context.Context, r *Order) error
 	GetUserOrders(ctx context.Context, pid string) ([]Order, error)
 }
 

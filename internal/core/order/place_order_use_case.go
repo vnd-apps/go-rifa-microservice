@@ -18,13 +18,14 @@ func NewPlaceOrderUseCase(orderRepo Repo, raffleRepo raffle.Repo, pixPayment Pix
 	return &PlaceOrderUseCase{orderRepo: orderRepo, raffleRepo: raffleRepo, pixPayment: pixPayment, uuid: uuid}
 }
 
-func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (*Order, error) {
+func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, userID string) (*Order, error) {
 	order := &Order{
 		ID:            u.uuid.Generate(),
 		ProductID:     model.ProductID,
 		Items:         model.Items,
-		UserID:        "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
 		PaymentMethod: PIX,
+		UserID:        userID,
+		Status:        string(Created),
 	}
 
 	raffleItem, err := u.raffleRepo.GetProduct(ctx, order.ProductID)
@@ -39,7 +40,7 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (*Order, er
 	}
 
 	for _, v := range order.Items {
-		if !checkAvaliability(raffleItem.Variation, v) {
+		if !checkAvaliability(raffleItem.Numbers, v) {
 			return nil, ErrUnavaliable
 		}
 	}
@@ -56,9 +57,9 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (*Order, er
 		}
 	}
 
-	order.Total = len(order.Items) * raffleItem.UnitPrice
+	order.Total = float32(len(order.Items)) * raffleItem.UnitPrice
 
-	_, err = u.orderRepo.CreateOrder(ctx, order)
+	err = u.orderRepo.CreateOrder(ctx, order)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +67,7 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request) (*Order, er
 	return order, nil
 }
 
-func checkAvaliability(s []raffle.Variation, e int) bool {
+func checkAvaliability(s []raffle.Numbers, e int) bool {
 	for _, a := range s {
 		if a.Number == e && a.Status != raffle.Available {
 			return false
@@ -77,12 +78,12 @@ func checkAvaliability(s []raffle.Variation, e int) bool {
 }
 
 func (u *PlaceOrderUseCase) updateItemStatus(ctx context.Context, s *raffle.Raffle, v int) error {
-	updateVariation := make([]raffle.Variation, 0)
+	updateVariation := make([]raffle.Numbers, 0)
 
-	for i := range s.Variation {
-		if s.Variation[i].Number == v {
-			s.Variation[i].Status = raffle.Pending
-			updateVariation = append(updateVariation, s.Variation[i])
+	for i := range s.Numbers {
+		if s.Numbers[i].Number == v {
+			s.Numbers[i].Status = raffle.Pending
+			updateVariation = append(updateVariation, s.Numbers[i])
 		}
 	}
 

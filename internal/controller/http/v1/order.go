@@ -2,7 +2,6 @@ package v1
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -12,10 +11,10 @@ import (
 
 type orderRoutes struct {
 	useCases *UseCases
-	logger   logger.Interface
+	logger   *logger.Logger
 }
 
-func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
+func newOrderRoutes(handler *gin.RouterGroup, l *logger.Logger, u *UseCases) {
 	r := &orderRoutes{
 		useCases: u,
 		logger:   l,
@@ -39,9 +38,6 @@ func newOrderRoutes(handler *gin.RouterGroup, l logger.Interface, u *UseCases) {
 // @Failure     500 {object} response
 // @Router      /order/ [post].
 func (r *orderRoutes) doPost(c *gin.Context) {
-	token := strings.Split(c.Request.Header["Authorization"][0], " ")[1]
-	r.logger.Info(token)
-
 	var request order.Request
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.logger.Error(err, "http - v1 - createOrder")
@@ -50,7 +46,9 @@ func (r *orderRoutes) doPost(c *gin.Context) {
 		return
 	}
 
-	res, err := r.useCases.PlaceOrder.Run(c.Request.Context(), &request)
+	UserID := "vnd-user-01"
+
+	res, err := r.useCases.PlaceOrder.Run(c.Request.Context(), &request, UserID)
 	if err != nil {
 		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusInternalServerError, "raffle service problems")

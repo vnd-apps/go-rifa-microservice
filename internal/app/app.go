@@ -20,22 +20,16 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/shared"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/skin"
-	db "github.com/evmartinelli/go-rifa-microservice/pkg/dynamodb"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/httpserver"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
-)
-
-const (
-	DBTableConfigName string = "raffle_table"
-	DBTableConfigPK   string = "PK"
-	DBTableConfigSK   string = "SK"
+	db "github.com/evmartinelli/go-rifa-microservice/pkg/postgres"
 )
 
 type Context struct {
 	cfg        *config.Config
 	rafflerepo raffle.Repo
 	logger     *logger.Logger
-	db         *db.DynamoConfig
+	db         *db.Database
 }
 
 func NewContext() *Context {
@@ -74,14 +68,14 @@ func (c *Context) PlaceOrderUseCase() *order.PlaceOrderUseCase {
 
 func (c *Context) RaffleRepo() raffle.Repo {
 	if c.rafflerepo == nil {
-		c.rafflerepo = rafflerepo.NewDynamoDBRaffleRepo(c.DB())
+		c.rafflerepo = rafflerepo.NewPostgresRaffleRepo(c.DB())
 	}
 
 	return c.rafflerepo
 }
 
 func (c *Context) OrderRepo() order.Repo {
-	return orderrepo.NewDynamoDBOrderRepo(c.DB())
+	return orderrepo.NewPostgresOrderRepo(c.DB())
 }
 
 func (c *Context) PlayerSkinRepo() skin.PlayerSkinRepo {
@@ -96,21 +90,23 @@ func (c *Context) PixPayment() order.PixPayment {
 	return fake.NewFakePixPayment()
 }
 
-func (c *Context) DB() *db.DynamoConfig {
+func (c *Context) DB() *db.Database {
 	if c.db == nil {
-		c.db = db.NewDynamoDB(DBTableConfigName, DBTableConfigPK, DBTableConfigSK)
+		c.db = db.NewDatabase(c.Config().DB.URL, c.Logger())
 	}
 
 	return c.db
 }
 
 func (c *Context) Config() *config.Config {
-	cfg, err := config.NewConfig()
-	if err != nil {
-		c.Logger().Fatal("Config read error: %s", err)
-	}
+	if c.cfg == nil {
+		cfg, err := config.NewConfig()
+		if err != nil {
+			c.Logger().Fatal("Config read error: %s", err)
+		}
 
-	c.cfg = cfg
+		c.cfg = cfg
+	}
 
 	return c.cfg
 }
@@ -135,7 +131,6 @@ func (c *Context) signal(httpServer *httpserver.Server) {
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-
 	select {
 	case s := <-interrupt:
 		c.Logger().Info("app - Run - signal: " + s.String())
@@ -151,7 +146,7 @@ func (c *Context) signal(httpServer *httpserver.Server) {
 
 func (c *Context) Logger() *logger.Logger {
 	if c.logger == nil {
-		c.logger = logger.New(c.cfg.Log.Level)
+		c.logger = logger.NewLogger(c.Config().Log.Level, c.Config().Log.Environment)
 	}
 
 	return c.logger

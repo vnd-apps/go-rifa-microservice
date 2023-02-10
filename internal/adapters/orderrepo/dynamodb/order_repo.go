@@ -23,13 +23,13 @@ func NewOrderRepo(mdb *db.DynamoConfig) *OrderRepo {
 	return &OrderRepo{mdb}
 }
 
-func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Order) (order.Order, error) {
+func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Order) error {
 	_, err := r.db.Save(OrderToDynamo(rm))
 	if err != nil {
-		return order.Order{}, err
+		return err
 	}
 
-	return order.Order{}, nil
+	return nil
 }
 
 func (r *OrderRepo) GetUserOrders(ctx context.Context, pid string) ([]order.Order, error) {
@@ -52,7 +52,7 @@ func OrderToDynamo(o *order.Order) DynamoOrder {
 		ProductID:     o.ProductID,
 		UserID:        o.UserID,
 		Total:         o.Total,
-		PaymentMethod: string(o.PaymentMethod),
+		PaymentMethod: int(o.PaymentMethod),
 		Items:         o.Items,
 		Pix:           o.Pix,
 		ItemType:      ItemType,

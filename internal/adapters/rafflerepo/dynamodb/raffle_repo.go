@@ -39,18 +39,18 @@ func RaffleToDynamo(r *raffle.Raffle) DynamoRaffle {
 		UnitPrice:    r.UnitPrice,
 		Quantity:     r.Quantity,
 		UserLimit:    r.UserLimit,
-		SortedNumber: r.SortedNumber,
+		SortedNumber: r.PrizeDrawNumber,
 		ItemType:     productType,
 	}
 }
 
-func RaffleItemToDynamoItem(r *raffle.Variation) DynamoRaffleItem {
+func RaffleItemToDynamoItem(r *raffle.Numbers) DynamoRaffleItem {
 	return DynamoRaffleItem{
 		PK:       r.ID,
 		SK:       strconv.Itoa(r.Number),
 		ID:       r.ID,
 		Number:   r.Number,
-		Name:     r.Name,
+		Name:     r.Slug,
 		Status:   string(r.Status),
 		ItemType: productItemType,
 	}
@@ -58,24 +58,24 @@ func RaffleItemToDynamoItem(r *raffle.Variation) DynamoRaffleItem {
 
 func DynamoToRaffle(dyn *DynamoRecRaffle) raffle.Raffle {
 	return raffle.Raffle{
-		ID:           dyn.ID,
-		Name:         dyn.Name,
-		Description:  dyn.Description,
-		Slug:         dyn.Slug,
-		Status:       raffle.Status(dyn.Status),
-		ImageURL:     dyn.ImageURL,
-		UnitPrice:    dyn.UnitPrice,
-		Quantity:     dyn.Quantity,
-		UserLimit:    dyn.UserLimit,
-		SortedNumber: dyn.SortedNumber,
+		ID:              dyn.ID,
+		Name:            dyn.Name,
+		Description:     dyn.Description,
+		Slug:            dyn.Slug,
+		Status:          raffle.Status(dyn.Status),
+		ImageURL:        dyn.ImageURL,
+		UnitPrice:       dyn.UnitPrice,
+		Quantity:        dyn.Quantity,
+		UserLimit:       dyn.UserLimit,
+		PrizeDrawNumber: dyn.SortedNumber,
 	}
 }
 
-func DynamoItemToRaffleItem(dyn *DynamoRecRaffle) raffle.Variation {
-	return raffle.Variation{
+func DynamoItemToRaffleItem(dyn *DynamoRecRaffle) raffle.Numbers {
+	return raffle.Numbers{
 		ID:     dyn.ID,
 		Number: dyn.Number,
-		Name:   dyn.Name,
+		Slug:   dyn.Slug,
 		Status: raffle.ItemStatus(dyn.Status),
 	}
 }
@@ -86,9 +86,9 @@ func (r *RaffleRepo) Create(ctx context.Context, rm *raffle.Raffle) error {
 		return err
 	}
 
-	raffleItems := make([]DynamoRaffleItem, 0, len(rm.Variation))
-	for i := range rm.Variation {
-		raffleItems = append(raffleItems, RaffleItemToDynamoItem(&rm.Variation[i]))
+	raffleItems := make([]DynamoRaffleItem, 0, len(rm.Numbers))
+	for i := range rm.Numbers {
+		raffleItems = append(raffleItems, RaffleItemToDynamoItem(&rm.Numbers[i]))
 	}
 
 	err = r.db.SaveMany(raffleItems)
@@ -138,7 +138,7 @@ func (r *RaffleRepo) GetProduct(ctx context.Context, id string) (raffle.Raffle, 
 	return DynamoToProduct(dynamoRaffleRec), nil
 }
 
-func (r *RaffleRepo) UpdateItems(ctx context.Context, items []raffle.Variation) error {
+func (r *RaffleRepo) UpdateItems(ctx context.Context, items []raffle.Numbers) error {
 	itemsSK := make([]string, len(items))
 
 	for i := range items {
@@ -157,7 +157,7 @@ func (r *RaffleRepo) UpdateItems(ctx context.Context, items []raffle.Variation) 
 func DynamoToProduct(dynamoRaffleRec []DynamoRecRaffle) raffle.Raffle {
 	var raffleResult raffle.Raffle
 
-	var raffleItems []raffle.Variation
+	var raffleItems []raffle.Numbers
 
 	for i := range dynamoRaffleRec {
 		if dynamoRaffleRec[i].ItemType == productType {
@@ -167,7 +167,7 @@ func DynamoToProduct(dynamoRaffleRec []DynamoRecRaffle) raffle.Raffle {
 		}
 	}
 
-	raffleResult.Variation = raffleItems
+	raffleResult.Numbers = raffleItems
 
 	return raffleResult
 }

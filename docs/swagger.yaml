@@ -16,8 +16,26 @@ definitions:
     - numbers
     - productID
     type: object
+  raffle.Numbers:
+    properties:
+      id:
+        example: 61f0c143ad06223fa03910b0
+        type: string
+      name:
+        example: Number
+        type: string
+      number:
+        example: 5
+        type: integer
+      status:
+        example: paid
+        type: string
+    type: object
   raffle.Raffle:
     properties:
+      PrizeDrawNumber:
+        example: 10
+        type: integer
       description:
         example: Rifa description
         type: string
@@ -30,28 +48,25 @@ definitions:
       name:
         example: Rifa
         type: string
+      numbers:
+        items:
+          $ref: '#/definitions/raffle.Numbers'
+        type: array
       quantity:
         example: 10
         type: integer
       slug:
         example: butterfly-32
         type: string
-      sortedNumber:
-        example: 10
-        type: integer
       status:
         example: open
         type: string
       unitPrice:
         example: 5
-        type: integer
+        type: number
       userLimit:
         example: 10
         type: integer
-      variation:
-        items:
-          $ref: '#/definitions/raffle.Variation'
-        type: array
     type: object
   raffle.Request:
     properties:
@@ -69,28 +84,13 @@ definitions:
         type: integer
       unitPrice:
         example: 5
-        type: integer
+        type: number
     required:
     - description
     - imageURL
     - name
     - quantity
     - unitPrice
-    type: object
-  raffle.Variation:
-    properties:
-      id:
-        example: 61f0c143ad06223fa03910b0
-        type: string
-      name:
-        example: Number
-        type: string
-      number:
-        example: 5
-        type: integer
-      status:
-        example: paid
-        type: string
     type: object
   skin.Item:
     properties:

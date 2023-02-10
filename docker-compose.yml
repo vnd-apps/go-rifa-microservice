@@ -1,9 +1,30 @@
 version: "3.9"
 services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'pass'
+      POSTGRES_DB: 'dev_db'
+    ports:
+      - 5432:5432
+  admin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=martinelli.evandro@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_LISTEN_PORT=5050
+    ports:
+      - "5050:5050"
   app:
     build: .
     container_name: app
     image: app
+    environment:
+      PG_URL: 'postgres://postgres:postgres@postgres:5432/dev_db'
     ports:
       - 8080:8080
   integration:
@@ -12,3 +33,5 @@ services:
       dockerfile: integration-test/Dockerfile
     container_name: integration
     image: integration
+volumes:
+  pg-data:

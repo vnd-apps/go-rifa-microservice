@@ -35,7 +35,7 @@ func TestCreateOrder(t *testing.T) {
 
 	orderUseCase, repo, raffleRepo, pix := placeOrderUseCase(t)
 
-	repo.EXPECT().CreateOrder(context.Background(), gomock.Any()).AnyTimes().Return(order.Order{}, nil)
+	repo.EXPECT().CreateOrder(context.Background(), gomock.Any()).AnyTimes().Return(nil)
 	pix.EXPECT().GeneratePix().AnyTimes().Return(order.Pix{}, nil)
 
 	t.Run("Given a product with user Limit, it returns error since the user has order", func(t *testing.T) {
@@ -46,7 +46,7 @@ func TestCreateOrder(t *testing.T) {
 
 		expectederr := order.ErrReachedLimit
 
-		res, err := orderUseCase.Run(context.Background(), &order.Request{})
+		res, err := orderUseCase.Run(context.Background(), &order.Request{}, "")
 		require.Error(t, expectederr, err)
 		require.Nil(t, res)
 	})
@@ -60,7 +60,7 @@ func TestCreateOrder(t *testing.T) {
 
 		expectederr := order.ErrReachedLimit
 
-		res, err := orderUseCase.Run(context.Background(), &order.Request{Items: []int{1, 2}})
+		res, err := orderUseCase.Run(context.Background(), &order.Request{Items: []int{1, 2}}, "")
 		require.Error(t, expectederr, err)
 		require.Nil(t, res)
 	})
@@ -70,9 +70,10 @@ func TestCreateOrder(t *testing.T) {
 
 		repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{{ID: "ID2"}, {ID: "ID2"}}, nil)
 		raffleRepo.EXPECT().GetProduct(context.Background(), gomock.Any()).Return(raffle.Raffle{}, nil)
+		raffleRepo.EXPECT().UpdateItems(gomock.Any(), gomock.Any()).Return(nil)
 
-		res, err := orderUseCase.Run(context.Background(), &order.Request{})
+		res, err := orderUseCase.Run(context.Background(), &order.Request{ProductID: "mockID", Items: []int{1}}, "")
 		require.Nil(t, err)
-		require.Contains(t, res.PaymentMethod, "pix")
+		require.Equal(t, int(res.PaymentMethod), int(order.PIX))
 	})
 }
