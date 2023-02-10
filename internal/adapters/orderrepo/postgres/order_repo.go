@@ -40,7 +40,8 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Order) error {
 		Status:       rm.Pix.Status,
 	})
 
-	if err := tx.Commit().Error; err != nil {
+	err := tx.Commit().Error
+	if err != nil {
 		return err
 	}
 
