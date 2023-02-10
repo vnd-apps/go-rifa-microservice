@@ -11,7 +11,6 @@ import (
 
 	// Swagger docs.
 	_ "github.com/evmartinelli/go-rifa-microservice/docs"
-	customlogger "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/middleware"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
 
@@ -27,7 +26,6 @@ func NewRouter(handler *gin.Engine, l *logger.Logger, u *UseCases) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
-	handler.Use(customlogger.RequestLoggerMiddleware(l))
 
 	// Swagger
 	swaggerHandler := ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "DISABLE_SWAGGER_HTTP_HANDLER")
