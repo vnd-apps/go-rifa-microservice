@@ -64,11 +64,11 @@ migrate-create:  ### create new migration
 db_url ?= postgres://user:pass@localhost:5432/dev_db?sslmode=disable
 
 migrate-up: ### migration up
-	migrate -path ./db/migration -database $(db_url) up
+	migrate -path db/migration -database $(db_url) up
 .PHONY: migrate-up
 
 migrate-down: ### migration down
-	migrate -path ./db/migration -database $(db_url) down
+	migrate -path db/migration -database $(db_url) down
 .PHONY: migrate-down
 
 db_force:
