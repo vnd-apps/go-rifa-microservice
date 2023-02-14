@@ -101,12 +101,21 @@ func (r *RaffleRepo) GetProduct(ctx context.Context, id string) (raffle.Raffle, 
 func (r *RaffleRepo) UpdateItems(ctx context.Context, itens []raffle.Numbers) error {
 	tx := r.db.Begin()
 	for _, v := range itens {
-		if err := tx.Where(&RaffleNumbers{Slug: v.Slug, Number: v.Number}).Updates(&RaffleNumbers{Status: string(raffle.Pending)}).Error; err != nil {
+		if err := tx.Where(&RaffleNumbers{Slug: v.Slug, Number: v.Number}).Updates(&RaffleNumbers{Status: string(raffle.Ordered)}).Error; err != nil {
 			return err
 		}
 	}
 
 	err := tx.Commit().Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *RaffleRepo) UpdateItem(ctx context.Context, slug string, numbers int) error {
+	err := r.db.Where(&RaffleNumbers{Slug: slug, Number: numbers}).Updates(&RaffleNumbers{Status: string(raffle.Pending)}).Error
 	if err != nil {
 		return err
 	}

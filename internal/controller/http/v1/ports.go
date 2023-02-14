@@ -9,11 +9,12 @@ import (
 )
 
 type UseCases struct {
-	GenerateRaffle  GenerateRaffleUseCase
-	ListRaffle      ListRaffleUseCase
-	GetRaffle       GetRaffleUseCase
-	PlayerInventory PlayerInventoryUseCase
-	PlaceOrder      PlaceOrderUseCase
+	GenerateRaffle           GenerateRaffleUseCase
+	ListRaffle               ListRaffleUseCase
+	GetRaffle                GetRaffleUseCase
+	PlayerInventory          PlayerInventoryUseCase
+	PlaceOrder               PlaceOrderUseCase
+	ChangeRaffleNumberStatus ChangeRaffleNumberStatusUseCase
 }
 
 type GenerateRaffleUseCase interface {
@@ -34,4 +35,8 @@ type PlayerInventoryUseCase interface {
 
 type PlaceOrderUseCase interface {
 	Run(ctx context.Context, model *order.Request, token string) (*order.Order, error)
+}
+
+type ChangeRaffleNumberStatusUseCase interface {
+	Run(ctx context.Context, slug string, number int) error
 }

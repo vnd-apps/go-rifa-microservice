@@ -13,4 +13,5 @@ type Repo interface {
 	GetByID(ctx context.Context, id string) (Raffle, error)
 	GetProduct(ctx context.Context, id string) (Raffle, error)
 	UpdateItems(ctx context.Context, itens []Numbers) error
+	UpdateItem(ctx context.Context, slug string, numbers int) error
 }

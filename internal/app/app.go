@@ -38,12 +38,17 @@ func NewContext() *Context {
 
 func (c *Context) UseCases() *v1.UseCases {
 	return &v1.UseCases{
-		GenerateRaffle:  c.GenerateRaffleUseCase(),
-		ListRaffle:      c.ListRaffleUseCase(),
-		GetRaffle:       c.GetRaffleUseCase(),
-		PlayerInventory: c.PlayerInventoryUseCase(),
-		PlaceOrder:      c.PlaceOrderUseCase(),
+		GenerateRaffle:           c.GenerateRaffleUseCase(),
+		ListRaffle:               c.ListRaffleUseCase(),
+		GetRaffle:                c.GetRaffleUseCase(),
+		PlayerInventory:          c.PlayerInventoryUseCase(),
+		PlaceOrder:               c.PlaceOrderUseCase(),
+		ChangeRaffleNumberStatus: c.ChangeRaffleNumberStatusUseCase(),
 	}
+}
+
+func (c *Context) ChangeRaffleNumberStatusUseCase() *raffle.ChangeRaffleNumberStatusUseCase {
+	return raffle.NewChangeRaffleNumberStatusUseCase(c.RaffleRepo())
 }
 
 func (c *Context) GenerateRaffleUseCase() *raffle.GenerateRaffleUseCase {

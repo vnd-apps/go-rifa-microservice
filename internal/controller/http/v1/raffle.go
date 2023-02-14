@@ -23,8 +23,9 @@ func newRaffleRoutes(handler *gin.RouterGroup, l *logger.Logger, u *UseCases) {
 	h := handler.Group("/raffle")
 	{
 		h.GET("/", r.getAll)
-		h.GET("/:id", r.getbyID)
 		h.POST("/", r.doCreateRaffle)
+		h.GET("/:id", r.getbyID)
+		h.PATCH("/:id", r.doUpdateRaffleNumberStatus)
 	}
 }
 
@@ -103,6 +104,44 @@ func (r *raffleRoutes) doCreateRaffle(c *gin.Context) {
 			UnitPrice:   request.UnitPrice,
 			Quantity:    request.Quantity,
 		},
+	)
+	if err != nil {
+		r.logger.Error(err, "http - v1 - doCreateRaffle")
+		errorResponse(c, http.StatusInternalServerError, "raffle service problems")
+
+		return
+	}
+
+	c.Status(http.StatusCreated)
+}
+
+// @Summary     Update Raffle Number Status
+// @Description Update Raffle Number Status
+// @ID          patch-raffle
+// @Tags  	    raffle
+// @Accept      json
+// @Produce     json
+// @Param       request body raffle.Numbers true "Set up raffle"
+// @Success     201 {object} response
+// @Failure     400 {object} response
+// @Failure     500 {object} response
+// @Router      /raffle/:id [patch].
+func (r *raffleRoutes) doUpdateRaffleNumberStatus(c *gin.Context) {
+	var request struct {
+		Number int `json:"number"`
+	}
+
+	if err := c.BindJSON(&request); err != nil {
+		r.logger.Error(err, "http - v1 - doUpdateRaffleNumberStatus")
+		errorResponse(c, http.StatusBadRequest, "invalid request body")
+
+		return
+	}
+
+	err := r.useCases.ChangeRaffleNumberStatus.Run(
+		c.Request.Context(),
+		c.Param("id"),
+		request.Number,
 	)
 	if err != nil {
 		r.logger.Error(err, "http - v1 - doCreateRaffle")

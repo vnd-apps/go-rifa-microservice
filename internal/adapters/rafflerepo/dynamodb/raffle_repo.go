@@ -80,6 +80,10 @@ func DynamoItemToRaffleItem(dyn *DynamoRecRaffle) raffle.Numbers {
 	}
 }
 
+func (r *RaffleRepo) UpdateItem(ctx context.Context, slug string, numbers int) error {
+	return nil
+}
+
 func (r *RaffleRepo) Create(ctx context.Context, rm *raffle.Raffle) error {
 	_, err := r.db.Save(RaffleToDynamo(rm))
 	if err != nil {

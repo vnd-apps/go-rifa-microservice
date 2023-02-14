@@ -39,6 +39,7 @@ type (
 const (
 	Paid      ItemStatus = "paid"
 	Pending   ItemStatus = "pending"
+	Ordered   ItemStatus = "ordered"
 	Available ItemStatus = "available"
 	Open      Status     = "open"
 	Cloed     Status     = "closed"
