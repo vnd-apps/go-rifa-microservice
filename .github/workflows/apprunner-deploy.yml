@@ -74,7 +74,7 @@ jobs:
         with:
           service: apprunner-rifa-microservice
           image: ${{ steps.build-image.outputs.image }}
-          access-role-arn: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
+          access-role-arn: ${{ secrets.AWS_ROLE_ARN }}
           region: ${{ secrets.AWS_REGION }}
           cpu : 1
           memory : 2
