@@ -15,8 +15,12 @@ type UseCases struct {
 	PlayerInventory          PlayerInventoryUseCase
 	PlaceOrder               PlaceOrderUseCase
 	ChangeRaffleNumberStatus ChangeRaffleNumberStatusUseCase
+	ListOrder                ListUserOrdersUseCase
 }
 
+type ListUserOrdersUseCase interface {
+	Run(ctx context.Context) ([]order.Order, error)
+}
 type GenerateRaffleUseCase interface {
 	Run(context.Context, *raffle.Raffle) error
 }

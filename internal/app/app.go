@@ -44,7 +44,12 @@ func (c *Context) UseCases() *v1.UseCases {
 		PlayerInventory:          c.PlayerInventoryUseCase(),
 		PlaceOrder:               c.PlaceOrderUseCase(),
 		ChangeRaffleNumberStatus: c.ChangeRaffleNumberStatusUseCase(),
+		ListOrder:                c.ListOrderUseCase(),
 	}
+}
+
+func (c *Context) ListOrderUseCase() *order.ListOrderUseCase {
+	return order.NewListOrderUseCase(c.OrderRepo())
 }
 
 func (c *Context) ChangeRaffleNumberStatusUseCase() *raffle.ChangeRaffleNumberStatusUseCase {
