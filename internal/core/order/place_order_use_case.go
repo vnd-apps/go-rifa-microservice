@@ -34,12 +34,16 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, token strin
 		Status:        string(Created),
 	}
 
-	if errOrder := u.validateOrder(ctx, order); err != nil {
+	if errOrder := u.validateOrder(ctx, order); errOrder != nil {
 		return nil, errOrder
 	}
 
 	order.Pix, err = u.pixPayment.GeneratePix()
 	if err != nil {
+		return nil, err
+	}
+
+	if err := u.orderRepo.CreateOrder(ctx, order); err != nil {
 		return nil, err
 	}
 
@@ -120,10 +124,6 @@ func (u *PlaceOrderUseCase) validateOrder(ctx context.Context, order *Order) err
 	}
 
 	order.Total = float32(len(order.Items)) * raffleItem.UnitPrice
-
-	if err := u.orderRepo.CreateOrder(ctx, order); err != nil {
-		return err
-	}
 
 	return nil
 }
