@@ -48,6 +48,47 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, rm *order.Order) error {
 	return nil
 }
 
-func (r *OrderRepo) GetUserOrders(ctx context.Context, pid string) ([]order.Order, error) {
-	return nil, nil
+func (r *OrderRepo) GetUserOrders(ctx context.Context, userID string) ([]order.Order, error) {
+	var orders []Order
+
+	r.db.Where("user_id = ?", userID).Find(&orders)
+
+	var ordersResponse []order.Order
+
+	for i := range orders {
+		var items []OrderItems
+
+		r.db.Where("order_id = ?", orders[i].ID).Find(&items)
+
+		var pix *PixPayment
+
+		r.db.Where("order_id = ?", orders[i].ID).Find(&pix)
+
+		ordersResponse = append(ordersResponse, order.Order{
+			ProductID: orders[i].RaffleSlug,
+			UserID:    orders[i].UserID,
+			Total:     orders[i].Total,
+			Items:     orderNumbers(items),
+			Pix:       orderPix(pix),
+		})
+	}
+
+	return ordersResponse, nil
+}
+
+func orderPix(pix *PixPayment) order.Pix {
+	return order.Pix{
+		QRCode:       pix.QRCode,
+		QRCodeBase64: pix.QRCodeBase64,
+		Status:       pix.Status,
+	}
+}
+
+func orderNumbers(items []OrderItems) []int {
+	var numbers []int
+	for _, v := range items {
+		numbers = append(numbers, v.Number)
+	}
+
+	return numbers
 }

@@ -44,7 +44,12 @@ func (c *Context) UseCases() *v1.UseCases {
 		PlayerInventory:          c.PlayerInventoryUseCase(),
 		PlaceOrder:               c.PlaceOrderUseCase(),
 		ChangeRaffleNumberStatus: c.ChangeRaffleNumberStatusUseCase(),
+		ListOrder:                c.ListOrderUseCase(),
 	}
+}
+
+func (c *Context) ListOrderUseCase() *order.ListOrderUseCase {
+	return order.NewListOrderUseCase(c.OrderRepo())
 }
 
 func (c *Context) ChangeRaffleNumberStatusUseCase() *raffle.ChangeRaffleNumberStatusUseCase {
@@ -107,7 +112,7 @@ func (c *Context) Config() *config.Config {
 	if c.cfg == nil {
 		cfg, err := config.NewConfig()
 		if err != nil {
-			c.Logger().Fatal("Config read error: %s", err)
+			panic(err)
 		}
 
 		c.cfg = cfg

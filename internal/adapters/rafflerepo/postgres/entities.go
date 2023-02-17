@@ -1,5 +1,7 @@
 package postgres
 
+import "time"
+
 type Raffle struct {
 	Name            string
 	Description     string
@@ -13,7 +15,9 @@ type Raffle struct {
 }
 
 type RaffleNumbers struct {
-	Slug   string `gorm:"column:raffle_slug"`
-	Number int
-	Status string
+	Slug           string `gorm:"column:raffle_slug"`
+	Number         int
+	Status         string
+	ReservedUserID string
+	ReservedAt     time.Time
 }
