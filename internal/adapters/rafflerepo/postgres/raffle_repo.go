@@ -115,7 +115,13 @@ func (r *RaffleRepo) UpdateItems(ctx context.Context, itens []raffle.Numbers) er
 }
 
 func (r *RaffleRepo) UpdateItem(ctx context.Context, slug string, numbers int) error {
-	err := r.db.Where(&RaffleNumbers{Slug: slug, Number: numbers}).Updates(&RaffleNumbers{Status: string(raffle.Pending)}).Error
+	err := r.db.Where(&RaffleNumbers{Slug: slug, Number: numbers}).
+		Updates(
+			&RaffleNumbers{
+				Status:         string(raffle.Pending),
+				ReservedUserID: "1234",
+				ReservedAt:     r.db.NowFunc(),
+			}).Error
 	if err != nil {
 		return err
 	}
