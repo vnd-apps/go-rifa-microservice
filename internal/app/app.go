@@ -112,7 +112,7 @@ func (c *Context) Config() *config.Config {
 	if c.cfg == nil {
 		cfg, err := config.NewConfig()
 		if err != nil {
-			c.Logger().Fatal("Config read error: %s", err)
+			panic(err)
 		}
 
 		c.cfg = cfg

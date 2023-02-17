@@ -1,3 +1,4 @@
+include .env
 export
 
 # HELP =================================================================================================================
@@ -77,3 +78,6 @@ db_force:
 
 install_golang_migrate:
 	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+
+	//VER LOGS

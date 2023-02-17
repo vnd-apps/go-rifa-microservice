@@ -30,7 +30,7 @@ func TestListOrder(t *testing.T) {
 
 	repo.EXPECT().GetUserOrders(gomock.Any(), gomock.Any()).Return([]order.Order{{ID: "ID2"}, {ID: "ID2"}}, nil)
 
-	res, err := orderUseCase.Run(context.Background())
+	res, err := orderUseCase.Run(context.Background(), "123")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}

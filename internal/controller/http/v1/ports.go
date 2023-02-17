@@ -19,7 +19,7 @@ type UseCases struct {
 }
 
 type ListUserOrdersUseCase interface {
-	Run(ctx context.Context) ([]order.Order, error)
+	Run(ctx context.Context, token string) ([]order.Order, error)
 }
 type GenerateRaffleUseCase interface {
 	Run(context.Context, *raffle.Raffle) error

@@ -14,8 +14,8 @@ func NewListOrderUseCase(r Repo) *ListOrderUseCase {
 	}
 }
 
-func (uc *ListOrderUseCase) Run(ctx context.Context) ([]Order, error) {
-	order, err := uc.repo.GetUserOrders(ctx, "123")
+func (uc *ListOrderUseCase) Run(ctx context.Context, token string) ([]Order, error) {
+	order, err := uc.repo.GetUserOrders(ctx, token)
 	if err != nil {
 		return nil, err
 	}

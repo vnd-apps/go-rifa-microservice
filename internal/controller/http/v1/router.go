@@ -24,7 +24,7 @@ import (
 // End.
 func NewRouter(handler *gin.Engine, l *logger.Logger, u *UseCases) {
 	// Options
-	handler.Use(gin.Logger())
+	handler.Use(gin.LoggerWithWriter(l.GetGinLogger()))
 	handler.Use(gin.Recovery())
 
 	// Swagger
