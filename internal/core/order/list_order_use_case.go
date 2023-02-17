@@ -2,6 +2,8 @@ package order
 
 import (
 	"context"
+
+	auth "github.com/evmartinelli/go-rifa-microservice/internal/adapters/shared/token"
 )
 
 type ListOrderUseCase struct {
@@ -15,7 +17,12 @@ func NewListOrderUseCase(r Repo) *ListOrderUseCase {
 }
 
 func (uc *ListOrderUseCase) Run(ctx context.Context, token string) ([]Order, error) {
-	order, err := uc.repo.GetUserOrders(ctx, token)
+	claims, err := auth.Claims(token)
+	if err != nil {
+		return nil, err
+	}
+
+	order, err := uc.repo.GetUserOrders(ctx, claims.Username)
 	if err != nil {
 		return nil, err
 	}

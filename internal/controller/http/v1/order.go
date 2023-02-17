@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	auth "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/middleware"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
@@ -14,8 +15,6 @@ type orderRoutes struct {
 	logger   *logger.Logger
 }
 
-const UserID string = "vnd-user-01"
-
 func newOrderRoutes(handler *gin.RouterGroup, l *logger.Logger, u *UseCases) {
 	r := &orderRoutes{
 		useCases: u,
@@ -24,6 +23,7 @@ func newOrderRoutes(handler *gin.RouterGroup, l *logger.Logger, u *UseCases) {
 
 	h := handler.Group("/order")
 	{
+		h.Use(auth.JwtAuthMiddleware())
 		h.POST("/", r.doPost)
 		h.GET("/", r.getOrdersByUserID)
 	}
@@ -49,7 +49,7 @@ func (r *orderRoutes) doPost(c *gin.Context) {
 		return
 	}
 
-	res, err := r.useCases.PlaceOrder.Run(c.Request.Context(), &request, UserID)
+	res, err := r.useCases.PlaceOrder.Run(c.Request.Context(), &request, c.GetHeader("Authorization"))
 	if err != nil {
 		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusInternalServerError, "raffle service problems")
@@ -66,12 +66,12 @@ func (r *orderRoutes) doPost(c *gin.Context) {
 // @Tags  	    order
 // @Accept      json
 // @Produce     json
-// @Success     201 {object} response
+// @Success     201 204 {object} response
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Router      /order/ [get].
 func (r *orderRoutes) getOrdersByUserID(c *gin.Context) {
-	res, err := r.useCases.ListOrder.Run(c.Request.Context(), UserID)
+	res, err := r.useCases.ListOrder.Run(c.Request.Context(), c.GetHeader("Authorization"))
 	if err != nil {
 		r.logger.Error(err, "http - v1 - doCreateRaffle")
 		errorResponse(c, http.StatusInternalServerError, "raffle service problems")
@@ -79,5 +79,11 @@ func (r *orderRoutes) getOrdersByUserID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, res)
+	if len(res) == 0 {
+		c.JSON(http.StatusNoContent, res)
+
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
 }

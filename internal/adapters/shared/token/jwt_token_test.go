@@ -1,18 +1,17 @@
-package claim_test
+package token_test
 
 import (
 	"testing"
 
-	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/shared/claim"
+	token "github.com/evmartinelli/go-rifa-microservice/internal/adapters/shared/token"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/assert"
 )
 
-func TestGetUserNameToken(t *testing.T) {
+func TestClaims(t *testing.T) {
 	t.Parallel()
 	t.Run("It return an username given a jwt token", func(t *testing.T) {
 		t.Parallel()
-		token := ""
-		claims, err := claim.NewClaims().GetUsername(token)
+		claims, err := token.Claims("Bearer randomtoken")
 		if err != nil {
 			assert.NotNil(t, err)
 		}
