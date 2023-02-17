@@ -14,6 +14,8 @@ type orderRoutes struct {
 	logger   *logger.Logger
 }
 
+const UserID string = "vnd-user-01"
+
 func newOrderRoutes(handler *gin.RouterGroup, l *logger.Logger, u *UseCases) {
 	r := &orderRoutes{
 		useCases: u,
@@ -47,8 +49,6 @@ func (r *orderRoutes) doPost(c *gin.Context) {
 		return
 	}
 
-	UserID := "vnd-user-01"
-
 	res, err := r.useCases.PlaceOrder.Run(c.Request.Context(), &request, UserID)
 	if err != nil {
 		r.logger.Error(err, "http - v1 - doCreateRaffle")
@@ -71,8 +71,6 @@ func (r *orderRoutes) doPost(c *gin.Context) {
 // @Failure     500 {object} response
 // @Router      /order/ [get].
 func (r *orderRoutes) getOrdersByUserID(c *gin.Context) {
-	UserID := "vnd-user-02"
-
 	res, err := r.useCases.ListOrder.Run(c.Request.Context(), UserID)
 	if err != nil {
 		r.logger.Error(err, "http - v1 - doCreateRaffle")
