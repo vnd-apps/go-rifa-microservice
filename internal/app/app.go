@@ -13,6 +13,7 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/orderrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/pix/fake"
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/rafflerepo"
+	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/shared/token"
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/skinrepo"
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/steam"
 	v1 "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/v1"
@@ -49,11 +50,11 @@ func (c *Context) UseCases() *v1.UseCases {
 }
 
 func (c *Context) ListOrderUseCase() *order.ListOrderUseCase {
-	return order.NewListOrderUseCase(c.OrderRepo())
+	return order.NewListOrderUseCase(c.OrderRepo(), c.Auth())
 }
 
 func (c *Context) ChangeRaffleNumberStatusUseCase() *raffle.ChangeRaffleNumberStatusUseCase {
-	return raffle.NewChangeRaffleNumberStatusUseCase(c.RaffleRepo())
+	return raffle.NewChangeRaffleNumberStatusUseCase(c.RaffleRepo(), c.Auth())
 }
 
 func (c *Context) GenerateRaffleUseCase() *raffle.GenerateRaffleUseCase {
@@ -73,7 +74,7 @@ func (c *Context) PlayerInventoryUseCase() *skin.PlayerInventoryUseCase {
 }
 
 func (c *Context) PlaceOrderUseCase() *order.PlaceOrderUseCase {
-	return order.NewPlaceOrderUseCase(c.OrderRepo(), c.RaffleRepo(), c.PixPayment(), c.UUIDGenerator())
+	return order.NewPlaceOrderUseCase(c.OrderRepo(), c.RaffleRepo(), c.PixPayment(), c.UUIDGenerator(), c.Auth())
 }
 
 func (c *Context) RaffleRepo() raffle.Repo {
@@ -94,6 +95,10 @@ func (c *Context) PlayerSkinRepo() skin.PlayerSkinRepo {
 
 func (c *Context) SteamWebAPI() skin.SteamWebAPI {
 	return steam.NewSteamAPI()
+}
+
+func (c *Context) Auth() shared.Auth {
+	return token.NewAuth()
 }
 
 func (c *Context) PixPayment() order.PixPayment {

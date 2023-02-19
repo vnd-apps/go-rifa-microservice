@@ -3,15 +3,19 @@ package raffle
 import (
 	"context"
 	"fmt"
+
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/shared"
 )
 
 type ChangeRaffleNumberStatusUseCase struct {
 	repo Repo
+	user shared.Auth
 }
 
-func NewChangeRaffleNumberStatusUseCase(r Repo) *ChangeRaffleNumberStatusUseCase {
+func NewChangeRaffleNumberStatusUseCase(r Repo, s shared.Auth) *ChangeRaffleNumberStatusUseCase {
 	return &ChangeRaffleNumberStatusUseCase{
 		repo: r,
+		user: s,
 	}
 }
 

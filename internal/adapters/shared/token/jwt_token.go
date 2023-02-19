@@ -7,6 +7,8 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/lestrrat-go/jwx/v2/jwk"
+
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/shared"
 )
 
 type Token struct {
@@ -19,7 +21,11 @@ const (
 	publicKeysURL = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_FFPBQIE9C/.well-known/jwks.json"
 )
 
-func ExtractToken(bearerToken string) string {
+func NewAuth() *Token {
+	return &Token{}
+}
+
+func (t *Token) ExtractToken(bearerToken string) string {
 	if len(strings.Split(bearerToken, " ")) == BearerLength {
 		return strings.Split(bearerToken, " ")[1]
 	}
@@ -27,8 +33,8 @@ func ExtractToken(bearerToken string) string {
 	return ""
 }
 
-func Valid(bearerToken string) error {
-	tokenString := ExtractToken(bearerToken)
+func (t *Token) CheckIsValid(bearerToken string) error {
+	tokenString := t.ExtractToken(bearerToken)
 
 	publicKeySet, err := jwk.Fetch(context.TODO(), publicKeysURL)
 	if err != nil {
@@ -77,8 +83,8 @@ func Valid(bearerToken string) error {
 	return nil
 }
 
-func Claims(bearerToken string) (*Token, error) {
-	tokenString := ExtractToken(bearerToken)
+func (t *Token) Claims(bearerToken string) (*shared.User, error) {
+	tokenString := t.ExtractToken(bearerToken)
 
 	publicKeySet, err := jwk.Fetch(context.TODO(), publicKeysURL)
 	if err != nil {
@@ -126,7 +132,7 @@ func Claims(bearerToken string) (*Token, error) {
 		return nil, errInvalidToken
 	}
 
-	return cognitoClaims, nil
+	return &shared.User{Username: cognitoClaims.Username}, nil
 }
 
 var (

@@ -11,7 +11,7 @@ func TestClaims(t *testing.T) {
 	t.Parallel()
 	t.Run("It return an username given a jwt token", func(t *testing.T) {
 		t.Parallel()
-		claims, err := token.Claims("Bearer randomtoken")
+		claims, err := token.NewAuth().Claims("Bearer randomtoken")
 		if err != nil {
 			assert.NotNil(t, err)
 		}

@@ -3,7 +3,6 @@ package order
 import (
 	"context"
 
-	auth "github.com/evmartinelli/go-rifa-microservice/internal/adapters/shared/token"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/shared"
 )
@@ -13,14 +12,26 @@ type PlaceOrderUseCase struct {
 	raffleRepo raffle.Repo
 	pixPayment PixPayment
 	uuid       shared.UUIDGenerator
+	user       shared.Auth
 }
 
-func NewPlaceOrderUseCase(orderRepo Repo, raffleRepo raffle.Repo, pixPayment PixPayment, uuid shared.UUIDGenerator) *PlaceOrderUseCase {
-	return &PlaceOrderUseCase{orderRepo: orderRepo, raffleRepo: raffleRepo, pixPayment: pixPayment, uuid: uuid}
+func NewPlaceOrderUseCase(orderRepo Repo,
+	raffleRepo raffle.Repo,
+	pixPayment PixPayment,
+	uuid shared.UUIDGenerator,
+	user shared.Auth,
+) *PlaceOrderUseCase {
+	return &PlaceOrderUseCase{
+		orderRepo:  orderRepo,
+		raffleRepo: raffleRepo,
+		pixPayment: pixPayment,
+		uuid:       uuid,
+		user:       user,
+	}
 }
 
 func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, token string) (*Order, error) {
-	claims, err := auth.Claims(token)
+	claims, err := u.user.Claims(token)
 	if err != nil {
 		return nil, err
 	}
