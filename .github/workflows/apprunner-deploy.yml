@@ -14,7 +14,7 @@ on:
     branches:
       - master
   workflow_dispatch: # Allow manual invocation of the workflow
-  
+
 jobs:
   migration:
     name: "DB Migration"
@@ -38,13 +38,13 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    
-    steps:      
+
+    steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           persist-credentials: false
-          
+
       - name: Configure AWS credentials
         id: aws-credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -55,7 +55,7 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1        
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -66,11 +66,13 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"  
-          
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
       - name: Deploy to App Runner Image
         id: deploy-apprunner
         uses: awslabs/amazon-app-runner-deploy@main
+        env:
+          SERVER_PORT: 8080
         with:
           service: apprunner-rifa-microservice
           image: ${{ steps.build-image.outputs.image }}
@@ -79,6 +81,6 @@ jobs:
           cpu : 1
           memory : 2
           wait-for-service-stability-seconds: 1200
-      
+
       - name: App Runner URL
-        run: echo "App runner URL ${{ steps.deploy-apprunner.outputs.service-url }}" 
+        run: echo "App runner URL ${{ steps.deploy-apprunner.outputs.service-url }}"
