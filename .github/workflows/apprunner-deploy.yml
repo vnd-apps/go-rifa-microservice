@@ -71,13 +71,12 @@ jobs:
       - name: Deploy to App Runner Image
         id: deploy-apprunner
         uses: awslabs/amazon-app-runner-deploy@main
-        env:
-          SERVER_PORT: 8080
         with:
           service: apprunner-rifa-microservice
           image: ${{ steps.build-image.outputs.image }}
           access-role-arn: ${{ secrets.AWS_ROLE_ARN }}
           region: ${{ secrets.AWS_REGION }}
+          port: 8080
           cpu : 1
           memory : 2
           wait-for-service-stability-seconds: 1200
