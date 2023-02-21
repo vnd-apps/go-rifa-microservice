@@ -1,7 +1,4 @@
 export
-ifneq (,$(wildcard ./.env))
-    include .env
-endif
 
 # HELP =================================================================================================================
 # This will output the help for each task
