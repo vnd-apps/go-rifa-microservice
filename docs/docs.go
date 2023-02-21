@@ -17,6 +17,40 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/order/": {
+            "get": {
+                "description": "Lists all orders from a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "List Orders by User ID",
+                "operationId": "getOrdersByUserID",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "204"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a Order",
                 "consumes": [

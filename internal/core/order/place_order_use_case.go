@@ -12,37 +12,41 @@ type PlaceOrderUseCase struct {
 	raffleRepo raffle.Repo
 	pixPayment PixPayment
 	uuid       shared.UUIDGenerator
+	user       shared.Auth
 }
 
-func NewPlaceOrderUseCase(orderRepo Repo, raffleRepo raffle.Repo, pixPayment PixPayment, uuid shared.UUIDGenerator) *PlaceOrderUseCase {
-	return &PlaceOrderUseCase{orderRepo: orderRepo, raffleRepo: raffleRepo, pixPayment: pixPayment, uuid: uuid}
+func NewPlaceOrderUseCase(orderRepo Repo,
+	raffleRepo raffle.Repo,
+	pixPayment PixPayment,
+	uuid shared.UUIDGenerator,
+	user shared.Auth,
+) *PlaceOrderUseCase {
+	return &PlaceOrderUseCase{
+		orderRepo:  orderRepo,
+		raffleRepo: raffleRepo,
+		pixPayment: pixPayment,
+		uuid:       uuid,
+		user:       user,
+	}
 }
 
-func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, userID string) (*Order, error) {
+func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, token string) (*Order, error) {
+	claims, err := u.user.Claims(token)
+	if err != nil {
+		return nil, err
+	}
+
 	order := &Order{
 		ID:            u.uuid.Generate(),
 		ProductID:     model.ProductID,
 		Items:         model.Items,
 		PaymentMethod: PIX,
-		UserID:        userID,
+		UserID:        claims.Username,
 		Status:        string(Created),
 	}
 
-	raffleItem, err := u.raffleRepo.GetProduct(ctx, order.ProductID)
-	if err != nil {
-		return nil, err
-	}
-
-	if u.hasUserLimit(raffleItem.UserLimit) {
-		if u.hasOrder(ctx, order, raffleItem.UserLimit) {
-			return nil, ErrReachedLimit
-		}
-	}
-
-	for _, v := range order.Items {
-		if !checkAvaliability(raffleItem.Numbers, v) {
-			return nil, ErrUnavaliable
-		}
+	if errOrder := u.validateOrder(ctx, order); errOrder != nil {
+		return nil, errOrder
 	}
 
 	order.Pix, err = u.pixPayment.GeneratePix()
@@ -50,17 +54,7 @@ func (u *PlaceOrderUseCase) Run(ctx context.Context, model *Request, userID stri
 		return nil, err
 	}
 
-	for _, v := range order.Items {
-		err = u.updateItemStatus(ctx, &raffleItem, v)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	order.Total = float32(len(order.Items)) * raffleItem.UnitPrice
-
-	err = u.orderRepo.CreateOrder(ctx, order)
-	if err != nil {
+	if err := u.orderRepo.CreateOrder(ctx, order); err != nil {
 		return nil, err
 	}
 
@@ -114,4 +108,33 @@ func (u *PlaceOrderUseCase) hasOrder(ctx context.Context, order *Order, userLimi
 	}
 
 	return false
+}
+
+func (u *PlaceOrderUseCase) validateOrder(ctx context.Context, order *Order) error {
+	raffleItem, err := u.raffleRepo.GetProduct(ctx, order.ProductID)
+	if err != nil {
+		return err
+	}
+
+	if u.hasUserLimit(raffleItem.UserLimit) {
+		if u.hasOrder(ctx, order, raffleItem.UserLimit) {
+			return ErrReachedLimit
+		}
+	}
+
+	for _, v := range order.Items {
+		if !checkAvaliability(raffleItem.Numbers, v) {
+			return ErrUnavaliable
+		}
+	}
+
+	for _, v := range order.Items {
+		if err := u.updateItemStatus(ctx, &raffleItem, v); err != nil {
+			return err
+		}
+	}
+
+	order.Total = float32(len(order.Items)) * raffleItem.UnitPrice
+
+	return nil
 }

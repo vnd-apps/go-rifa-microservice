@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	auth "github.com/evmartinelli/go-rifa-microservice/internal/controller/http/middleware"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
 	"github.com/evmartinelli/go-rifa-microservice/pkg/logger"
 )
@@ -23,9 +24,9 @@ func newRaffleRoutes(handler *gin.RouterGroup, l *logger.Logger, u *UseCases) {
 	h := handler.Group("/raffle")
 	{
 		h.GET("/", r.getAll)
-		h.POST("/", r.doCreateRaffle)
+		h.POST("/", auth.JwtAuthMiddleware(), r.doCreateRaffle)
 		h.GET("/:id", r.getbyID)
-		h.PATCH("/:id", r.doUpdateRaffleNumberStatus)
+		h.PATCH("/:id", auth.JwtAuthMiddleware(), r.doUpdateRaffleNumberStatus)
 	}
 }
 

@@ -10,11 +10,18 @@ import (
 	"github.com/evmartinelli/go-rifa-microservice/internal/adapters/idgenerator"
 	mock_order "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/order"
 	mock_raffle "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/raffle"
+	mock_shared "github.com/evmartinelli/go-rifa-microservice/internal/core/mock/shared"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/order"
 	"github.com/evmartinelli/go-rifa-microservice/internal/core/raffle"
+	"github.com/evmartinelli/go-rifa-microservice/internal/core/shared"
 )
 
-func placeOrderUseCase(t *testing.T) (uc *order.PlaceOrderUseCase, or *mock_order.MockRepo, rr *mock_raffle.MockRepo, p *mock_order.MockPixPayment) {
+func placeOrderUseCase(t *testing.T) (uc *order.PlaceOrderUseCase,
+	or *mock_order.MockRepo,
+	rr *mock_raffle.MockRepo,
+	p *mock_order.MockPixPayment,
+	ur *mock_shared.MockAuth,
+) {
 	t.Helper()
 
 	mockCtl := gomock.NewController(t)
@@ -24,19 +31,21 @@ func placeOrderUseCase(t *testing.T) (uc *order.PlaceOrderUseCase, or *mock_orde
 	raffleRepo := mock_raffle.NewMockRepo(mockCtl)
 	uuid := idgenerator.NewUUIDGenerator()
 	pix := mock_order.NewMockPixPayment(mockCtl)
+	userrepo := mock_shared.NewMockAuth(mockCtl)
 
-	placeOrderUseCase := order.NewPlaceOrderUseCase(orderRepo, raffleRepo, pix, uuid)
+	placeOrderUseCase := order.NewPlaceOrderUseCase(orderRepo, raffleRepo, pix, uuid, userrepo)
 
-	return placeOrderUseCase, orderRepo, raffleRepo, pix
+	return placeOrderUseCase, orderRepo, raffleRepo, pix, userrepo
 }
 
 func TestCreateOrder(t *testing.T) {
 	t.Parallel()
 
-	orderUseCase, repo, raffleRepo, pix := placeOrderUseCase(t)
+	orderUseCase, repo, raffleRepo, pix, userrepo := placeOrderUseCase(t)
 
 	repo.EXPECT().CreateOrder(context.Background(), gomock.Any()).AnyTimes().Return(nil)
 	pix.EXPECT().GeneratePix().AnyTimes().Return(order.Pix{}, nil)
+	userrepo.EXPECT().Claims(gomock.Any()).AnyTimes().Return(&shared.User{}, nil)
 
 	t.Run("Given a product with user Limit, it returns error since the user has order", func(t *testing.T) {
 		t.Parallel()

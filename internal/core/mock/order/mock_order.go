@@ -50,18 +50,18 @@ func (mr *MockRepoMockRecorder) CreateOrder(ctx, r interface{}) *gomock.Call {
 }
 
 // GetUserOrders mocks base method.
-func (m *MockRepo) GetUserOrders(ctx context.Context, pid string) ([]order.Order, error) {
+func (m *MockRepo) GetUserOrders(ctx context.Context, userID string) ([]order.Order, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserOrders", ctx, pid)
+	ret := m.ctrl.Call(m, "GetUserOrders", ctx, userID)
 	ret0, _ := ret[0].([]order.Order)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserOrders indicates an expected call of GetUserOrders.
-func (mr *MockRepoMockRecorder) GetUserOrders(ctx, pid interface{}) *gomock.Call {
+func (mr *MockRepoMockRecorder) GetUserOrders(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserOrders", reflect.TypeOf((*MockRepo)(nil).GetUserOrders), ctx, pid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserOrders", reflect.TypeOf((*MockRepo)(nil).GetUserOrders), ctx, userID)
 }
 
 // MockPixPayment is a mock of PixPayment interface.
